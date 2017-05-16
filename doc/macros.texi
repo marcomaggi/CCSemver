@@ -1,0 +1,324 @@
+@c ------------------------------------------------------------
+@c Macros.
+@c ------------------------------------------------------------
+
+@macro version{}
+@value{VERSION}
+@end macro
+
+@macro gnu{}
+@acronym{GNU}
+@end macro
+
+@macro gpl{}
+@acronym{GPL}
+@end macro
+
+@macro lgpl{}
+@acronym{LGPL}
+@end macro
+
+@macro fdl{}
+@acronym{FDL}
+@end macro
+
+
+@c page
+@c ------------------------------------------------------------
+@c Special notes.
+@c ------------------------------------------------------------
+
+@macro forunix{}
+@strong{Unix:}
+@end macro
+
+@macro fixme{TEXT}
+@strong{FIXME: \TEXT\}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Miscellaneous acronyms.
+@c ------------------------------------------------------------
+
+@c *** KEEP ALPHABETIC ORDER ***
+
+@macro acpi{}
+@acronym{ACPI}
+@end macro
+
+@macro alsa{}
+@acronym{ALSA}
+@end macro
+
+@macro adsl{}
+@acronym{ADSL}
+@end macro
+
+@macro ansi{}
+@acronym{ANSI}
+@end macro
+
+@macro api{}
+@acronym{API}
+@end macro
+
+@macro ascii{}
+@acronym{ASCII}
+@end macro
+
+@macro asciiz{}
+@acronym{ASCIIZ}
+@end macro
+
+@c Remember that @url is already used by Texinfo.
+@macro aurl{}
+@acronym{URL}
+@end macro
+
+@c Remember that @xml is already used by Texinfo.
+@macro axml{}
+@acronym{XML}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro cdrom{}
+@acronym{CDROM}
+@end macro
+
+@macro cli{}
+@acronym{CLI}
+@end macro
+
+@macro cpu{}
+@acronym{CPU}
+@end macro
+
+@macro csv{}
+@acronym{CSV}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro dhcp{}
+@acronym{DHCP}
+@end macro
+
+@macro dns{}
+@acronym{DNS}
+@end macro
+
+@macro dtd{}
+@acronym{DTD}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro eof{}
+@acronym{EOF}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro ffi{}
+@acronym{FFI}
+@end macro
+
+@macro fifo{}
+@acronym{FIFO}
+@end macro
+
+@macro ftp{}
+@acronym{FTP}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro git{}
+@acronym{GIT}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro http{}
+@acronym{HTTP}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro ieee{}
+@acronym{IEEE}
+@end macro
+
+@macro imap{}
+@acronym{IMAP}
+@end macro
+
+@macro ip{}
+@acronym{IP}
+@end macro
+
+@macro iso{}
+@acronym{ISO}
+@end macro
+
+@macro isp{}
+@acronym{ISP}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro mime{}
+@acronym{MIME}
+@end macro
+
+@macro mpeg{}
+@acronym{MPEG}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro oob{}
+@acronym{OOB}
+@end macro
+
+@macro os{}
+@acronym{OS}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro posix{}
+@acronym{POSIX}
+@end macro
+
+@macro ppp{}
+@acronym{PPP}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro rfc{}
+@acronym{RFC}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro sftp{}
+@acronym{SFTP}
+@end macro
+
+@macro smtp{}
+@acronym{SMTP}
+@end macro
+
+@macro snmp{}
+@acronym{SNMP}
+@end macro
+
+@macro sql{}
+@acronym{SQL}
+@end macro
+
+@macro ssh{}
+@acronym{SSH}
+@end macro
+
+@macro ssl{}
+@acronym{SSL}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro tai{}
+@acronym{TAI}
+@end macro
+
+@macro tcp{}
+@acronym{TCP}
+@end macro
+
+@macro tls{}
+@acronym{TLS}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro udp{}
+@acronym{UDP}
+@end macro
+
+@macro utf{}
+@acronym{UTF}
+@end macro
+
+@macro utc{}
+@acronym{UTC}
+@end macro
+
+@macro uri{}
+@acronym{URI}
+@end macro
+
+@macro urldate{DATE}
+(@acronym{URL} last verified \DATE\)
+@end macro
+
+@macro usb{}
+@acronym{USB}
+@end macro
+
+@c ------------------------------------------------------------
+
+@macro vlc{}
+@acronym{VLC}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Software acronyms.
+@c ------------------------------------------------------------
+
+@macro bash{}
+@command{bash}
+@end macro
+
+@macro gcc{}
+@acronym{GCC}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c C language macros.
+@c ------------------------------------------------------------
+
+@macro cfunc{NAME}
+@code{\NAME\()}
+@end macro
+
+@macro cnull{}
+@code{NULL}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Macros for references to external documents.
+@c ------------------------------------------------------------
+
+@macro glibcref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,libc}
+@end macro
+
+@macro bibref{TAG}
+@code{[\TAG\]}
+@end macro
+
+@macro autoconfref{NODE, TITLE}
+@ref{\NODE\,\TITLE\,\TITLE\,autoconf}
+@end macro
+
+@c Local Variables:
+@c mode: texinfo
+@c TeX-master: t
+@c End:

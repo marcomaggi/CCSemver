@@ -1,0 +1,261 @@
+\input texinfo.tex
+@c %**start of header
+@setfilename libsv.info
+@settitle Libsv
+@c %**end of header
+
+@include version.texi
+@include macros.texi
+
+@c page
+@c ------------------------------------------------------------
+@c Values.
+@c ------------------------------------------------------------
+
+@set TITLE                      Libsv
+
+@c To be used as @value{PACKAGE} whenever we need to include the full
+@c name of this package.
+@set PACKAGE                    Libsv
+
+@c To be used as @value{PACKAGE} whenever we need to include the
+@c nickname of the project: the name that is used to compose the
+@c distribution tarball or the web address.
+@set PACKAGE_NICKNAME           sv
+
+@c To be used as @value{AUTHOR} whenever we need to include the list of
+@c authors of this document.
+@set AUTHOR                     Lucas Abel
+
+@c To be used as @value{AUTHOR_URL} whenever we need to include the
+@c email of the *single* author of this document.
+@set AUTHOR_URL                 @email{https://github.com/uael}
+
+@c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
+@c list of copyright years.
+@set COPYRIGHT_YEARS            2017
+
+@c ------------------------------------------------------------
+
+@set GITHUB_URL                 @url{https://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
+@set DOCUMENTATION_URL          @url{https://marcomaggi.github.io/docs/@value{PACKAGE_NICKNAME}.html}
+
+@set ORIGIN_URL                 @url{https://github.com/uael/sv/}
+
+@c page
+@c ------------------------------------------------------------
+@c Copyright notice.
+@c ------------------------------------------------------------
+
+@copying
+This document describes version @value{VERSION} of @value{PACKAGE}, a C
+language library implementing semantic versioning for the C language.
+
+The package is distributed under the terms of the Unlicense, see
+@url{unlicense.org}.
+
+The latest release, under the @gnu{} Autotools, can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+development of the original projects takes place at:
+
+@center @value{ORIGIN_URL}
+
+@noindent
+development of the @gnu{} Autotools repackaging takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+under the @code{autotools.marcomaggi-2017-05-16} branch, and as backup
+at:
+
+@center @value{BITBUCKET_URL}
+@end copying
+
+@c page
+@c ------------------------------------------------------------
+@c Headers.
+@c ------------------------------------------------------------
+
+@titlepage
+@title @value{TITLE}
+@subtitle Revision @value{VERSION}
+@author @value{AUTHOR} @value{AUTHOR_URL}
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c ------------------------------------------------------------
+
+@ifinfo
+@dircategory Development
+@direntry
+* libsv: (libsv).               Libsv, semantic versioning for C.
+@end direntry
+@end ifinfo
+
+@c page
+@ifnottex
+@node Top
+@top @value{TITLE}
+
+@insertcopying
+
+@menu
+* overview::                    Overview of the package.
+* api::                         Application programming interface.
+
+Appendices
+
+* Package License::             Unlicense.
+* references::                  Bibliography and references.
+
+Indexes
+
+* concept index::               An entry for each concept.
+* function index::              An entry for each function.
+* variable index::              An entry for each variable.
+* type index::                  An entry for each type.
+@end menu
+@end ifnottex
+
+@c page
+@node overview
+@chapter Overview of the package
+
+
+This document describes version @value{VERSION} of @value{PACKAGE}, a C
+language library implementing a template library.
+
+@value{PACKAGE} installs the single header file @file{semver.h}.  All the
+function names in the @api{} are prefixed with @code{sv_}; all the
+constant names are prefixed with @code{SV_}; all the type names are
+prefixed with @code{sv_} and suffixed with @code{_t}.
+
+@menu
+* overview linking::            Linking code with the library.
+@end menu
+
+@c page
+@node overview linking
+@section Linking code with the library
+
+
+This package installs a data file for @command{pkg-config}, so when
+searching for the installed library with the @gnu{} Autotools, we can
+add the following macro use to @file{configure.ac}:
+
+@example
+PKG_CHECK_MODULES([LIBSV],[libsv >= 3.1])
+@end example
+
+@noindent
+which will set the variables @code{LIBSV_LIBS} and @code{LIBSV_CFLAGS}.
+
+Alternatively we can use the raw @gnu{} Autoconf macros:
+
+@example
+AC_CHECK_LIB([libsv],[sv_ctor],,
+  [AC_MSG_FAILURE([test for Libsv library failed])])
+AC_CHECK_HEADERS([semver.h],,
+  [AC_MSG_FAILURE([test for Libsv header failed])])
+@end example
+
+@c page
+@node api
+@chapter Application programming interface
+
+
+@c page
+@node Package License
+@appendix Unlicense
+
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non--commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors of
+this software dedicate any and all copyright interest in the software to
+the public domain. We make this dedication for the benefit of the public
+at large and to the detriment of our heirs and successors. We intend
+this dedication to be an overt act of relinquishment in perpetuity of
+all present and future rights to this software under copyright law.
+
+THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to @url{http://unlicense.org}.
+
+@c page
+@node references
+@appendix Bibliography and references
+
+
+The documentation of @value{PACKAGE} is available online:
+
+@center @value{DOCUMENTATION_URL}
+
+@noindent
+The latest release, under the @gnu{} Autotools, can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+development of the original projects takes place at:
+
+@center @value{ORIGIN_URL}
+
+@noindent
+development of the @gnu{} Autotools repackaging takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+under the @code{autotools.marcomaggi-2017-05-16} branch, and as backup
+at:
+
+@center @value{BITBUCKET_URL}
+
+@c page
+@node concept index
+@appendix An entry for each concept
+
+@printindex cp
+
+@node function index
+@appendix An entry for each function.
+
+@printindex fn
+
+@node variable index
+@appendix An entry for each variable.
+
+@printindex vr
+
+@node type index
+@appendix An entry for each type.
+
+@printindex tp
+
+@contents
+@bye
+
+@c end of file
+@c Local Variables:
+@c fill-column: 72
+@c End:
