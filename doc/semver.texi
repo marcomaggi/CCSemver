@@ -1,6 +1,6 @@
 \input texinfo.tex
 @c %**start of header
-@setfilename libsv.info
+@setfilename semver.info
 @settitle Libsv
 @c %**end of header
 
@@ -54,7 +54,7 @@ This document describes version @value{VERSION} of @value{PACKAGE}, a C
 language library implementing semantic versioning for the C language.
 
 The package is distributed under the terms of the Unlicense, see
-@url{unlicense.org}.
+@url{http://unlicense.org}.
 
 The latest release, under the @gnu{} Autotools, can be downloaded from:
 

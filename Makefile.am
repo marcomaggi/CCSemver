@@ -16,8 +16,8 @@ nodist_pkgconfig_DATA	= meta/scripts/libsv.pc
 
 AM_MAKEINFOFLAGS	= --no-split
 
-info_TEXINFOS		= doc/libsv.texi
-doc_libsv_TEXINFOS	= doc/macros.texi
+info_TEXINFOS		= doc/semver.texi
+doc_semver_TEXINFOS	= doc/macros.texi
 
 #page
 #### libraries
