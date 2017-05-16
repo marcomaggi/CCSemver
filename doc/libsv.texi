@@ -133,10 +133,10 @@ Indexes
 This document describes version @value{VERSION} of @value{PACKAGE}, a C
 language library implementing a template library.
 
-@value{PACKAGE} installs the single header file @file{semver.h}.  All the
-function names in the @api{} are prefixed with @code{sv_}; all the
-constant names are prefixed with @code{SV_}; all the type names are
-prefixed with @code{sv_} and suffixed with @code{_t}.
+@value{PACKAGE} installs the single header file @file{semver.h}.  All
+the function names in the @api{} are prefixed with @code{semver_}; all
+the constant names are prefixed with @code{SEMVER_}; all the type names
+are prefixed with @code{semver_} and suffixed with @code{_t}.
 
 @menu
 * overview linking::            Linking code with the library.
@@ -161,7 +161,7 @@ which will set the variables @code{LIBSV_LIBS} and @code{LIBSV_CFLAGS}.
 Alternatively we can use the raw @gnu{} Autoconf macros:
 
 @example
-AC_CHECK_LIB([libsv],[sv_ctor],,
+AC_CHECK_LIB([libsv],[semver_ctor],,
   [AC_MSG_FAILURE([test for Libsv library failed])])
 AC_CHECK_HEADERS([semver.h],,
   [AC_MSG_FAILURE([test for Libsv header failed])])
