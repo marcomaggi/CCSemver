@@ -14,6 +14,7 @@ Topics
   A. Credits
   B. Bugs, vulnerabilities and contributions
   C. Resources
+  D. Badges and static analysis
 
 
 1. Introduction
@@ -151,6 +152,22 @@ the documentation is available online:
 the GNU Project software can be found here:
 
 			 <https://www.gnu.org/>
+
+
+D. Badges and static analysis
+-----------------------------
+
+D.1 Clang's Static Analyzer
+---------------------------
+
+The Clang Static Analyzer is a source code analysis tool that finds bugs
+in C, C++, and Objective-C programs.  It is distributed along with Clang
+and we can find it at:
+
+		   <http://clang-analyzer.llvm.org/>
+
+  Usage of this service is implemented with make rules; see the relevant
+section in the file "Makefile.am".
 
 
 ### end of file
