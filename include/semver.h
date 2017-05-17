@@ -74,12 +74,12 @@
 
 #define SEMVER_NUM_X (-1)
 
-typedef struct semver_t semver_t;
-typedef struct semver_id_t semver_id_t;
-typedef struct semver_comp_t semver_comp_t;
-typedef struct semver_range_t semver_range_t;
+typedef struct semver semver_t;
+typedef struct semver_id semver_id_t;
+typedef struct semver_comp semver_comp_t;
+typedef struct semver_range semver_range_t;
 
-enum semver_op_t {
+enum semver_op {
   SEMVER_OP_EQ = 0,
   SEMVER_OP_LT,
   SEMVER_OP_LE,
@@ -95,7 +95,7 @@ struct semver_id {
   int num;
   size_t len;
   const char *raw;
-  struct semver_id_t *next;
+  struct semver_id *next;
 };
 
 SEMVER_API void semver_id_ctor(semver_id_t *self);
@@ -104,7 +104,7 @@ SEMVER_API char semver_id_read(semver_id_t *self, const char *str, size_t len, s
 SEMVER_API int  semver_id_write(semver_id_t self, char *buffer, size_t len);
 SEMVER_API char semver_id_comp(semver_id_t self, semver_id_t other);
 
-struct semver_t {
+struct semver {
   int major, minor, patch;
   semver_id_t prerelease, build;
   size_t len;
@@ -117,9 +117,9 @@ SEMVER_API char semver_read(semver_t *self, const char *str, size_t len, size_t 
 SEMVER_API int  semver_write(semver_t self, char *buffer, size_t len);
 SEMVER_API char semver_comp(semver_t self, semver_t other);
 
-struct semver_comp_t {
-  struct semver_comp_t *next;
-  enum semver_op_t op;
+struct semver_comp {
+  struct semver_comp *next;
+  enum semver_op op;
   semver_t version;
 };
 
@@ -129,8 +129,8 @@ SEMVER_API char semver_comp_read(semver_comp_t *self, const char *str, size_t le
 SEMVER_API int  semver_comp_write(semver_comp_t self, char *buffer, size_t len);
 SEMVER_API char semver_match(semver_t self, semver_comp_t comp);
 
-struct semver_range_t {
-  struct semver_range_t *next;
+struct semver_range {
+  struct semver_range *next;
   semver_comp_t comp;
 };
 
