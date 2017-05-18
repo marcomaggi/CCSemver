@@ -61,7 +61,7 @@ The latest release, under the @gnu{} Autotools, can be downloaded from:
 @center @value{DOWNLOAD_URL}
 
 @noindent
-development of the original projects takes place at:
+development of the original project takes place at:
 
 @center @value{ORIGIN_URL}
 
@@ -148,6 +148,8 @@ are prefixed with @code{semver_} and suffixed with @code{_t}.
 @section Linking code with the library
 
 
+@subsubheading Using the @gnu{} Autotools
+
 This package installs a data file for @command{pkg-config}, so when
 searching for the installed library with the @gnu{} Autotools, we can
 add the following macro use to @file{configure.ac}:
@@ -166,6 +168,19 @@ AC_CHECK_LIB([libsv],[semver_ctor],,
   [AC_MSG_FAILURE([test for Libsv library failed])])
 AC_CHECK_HEADERS([semver.h],,
   [AC_MSG_FAILURE([test for Libsv header failed])])
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading One--shot compilation, Unix command line
+
+For the one--shot compilation of a file named @file{demo.c}, we can do:
+
+@example
+gcc -std=c99 -Wall \
+   `pkg-config libsv --cflags` \
+   `pkg-config libsv --libs` \
+   -o demo demo.c
 @end example
 
 @c page
