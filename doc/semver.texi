@@ -661,6 +661,9 @@ non--parsed character is stored in the variable referenced by
 When the function returns unsuccessfully: the value stored in the
 variable is invalid.
 @end itemize
+
+If the string is empty (@var{len} is zero): the function returns
+unsuccessfully.
 @end deftypefun
 
 

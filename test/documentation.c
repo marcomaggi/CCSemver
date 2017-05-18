@@ -120,6 +120,26 @@ doc_example_identifiers_5 (void)
   semver_id_dtor(&id);
 }
 
+void
+doc_example_identifiers_6 (void)
+/* Parsing the empty string. */
+{
+  static const char	input_str[] = "";
+  semver_id_t	id;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+	   (int)id.numeric, id.num, id.len, id.raw,
+	   (void *)id.next);
+  } else {
+    fprintf(stderr, "invalid empty string\n");
+  }
+  semver_id_dtor(&id);
+}
+
 
 /** --------------------------------------------------------------------
  ** Main.
@@ -131,6 +151,7 @@ int main(void) {
   doc_example_identifiers_3();
   doc_example_identifiers_4();
   doc_example_identifiers_5();
+  doc_example_identifiers_6();
 
   return EXIT_SUCCESS;
 }
