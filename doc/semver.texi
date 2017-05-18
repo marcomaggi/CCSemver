@@ -667,12 +667,20 @@ unsuccessfully.
 @end deftypefun
 
 
-@deftypefun int semver_id_write(semver_id_t self, char *buffer, size_t len)
+@deftypefun int semver_id_pwrite (const semver_id_t * @var{self}, char * @var{buffer}, size_t @var{len})
 @end deftypefun
 
 
-@deftypefun char semver_id_comp(semver_id_t self, semver_id_t other)
+@deftypefun char semver_id_pcomp (const semver_id_t * @var{self}, semver_id_t @var{other})
 @end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{self}, char * @var{buffer}, size_t @var{len})
+@end deftypefn
+
+
+@deftypefn {Preprocessor Macro} char semver_id_comp (semver_id_t @var{self}, semver_id_t @var{other})
+@end deftypefn
 
 @c page
 @node Package License
