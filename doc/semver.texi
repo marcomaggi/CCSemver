@@ -110,7 +110,7 @@ at:
 @menu
 * overview::                    Overview of the package.
 * semver::                      Semantic versioning.
-* api::                         Application programming interface.
+* identifiers::                 Parsing identifiers.
 
 Appendices
 
@@ -450,9 +450,226 @@ zero.
 @end table
 
 @c page
-@node api
-@chapter Application programming interface
+@node identifiers
+@chapter Parsing identifiers
 
+
+Usually we do @strong{not} need to use the identifiers parser directly.
+
+In the context of @value{PACKAGE} parsing functions, identifiers are
+@ascii{} strings holding: alphanumeric characters (according to the
+standard function @cfunc{isalnum}); dash characters; dot characters.
+Dot characters are interpreted as separators between components.
+
+The following example parses the numeric identifier @samp{123}:
+
+@example
+static const char     input_str[] = "123";
+semver_id_t   id;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+         (int)id.numeric, id.num, id.len, id.raw,
+         (void *)id.next);
+@}
+semver_id_dtor(&id);
+@end example
+
+@noindent
+and it prints:
+
+@example
+numeric?=1, num=123, len=3, raw=123, next=(nil)
+@end example
+
+The following example parses the alphabetic identifier @samp{alpha}:
+
+@example
+static const char     input_str[] = "alpha";
+semver_id_t   id;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+         (int)id.numeric, id.num, id.len, id.raw,
+         (void *)id.next);
+@}
+semver_id_dtor(&id);
+@end example
+
+@noindent
+and it prints:
+
+@example
+numeric?=0, num=0, len=5, raw=alpha, next=(nil)
+@end example
+
+The following example parses the compound identifier @samp{1.2.3-alpha.7}:
+
+@example
+static const char     input_str[] = "1.2.3-alpha.7";
+semver_id_t   id;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  for (semver_id_t * iter = &id; iter; iter = iter->next) @{
+    printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+           (int)iter->numeric, iter->num, iter->len, iter->raw);
+  @}
+@}
+semver_id_dtor(&id);
+@end example
+
+@noindent
+and it prints:
+
+@example
+numeric?=1, num=1, len=1, raw=1.2.3-alpha.7
+numeric?=1, num=2, len=1, raw=2.3-alpha.7
+numeric?=0, num=0, len=7, raw=3-alpha.7
+numeric?=1, num=7, len=1, raw=7
+@end example
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftp {Struct Typedef} semver_id_t
+Type of data structures representing a parsed identifier; every instance
+of this structure is a node in a simply--linked list.  Instances of this
+structure are initialised with @cfunc{semver_id_ctor} or
+@cfunc{semver_id_read}.  Instances of this structure are finalised with
+@cfunc{semver_id_dtor}.
+
+The structure has the following public fields:
+
+@table @code
+@item bool numeric
+A boolean value: @ctrue{} if the identifier is numeric; @cfalse{} if the
+identifier is alphabetic.
+
+@item int num
+If the identifier is numeric: this field holds its numeric
+representation.  Otherwise this field holds a meaningless value.
+
+@item size_t len
+The number of characters in the input string that where parsed to for
+this identifier.
+
+@item const char * raw
+Pointer to the character in the input string representing the first
+character of the identifier.  This pointer is valid as long as the input
+string handed to @cfunc{semver_id_read} is not mutated.
+
+@item semver_id_t * next
+Pointer to the next node in the linked list; @cnull{} if this structure
+is the last node.
+@end table
+@end deftp
+
+
+@deftypefun void semver_id_ctor (semver_id_t * @var{self})
+Initialise to empty an already allocated data structure representing a
+parsed identifier.  Every call to this function must be matched by a
+call to @cfunc{semver_id_dtor}:
+
+@example
+semver_id_t     id;
+
+semver_id_ctor(&id);
+@{
+  /* Do something with "id" here. */
+@}
+semver_id_dtor(&id);
+@end example
+@end deftypefun
+
+
+@deftypefun void semver_id_dtor(semver_id_t * @var{self})
+Finalise to empty a data structure representing a parsed identifier;
+calls to this function must match a previous call to
+@cfunc{semver_id_ctor} or @cfunc{semver_id_read}.
+
+All the resources associated to @var{self} are released, but the
+structure itself.  The following code is correct:
+
+@example
+semver_id_t     id;
+
+semver_id_ctor(&id);
+@{
+  /* Do something with "id" here. */
+@}
+semver_id_dtor(&id);
+@end example
+
+@noindent
+the following code is also correct:
+
+@example
+semver_id_t *   idp;
+
+idp = malloc(sizeof(semver_id_t));
+assert(NULL != idp);
+@{
+  semver_id_ctor(idp);
+  @{
+    /* Do something with "idp" here. */
+  @}
+  semver_id_dtor(idp);
+@}
+free(idp);
+@end example
+@end deftypefun
+
+
+@deftypefun char semver_id_read(semver_id_t * @var{self}, const char * @var{str}, size_t @var{len}, size_t * @var{offsetp})
+Parse an input string in @ascii{} format which is meant to hold an
+identifier.  When successful: the return value is @code{0}.  If an error
+occurs: the return value is @code{1}.
+
+The results of parsing are stored in the already allocated structure
+referenced by @var{self}; the structure is first initialised with
+@cfunc{semver_id_ctor}.
+
+In both the successful and unsuccessful cases: every call to this
+function must be matched by the application of @cfunc{semver_id_dtor} to
+@var{self}.
+
+The input string is referenced by @var{str}; the length of the input
+string is @var{len} characters.  The argument @var{offsetp} is both an
+input and output parameter:
+
+@itemize
+@item
+Upon entering the function: the offset of the first character to parse
+in @var{str} is acquired from the variable referenced by @var{offsetp}.
+
+@item
+When the function returns successfully: the offset of the first
+non--parsed character is stored in the variable referenced by
+@var{offsetp}; further parsing operations can use such value as input.
+
+@item
+When the function returns unsuccessfully: the value stored in the
+variable is invalid.
+@end itemize
+@end deftypefun
+
+
+@deftypefun int semver_id_write(semver_id_t self, char *buffer, size_t len)
+@end deftypefun
+
+
+@deftypefun char semver_id_comp(semver_id_t self, semver_id_t other)
+@end deftypefun
 
 @c page
 @node Package License
@@ -540,4 +757,5 @@ at:
 @c end of file
 @c Local Variables:
 @c fill-column: 72
+@c page-delimiter: "^@c page$"
 @c End:

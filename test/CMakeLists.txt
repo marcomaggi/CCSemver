@@ -13,3 +13,7 @@ add_test(range range)
 add_executable(match match.c)
 target_link_libraries(match ${PROJECT_NAME})
 add_test(match match)
+
+add_executable(documentation documentation.c)
+target_link_libraries(documentation ${PROJECT_NAME})
+add_test(documentation documentation)
