@@ -71,7 +71,7 @@ development of the @gnu{} Autotools repackaging takes place at:
 @center @value{GITHUB_URL}
 
 @noindent
-under the @code{autotools.marcomaggi-2017-05-16} branch, and as backup
+under the @code{autotools.marcomaggi-2017-05-17} branch, and as backup
 at:
 
 @center @value{BITBUCKET_URL}
@@ -493,7 +493,7 @@ development of the @gnu{} Autotools repackaging takes place at:
 @center @value{GITHUB_URL}
 
 @noindent
-under the @code{autotools.marcomaggi-2017-05-16} branch, and as backup
+under the @code{autotools.marcomaggi-2017-05-17} branch, and as backup
 at:
 
 @center @value{BITBUCKET_URL}
