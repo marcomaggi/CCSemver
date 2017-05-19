@@ -109,7 +109,8 @@ at:
 
 @menu
 * overview::                    Overview of the package.
-* semver::                      Semantic versioning.
+* spec::                        Semantic versioning.
+* numbers::                     Parsing numbers.
 * identifiers::                 Parsing identifiers.
 
 Appendices
@@ -184,7 +185,7 @@ gcc -std=c99 -Wall \
 @end example
 
 @c page
-@node semver
+@node spec
 @chapter Semantic versioning
 
 
@@ -196,13 +197,13 @@ at:
 A leading @samp{v} character is stripped off and ignored.
 
 @menu
-* semver ranges::               Ranges.
-* semver tags::                 Prerelease tags.
-* semver advanced::             Advanced range syntax.
+* spec ranges::                 Ranges.
+* spec tags::                   Prerelease tags.
+* spec advanced::               Advanced range syntax.
 @end menu
 
 @c page
-@node semver ranges
+@node spec ranges
 @section Ranges
 
 
@@ -250,7 +251,7 @@ The range @samp{1.2.7 || >=1.2.9 <2.0.0} would match the versions
 @samp{1.2.8} or @samp{2.0.0}.
 
 @c page
-@node semver tags
+@node spec tags
 @section Prerelease tags
 
 
@@ -287,7 +288,7 @@ the @strong{next} set of prerelease versions.
 @end itemize
 
 @c page
-@node semver advanced
+@node spec advanced
 @section Advanced range syntax
 
 
@@ -448,6 +449,11 @@ zero.
 
 @item @samp{^0.x} := @samp{>=0.0.0 <1.0.0}
 @end table
+
+@c page
+@node numbers
+@chapter Parsing numbers
+
 
 @c page
 @node identifiers
