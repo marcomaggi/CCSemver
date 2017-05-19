@@ -668,18 +668,67 @@ unsuccessfully.
 
 
 @deftypefun int semver_id_pwrite (const semver_id_t * @var{self}, char * @var{buffer}, size_t @var{len})
+Serialise the identifier @var{self} as @ascii{} string in the memory
+block referenced by @var{buffer}, which has at least @var{len}
+characters available.  If the buffer has not enough room to hold the
+full identifier serialisation: the string is truncated to @var{len}
+characters.
+
+Like @cfunc{snprintf}: return the number of characters needed to hold
+the full serialisation, excluding the trailing null; if the return value
+is greater than or equal to @var{len}, the string has been truncated.
+
+The following sample serialises a compound identifier:
+
+@example
+static const char     input_str[] = "1.2.3-alpha.7";
+size_t        buffer_len = 32;
+char          buffer_ptr[buffer_len];
+semver_id_t   id;
+size_t        offset = 0;
+char          rv;
+
+memset(buffer_ptr, 0, buffer_len);
+
+rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  size_t      needed_count;
+  size_t      actual_count;
+  needed_count = (size_t)semver_id_write(id, \
+      buffer_ptr, buffer_len);
+  if (0 < needed_count) @{
+    actual_count = (needed_count < buffer_len)? \
+       needed_count : buffer_len;
+    printf("actual_count=%lu, id=", actual_count);
+    fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    printf("\n");
+  @}
+@}
+semver_id_dtor(&id);
+@end example
+
+@noindent
+the code prints:
+
+@example
+actual_count=13, id=1.2.3-alpha.7
+@end example
 @end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{self}, char * @var{buffer}, size_t @var{len})
+Like @cfunc{semver_id_pwrite}, but accepts the identifier structure as
+argument, rather than a pointer to it.
+@end deftypefn
 
 
 @deftypefun char semver_id_pcomp (const semver_id_t * @var{self}, semver_id_t @var{other})
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{self}, char * @var{buffer}, size_t @var{len})
-@end deftypefn
-
-
 @deftypefn {Preprocessor Macro} char semver_id_comp (semver_id_t @var{self}, semver_id_t @var{other})
+Like @cfunc{semver_id_pcomp}, but accepts the identifier structures as
+arguments, rather than pointers to them.
 @end deftypefn
 
 @c page

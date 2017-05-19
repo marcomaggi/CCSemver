@@ -69,6 +69,7 @@ void
 doc_example_identifiers_3 (void)
 /* Parsing a single numeric identifier. */
 {
+  printf("--- %s:\n", __func__);
   static const char	input_str[] = "123";
   semver_id_t	id;
   size_t	offset = 0;
@@ -87,6 +88,7 @@ void
 doc_example_identifiers_4 (void)
 /* Parsing a single alphabetic identifier. */
 {
+  printf("--- %s:\n", __func__);
   static const char	input_str[] = "alpha";
   semver_id_t	id;
   size_t	offset = 0;
@@ -105,6 +107,7 @@ void
 doc_example_identifiers_5 (void)
 /* Parsing a compound identifier. */
 {
+  printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7";
   semver_id_t	id;
   size_t	offset = 0;
@@ -124,6 +127,7 @@ void
 doc_example_identifiers_6 (void)
 /* Parsing the empty string. */
 {
+  printf("--- %s:\n", __func__);
   static const char	input_str[] = "";
   semver_id_t	id;
   size_t	offset = 0;
@@ -135,7 +139,65 @@ doc_example_identifiers_6 (void)
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   } else {
-    fprintf(stderr, "invalid empty string\n");
+    printf("invalid empty string\n");
+  }
+  semver_id_dtor(&id);
+}
+
+void
+doc_example_identifiers_7 (void)
+/* Writing a compound identifier, enough room in the buffer. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7";
+  size_t	buffer_len = 32;
+  char		buffer_ptr[buffer_len];
+  semver_id_t	id;
+  size_t	offset = 0;
+  char		rv;
+
+  memset(buffer_ptr, 0, buffer_len);
+
+  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    size_t	needed_count;
+    size_t	actual_count;
+    needed_count = (size_t)semver_id_write(id, buffer_ptr, buffer_len);
+    if (0 < needed_count) {
+      actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
+      printf("actual_count=%lu, id=", actual_count);
+      fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      printf("\n");
+    }
+  }
+  semver_id_dtor(&id);
+}
+
+void
+doc_example_identifiers_8 (void)
+/* Writing a compound identifier, *not* enough room in the buffer. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7";
+  size_t	buffer_len = 6;
+  char		buffer_ptr[buffer_len];
+  semver_id_t	id;
+  size_t	offset = 0;
+  char		rv;
+
+  memset(buffer_ptr, 0, buffer_len);
+
+  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    size_t	needed_count;
+    size_t	actual_count;
+    needed_count = (size_t)semver_id_write(id, buffer_ptr, buffer_len);
+    if (0 < needed_count) {
+      actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
+      printf("actual_count=%lu, id=", actual_count);
+      fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      printf("\n");
+    }
   }
   semver_id_dtor(&id);
 }
@@ -152,6 +214,8 @@ int main(void) {
   doc_example_identifiers_4();
   doc_example_identifiers_5();
   doc_example_identifiers_6();
+  doc_example_identifiers_7();
+  doc_example_identifiers_8();
 
   return EXIT_SUCCESS;
 }
