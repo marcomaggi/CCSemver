@@ -33,6 +33,31 @@
 
 
 /** --------------------------------------------------------------------
+ ** Helpers.
+ ** ----------------------------------------------------------------- */
+
+static int
+semver_id_fwrite (const semver_id_t * idp, FILE * stream)
+{
+  size_t	buffer_len = 64;
+  char		buffer_ptr[buffer_len];
+  size_t	needed_count;
+
+  needed_count = (size_t)semver_id_pwrite(idp, buffer_ptr, buffer_len);
+  if (0 == needed_count) {
+    return 0;
+  } else if (needed_count < buffer_len) {
+    return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
+  } else {
+    size_t	buffer_len = needed_count+1;
+    char	buffer_ptr[buffer_len];
+    size_t	actual_count = semver_id_pwrite(idp, buffer_ptr, buffer_len);
+    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+  }
+}
+
+
+/** --------------------------------------------------------------------
  ** Documentation snippets: parsing identifiers.
  ** ----------------------------------------------------------------- */
 
@@ -395,6 +420,138 @@ doc_example_numeric_components_2_4 (void)
 
 
 /** --------------------------------------------------------------------
+ ** Documentation snippets: parsing versions.
+ ** ----------------------------------------------------------------- */
+
+void
+doc_example_versions_1_1 (void)
+{
+  semver_t	version;
+
+  semver_ctor(&version);
+  {
+    /* Do something with "version" here. */
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_versions_1_2 (void)
+{
+  semver_t *	versionp;
+
+  versionp = malloc(sizeof(semver_t));
+  assert(NULL != versionp);
+  {
+    semver_ctor(versionp);
+    {
+      /* Do something with "versionp" here. */
+    }
+    semver_dtor(versionp);
+  }
+  free(versionp);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_versions_2_1 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3";
+  semver_t	version;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("major=%d, minor=%d, patch=%d, ",
+	   version.major, version.minor, version.patch);
+    printf("prerelease=");
+    semver_id_fwrite(&version.prerelease, stdout);
+    printf(", ");
+    printf("build=");
+    semver_id_fwrite(&version.build, stdout);
+    printf("\n");
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_versions_2_2 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7";
+  semver_t	version;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("major=%d, minor=%d, patch=%d, ",
+	   version.major, version.minor, version.patch);
+    printf("prerelease=");
+    semver_id_fwrite(&version.prerelease, stdout);
+    printf(", ");
+    printf("build=");
+    semver_id_fwrite(&version.build, stdout);
+    printf("\n");
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_versions_2_3 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7+x86-64";
+  semver_t	version;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("major=%d, minor=%d, patch=%d, ",
+	   version.major, version.minor, version.patch);
+    printf("prerelease=");
+    semver_id_fwrite(&version.prerelease, stdout);
+    printf(", ");
+    printf("build=");
+    semver_id_fwrite(&version.build, stdout);
+    printf("\n");
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_versions_2_4 (void)
+/* Parsing the empty string. */
+{
+
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "";
+  semver_t	version;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("major=%d, minor=%d, patch=%d, ",
+	   version.major, version.minor, version.patch);
+    printf("prerelease=");
+    semver_id_fwrite(&version.prerelease, stdout);
+    printf(", ");
+    printf("build=");
+    semver_id_fwrite(&version.build, stdout);
+    printf("\n");
+  } else {
+    printf("invalid empty string\n");
+  }
+  semver_dtor(&version);
+}
+
+
+/** --------------------------------------------------------------------
  ** Main.
  ** ----------------------------------------------------------------- */
 
@@ -420,6 +577,13 @@ int main(void) {
   doc_example_numeric_components_2_2();
   doc_example_numeric_components_2_3();
   doc_example_numeric_components_2_4();
+
+  doc_example_versions_1_1();
+  doc_example_versions_1_2();
+  doc_example_versions_2_1();
+  doc_example_versions_2_2();
+  doc_example_versions_2_3();
+  doc_example_versions_2_4();
 
   return EXIT_SUCCESS;
 }

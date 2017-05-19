@@ -475,36 +475,93 @@ All the following symbols are defined in the header file
 
 
 @deftp {Struct Typedef} semver_t
-Type of data structures representing parsed versions.
+Type of data structures representing parsed versions.  Instances of this
+structure are initialised with @cfunc{semver_ctor} or
+@cfunc{semver_read}.  Instances of this structure are finalised with
+@cfunc{semver_dtor}.
 
 It has the following public fields:
 
 @table @code
 @item int major
+An integer representing the major version number.
 
 @item int minor
+An integer representing the minor version number.
 
 @item int patch
+An integer representing the patch level.
 
 @item semver_id_t prerelease
+An identifier representing the prerelease tag.
 
 @item semver_id_t build
+An identifier representing the build metadata.
 
 @item size_t len
+The number of characters in the input string that where parsed to form
+this version.
 
 @item const char * raw
-
+Pointer to the character in the input string representing the first
+character of this component.  This pointer is valid as long as the input
+string handed to @cfunc{semver_read} is not mutated.
 @end table
 @end deftp
 
 
 @deftypefun void semver_ctor (semver_t * @var{versionp})
+Initialise to empty an already allocated data structure representing a
+parsed version.  Every call to this function must be matched by a call
+to @cfunc{semver_dtor}:
 
+@example
+semver_t        version;
+
+semver_ctor(&version);
+@{
+  /* Do something with "version" here. */
+@}
+semver_dtor(&version);
+@end example
 @end deftypefun
 
 
 @deftypefun void semver_dtor (semver_t * @var{versionp})
+Finalise to empty a data structure representing a parsed version; calls
+to this function must match a previous call to @cfunc{semver_ctor} or
+@cfunc{semver_read}.
 
+All the resources associated to @var{versionp} are released, but the
+structure itself.  The following code is correct:
+
+@example
+semver_t        version;
+
+semver_ctor(&version);
+@{
+  /* Do something with "version" here. */
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+the following code is also correct:
+
+@example
+semver_t *      versionp;
+
+versionp = malloc(sizeof(semver_t));
+assert(NULL != versionp);
+@{
+  semver_ctor(versionp);
+  @{
+    /* Do something with "versionp" here. */
+  @}
+  semver_dtor(versionp);
+@}
+free(versionp);
+@end example
 @end deftypefun
 
 @c page
@@ -517,7 +574,146 @@ All the following symbols are defined in the header file
 
 
 @deftypefun char semver_read (semver_t * @var{versionp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+Parse an input string in @ascii{} format which is meant to hold a
+version specification.  When successful: the return value is @code{0}.
+If an error occurs: the return value is @code{1}.
+
+The results of parsing are stored in the already allocated structure
+referenced by @var{versionp}; the structure is first initialised with
+@cfunc{semver_ctor}.
+
+In both the successful and unsuccessful cases: every call to this
+function must be matched by the application of @cfunc{semver_dtor} to
+@var{versionp}.
+
+The input string is referenced by @var{input_buf}; the length of the
+input string is @var{input_len} characters.  The argument
+@var{input_offp} is both an input and output parameter:
+
+@itemize
+@item
+Upon entering the function: the offset of the first character to parse
+in @var{input_buf} is acquired from the variable referenced by
+@var{input_offp}.
+
+@item
+When the function returns successfully: the offset of the first
+non--parsed character is stored in the variable referenced by
+@var{input_offp}; further parsing operations can use such value as
+input.
+
+@item
+When the function returns unsuccessfully: the value stored in the
+variable is invalid.
+@end itemize
+
+If the string is empty (@var{input_len} is zero): the function returns
+unsuccessfully.
+
+Internally, this function allocates memory with @cfunc{malloc}; if
+memory allocation fails: the return value is @code{1}.
 @end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: parsing a numeric version
+
+The following example parses the numeric version @samp{1.2.3}:
+
+@example
+const char    input_str[] = "1.2.3";
+semver_t      version;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_read(&version, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("major=%d, minor=%d, patch=%d, ",
+         version.major, version.minor, version.patch);
+  printf("prerelease=");
+  semver_id_fwrite(&version.prerelease, stdout);
+  printf(", ");
+  printf("build=");
+  semver_id_fwrite(&version.build, stdout);
+  printf("\n");
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+and it prints:
+
+@example
+major=1, minor=2, patch=3, prerelease=, build=
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: parsing a tagged version
+
+The following example parses the version @samp{1.2.3-alpha.7}, which has
+a prerelease tag:
+
+@example
+static const char     input_str[] = "1.2.3-alpha.7";
+semver_t      version;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_read(&version, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("major=%d, minor=%d, patch=%d, ",
+         version.major, version.minor, version.patch);
+  printf("prerelease=");
+  semver_id_fwrite(&version.prerelease, stdout);
+  printf(", ");
+  printf("build=");
+  semver_id_fwrite(&version.build, stdout);
+  printf("\n");
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+and it prints:
+
+@example
+major=1, minor=2, patch=3, prerelease=alpha.7, build=
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: parsing a full version
+
+The following example parses the version @samp{1.2.3-alpha.7+x86-64},
+which has both a prerelease tag and build metadata:
+
+@example
+static const char     input_str[] = "1.2.3-alpha.7+x86-64";
+semver_t      version;
+size_t        offset = 0;
+char          rv;
+
+rv = semver_read(&version, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("major=%d, minor=%d, patch=%d, ",
+         version.major, version.minor, version.patch);
+  printf("prerelease=");
+  semver_id_fwrite(&version.prerelease, stdout);
+  printf(", ");
+  printf("build=");
+  semver_id_fwrite(&version.build, stdout);
+  printf("\n");
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+and it prints:
+
+@example
+major=1, minor=2, patch=3, prerelease=alpha.7, build=x86-64
+@end example
 
 @c page
 @node versions writing
