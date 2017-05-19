@@ -4,7 +4,6 @@ ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= INSTALL.autotools configure.sh
 dist_doc_DATA		= UNLICENSE README.md README.autotools README.forked.marcomagggi-2017-05-16
-dist_doc_DATA		= UNLICENSE README.md README.autotools
 AM_CFLAGS		= -I$(srcdir)/src -I$(srcdir)/include -Wall $(AX_CFLAGS)
 
 ## --------------------------------------------------------------------
@@ -16,9 +15,16 @@ nodist_pkgconfig_DATA	= meta/scripts/libsv.pc
 ## --------------------------------------------------------------------
 
 AM_MAKEINFOFLAGS	= --no-split
+AM_MAKEINFOHTMLFLAGS	= -c WORDS_IN_PAGE=0 --css-ref=semver.css
 
 info_TEXINFOS		= doc/semver.texi
 doc_semver_TEXINFOS	= doc/macros.texi
+
+doc_semver_CSS		= doc/semver.css
+
+install-html-local:
+	$(MKDIR_P) "$(DESTDIR)$(htmldir)/semver.html"
+	$(INSTALL_DATA) $(srcdir)/doc/semver.css "$(DESTDIR)$(htmldir)/semver.html/semver.css"
 
 #page
 #### libraries
