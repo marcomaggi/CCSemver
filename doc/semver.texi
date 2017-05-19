@@ -762,7 +762,8 @@ to the standard function @cfunc{isdigit}); the standalone character
 @samp{x}; the standalone character @samp{X}; the standalone character
 @samp{*}.
 
-Usually we do @strong{not} need to use the identifiers parser directly.
+Usually we do @strong{not} need to use the numeric components parser
+directly.
 
 All the following symbols are defined in the header file
 @file{semver.h}.
