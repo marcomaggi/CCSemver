@@ -109,7 +109,8 @@ at:
 
 @menu
 * overview::                    Overview of the package.
-* spec::                        Semantic versioning.
+* semver::                      Semantic versioning.
+* versions::                    Parsing version specifications.
 * numbers::                     Parsing numeric components.
 * identifiers::                 Parsing identifiers.
 
@@ -185,7 +186,7 @@ gcc -std=c99 -Wall \
 @end example
 
 @c page
-@node spec
+@node semver
 @chapter Semantic versioning
 
 
@@ -197,13 +198,13 @@ at:
 A leading @samp{v} character is stripped off and ignored.
 
 @menu
-* spec ranges::                 Ranges.
-* spec tags::                   Prerelease tags.
-* spec advanced::               Advanced range syntax.
+* semver ranges::               Ranges.
+* semver tags::                 Prerelease tags.
+* semver advanced::             Advanced range syntax.
 @end menu
 
 @c page
-@node spec ranges
+@node semver ranges
 @section Ranges
 
 
@@ -251,7 +252,7 @@ The range @samp{1.2.7 || >=1.2.9 <2.0.0} would match the versions
 @samp{1.2.8} or @samp{2.0.0}.
 
 @c page
-@node spec tags
+@node semver tags
 @section Prerelease tags
 
 
@@ -288,7 +289,7 @@ the @strong{next} set of prerelease versions.
 @end itemize
 
 @c page
-@node spec advanced
+@node semver advanced
 @section Advanced range syntax
 
 
@@ -451,6 +452,110 @@ zero.
 @end table
 
 @c page
+@node versions
+@chapter Parsing version specifications
+
+
+The versions @api{} does @strong{not} duplicate the input strings.
+
+@menu
+* versions typedefs::           Type definitions.
+* versions reading::            Parsing from a string.
+* versions writing::            Writing to a string.
+* versions comparing::          Versions comparison.
+@end menu
+
+@c page
+@node versions typedefs
+@section Type definitions
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftp {Struct Typedef} semver_t
+Type of data structures representing parsed versions.
+
+It has the following public fields:
+
+@table @code
+@item int major
+
+@item int minor
+
+@item int patch
+
+@item semver_id_t prerelease
+
+@item semver_id_t build
+
+@item size_t len
+
+@item const char * raw
+
+@end table
+@end deftp
+
+
+@deftypefun void semver_ctor (semver_t * @var{versionp})
+
+@end deftypefun
+
+
+@deftypefun void semver_dtor (semver_t * @var{versionp})
+
+@end deftypefun
+
+@c page
+@node versions reading
+@section Parsing from a string
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun char semver_read (semver_t * @var{versionp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+@end deftypefun
+
+@c page
+@node versions writing
+@section Writing to a string
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun int semver_pwrite (const semver_t * @var{versionp}, char * @var{output_buf}, size_t @var{output_len})
+
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_write (semver_t @var{version}, char * @var{output_buf}, size_t @var{output_len})
+
+@end deftypefn
+
+@c page
+@node versions comparing
+@section Versions comparison
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun char semver_pcomp (const semver_t * @var{A}, const semver_t * @var{B})
+
+@end deftypefun
+
+
+@deftypefn char semver_comp (semver_t @var{A}, @var{B})
+
+@end deftypefn
+
+@c page
 @node numbers
 @chapter Parsing numeric components
 
@@ -531,6 +636,9 @@ Special value used to represent a numeric component specified as
 Compare the given integers.  Return @code{-1} if @var{A} is less than
 @var{B}; return @code{0} if @var{A} is equal to @var{B}; return
 @code{+1} if @var{A} is greater than @var{B}.
+
+The return values of this function are @strong{invalid} if one of the
+arguments is @code{SEMVER_NUM_X}.
 @end deftypefun
 
 @c page
