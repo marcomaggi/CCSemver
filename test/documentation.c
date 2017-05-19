@@ -264,11 +264,9 @@ doc_example_identifiers_9 (void)
   rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
   if (0 == rv) {
     rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
-    {
-      if (0 == rv) {
-	char	compar = semver_id_comp(id_A, id_B);
-	printf("compar=%d\n", (int)compar);
-      }
+    if (0 == rv) {
+      char	compar = semver_id_comp(id_A, id_B);
+      printf("compar=%d\n", (int)compar);
     }
     semver_id_dtor(&id_B);
   }
@@ -289,11 +287,9 @@ doc_example_identifiers_10 (void)
   rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
   if (0 == rv) {
     rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
-    {
-      if (0 == rv) {
-	char	compar = semver_id_comp(id_A, id_B);
-	printf("compar=%d\n", (int)compar);
-      }
+    if (0 == rv) {
+      char	compar = semver_id_comp(id_A, id_B);
+      printf("compar=%d\n", (int)compar);
     }
     semver_id_dtor(&id_B);
   }
@@ -550,6 +546,63 @@ doc_example_versions_2_4 (void)
   semver_dtor(&version);
 }
 
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_versions_3_1 (void)
+/* Writing a version, enough room in the buffer. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7";
+  size_t	buffer_len = 32;
+  char		buffer_ptr[buffer_len];
+  semver_t	version;
+  size_t	offset = 0;
+  char		rv;
+
+  memset(buffer_ptr, 0, buffer_len);
+
+  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    size_t	needed_count;
+    size_t	actual_count;
+    needed_count = (size_t)semver_write(version, buffer_ptr, buffer_len);
+    if (0 < needed_count) {
+      actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
+      printf("len=%lu, actual_count=%lu, id=",
+	     strlen(input_str), actual_count);
+      fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      printf("\n");
+    }
+  }
+  semver_dtor(&version);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_versions_4_1 (void)
+/* Comparing versions: A < B. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str_A[] = "1.2.3";
+  static const char	input_str_B[] = "1.2.4";
+  semver_t	version_A, version_B;
+  size_t	offset_A = 0, offset_B = 0;
+  char		rv;
+
+  rv = semver_read(&version_A, input_str_A, strlen(input_str_A), &offset_A);
+  if (0 == rv) {
+    rv = semver_read(&version_B, input_str_B, strlen(input_str_B), &offset_B);
+    if (0 == rv) {
+      char	compar = semver_comp(version_A, version_B);
+      printf("compar=%d\n", (int)compar);
+    }
+    semver_dtor(&version_B);
+  }
+  semver_dtor(&version_A);
+}
+
 
 /** --------------------------------------------------------------------
  ** Main.
@@ -584,6 +637,8 @@ int main(void) {
   doc_example_versions_2_2();
   doc_example_versions_2_3();
   doc_example_versions_2_4();
+  doc_example_versions_3_1();
+  doc_example_versions_4_1();
 
   return EXIT_SUCCESS;
 }

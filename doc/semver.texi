@@ -725,13 +725,64 @@ All the following symbols are defined in the header file
 
 
 @deftypefun int semver_pwrite (const semver_t * @var{versionp}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the version @var{versionp} as @ascii{} string in the memory
+block referenced by @var{output_buf}, which has at least
+@var{output_len} characters available.  If the buffer has not enough
+room to hold the full version serialisation: the string is truncated to
+@var{output_len} characters.
 
+Like @cfunc{snprintf}: return the number of characters needed to hold
+the full serialisation, excluding the trailing null; if the return value
+is greater than or equal to @var{output_len}, the string has been
+truncated.
 @end deftypefun
 
 
 @deftypefn {Preprocessor Macro} int semver_write (semver_t @var{version}, char * @var{output_buf}, size_t @var{output_len})
-
+Like @cfunc{semver_pwrite}, but accept the version structure as
+argument, rather than a pointer to it.
 @end deftypefn
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: serialising a version
+
+The following example serialises a version specification:
+
+@example
+static const char     input_str[] = "1.2.3-alpha.7";
+size_t        buffer_len = 32;
+char          buffer_ptr[buffer_len];
+semver_t      version;
+size_t        offset = 0;
+char          rv;
+
+memset(buffer_ptr, 0, buffer_len);
+
+rv = semver_read(&version, input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  size_t      needed_count;
+  size_t      actual_count;
+  needed_count = (size_t)semver_write(version, \
+     buffer_ptr, buffer_len);
+  if (0 < needed_count) @{
+    actual_count = (needed_count < buffer_len)? \
+        needed_count : buffer_len;
+    printf("len=%lu, actual_count=%lu, id=",
+           strlen(input_str), actual_count);
+    fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    printf("\n");
+  @}
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+the code prints:
+
+@example
+len=13, actual_count=13, id=1.2.3-alpha.7
+@end example
 
 @c page
 @node versions comparing
@@ -743,13 +794,51 @@ All the following symbols are defined in the header file
 
 
 @deftypefun char semver_pcomp (const semver_t * @var{A}, const semver_t * @var{B})
-
+Compare the given versions.  Return @code{-1} if @var{A} is less than
+@var{B}; return @code{0} if @var{A} is equal to @var{B}; return
+@code{+1} if @var{A} is greater than @var{B}.
 @end deftypefun
 
 
-@deftypefn char semver_comp (semver_t @var{A}, @var{B})
-
+@deftypefn {Preprocessor Macro} char semver_comp (semver_t @var{A}, semver_t @var{B})
+Like @cfunc{semver_pcomp}, but accept the version structures as
+arguments, rather than pointers to them.
 @end deftypefn
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: comparing versions
+
+
+The following example compares two versions:
+
+@example
+static const char     input_str_A[] = "1.2.3";
+static const char     input_str_B[] = "1.2.4";
+semver_t      version_A, version_B;
+size_t        offset_A = 0, offset_B = 0;
+char          rv;
+
+rv = semver_read(&version_A, input_str_A,
+                 strlen(input_str_A), &offset_A);
+if (0 == rv) @{
+  rv = semver_read(&version_B, input_str_B,
+                   strlen(input_str_B), &offset_B);
+  if (0 == rv) @{
+    char    compar = semver_comp(version_A, version_B);
+    printf("compar=%d\n", (int)compar);
+  @}
+  semver_dtor(&version_B);
+@}
+semver_dtor(&version_A);
+@end example
+
+@noindent
+and the code prints:
+
+@example
+compar=-1
+@end example
 
 @c page
 @node numbers
@@ -1240,11 +1329,9 @@ rv = semver_id_read(&id_A, \
 if (0 == rv) @{
   rv = semver_id_read(&id_B, \
       input_str_B, strlen(input_str_B), &offset_B);
-  @{
-    if (0 == rv) @{
-      char    compar = semver_id_comp(id_A, id_B);
-      printf("compar=%d\n", (int)compar);
-    @}
+  if (0 == rv) @{
+    char    compar = semver_id_comp(id_A, id_B);
+    printf("compar=%d\n", (int)compar);
   @}
   semver_id_dtor(&id_B);
 @}
