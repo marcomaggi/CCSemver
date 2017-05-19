@@ -762,7 +762,7 @@ truncated.
 
 
 @deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{idp}, char * @var{output_buf}, size_t @var{output_len})
-Like @cfunc{semver_id_pwrite}, but accepts the identifier structure as
+Like @cfunc{semver_id_pwrite}, but accept the identifier structure as
 argument, rather than a pointer to it.
 @end deftypefn
 
@@ -822,12 +822,13 @@ Compare the numeric components of the given identifiers.  Return
 @code{-1} if @var{A} is less than @var{B}; return @code{0} if @var{A} is
 equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 
-An empty identifier is less than any other identifier but the empty one.
+An empty identifier is less than any other identifier but the empty one;
+two empty identifiers are equal.
 @end deftypefun
 
 
 @deftypefn {Preprocessor Macro} char semver_id_comp (semver_id_t @var{A}, semver_id_t @var{B})
-Like @cfunc{semver_id_pcomp}, but accepts the identifier structures as
+Like @cfunc{semver_id_pcomp}, but accept the identifier structures as
 arguments, rather than pointers to them.
 @end deftypefn
 
@@ -859,6 +860,13 @@ if (0 == rv) @{
   semver_id_dtor(&id_B);
 @}
 semver_id_dtor(&id_A);
+@end example
+
+@noindent
+and the code prints:
+
+@example
+compar=-1
 @end example
 
 @c page
