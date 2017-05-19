@@ -277,6 +277,124 @@ doc_example_identifiers_10 (void)
 
 
 /** --------------------------------------------------------------------
+ ** Documentation snippets: parsing numeric components.
+ ** ----------------------------------------------------------------- */
+
+void
+doc_example_numeric_components_1_1 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_buf[] = "123";
+  int		num;
+  size_t	input_off = 0;
+  char		rv;
+
+  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  if (0 == rv) {
+    printf("num=%d\n", num);
+  }
+}
+
+void
+doc_example_numeric_components_1_2 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_buf[] = "x";
+  int		num;
+  size_t	input_off = 0;
+  char		rv;
+
+  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  if (0 == rv) {
+    printf("num=%d\n", num);
+  }
+}
+
+void
+doc_example_numeric_components_1_3 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_buf[] = "X";
+  int		num;
+  size_t	input_off = 0;
+  char		rv;
+
+  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  if (0 == rv) {
+    printf("num=%d\n", num);
+  }
+}
+
+void
+doc_example_numeric_components_1_4 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_buf[] = "*";
+  int		num;
+  size_t	input_off = 0;
+  char		rv;
+
+  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  if (0 == rv) {
+    printf("num=%d\n", num);
+  }
+}
+
+void
+doc_example_numeric_components_1_5 (void)
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_buf[] = "";
+  int		num;
+  size_t	input_off = 0;
+  char		rv;
+
+  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  if (0 == rv) {
+    printf("num=%d\n", num);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_numeric_components_2_1 (void)
+{
+  printf("--- %s:\n", __func__);
+  int	A = 123;
+  int	B = 456;
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+}
+
+void
+doc_example_numeric_components_2_2 (void)
+{
+  printf("--- %s:\n", __func__);
+  int	A = 456;
+  int	B = 123;
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+}
+
+void
+doc_example_numeric_components_2_3 (void)
+{
+  printf("--- %s:\n", __func__);
+  int	A = 123;
+  int	B = 123;
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+}
+
+void
+doc_example_numeric_components_2_4 (void)
+{
+  printf("--- %s:\n", __func__);
+  int	A = SEMVER_NUM_X;
+  int	B = 123;
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+}
+
+
+/** --------------------------------------------------------------------
  ** Main.
  ** ----------------------------------------------------------------- */
 
@@ -292,6 +410,16 @@ int main(void) {
   doc_example_identifiers_8();
   doc_example_identifiers_9();
   doc_example_identifiers_10();
+
+  doc_example_numeric_components_1_1();
+  doc_example_numeric_components_1_2();
+  doc_example_numeric_components_1_3();
+  doc_example_numeric_components_1_4();
+  doc_example_numeric_components_1_5();
+  doc_example_numeric_components_2_1();
+  doc_example_numeric_components_2_2();
+  doc_example_numeric_components_2_3();
+  doc_example_numeric_components_2_4();
 
   return EXIT_SUCCESS;
 }

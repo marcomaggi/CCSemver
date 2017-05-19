@@ -110,7 +110,7 @@ at:
 @menu
 * overview::                    Overview of the package.
 * spec::                        Semantic versioning.
-* numbers::                     Parsing numbers.
+* numbers::                     Parsing numeric components.
 * identifiers::                 Parsing identifiers.
 
 Appendices
@@ -452,8 +452,86 @@ zero.
 
 @c page
 @node numbers
-@chapter Parsing numbers
+@chapter Parsing numeric components
 
+
+In the context of @value{PACKAGE}'s parsing functions, numeric
+components are @ascii{} strings holding: numeric characters (according
+to the standard function @cfunc{isdigit}); the standalone character
+@samp{x}; the standalone character @samp{X}; the standalone character
+@samp{*}.
+
+Usually we do @strong{not} need to use the identifiers parser directly.
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun char semver_num_read (int * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+Parse an input string in @ascii{} format which is meant to hold an
+integer number.  When successful: the return value is @code{0}.  If an
+error occurs: the return value is @code{1}.
+
+The results of parsing are stored in the variable referenced by
+@var{nump}.
+
+The input string is referenced by @var{input_buf}; the length of the
+input string is @var{input_len} characters.  The argument
+@var{input_offp} is both an input and output parameter:
+
+@itemize
+@item
+Upon entering the function: the offset of the first character to parse
+in @var{input_buf} is acquired from the variable referenced by
+@var{input_offp}.  If the value in the referenced variable is greater
+than @var{input_len}: the function returns unsuccessfully.
+
+@item
+When the function returns successfully: the offset of the first
+non--parsed character is stored in the variable referenced by
+@var{input_offp}; further parsing operations can use such value as
+input.
+
+@item
+When the function returns unsuccessfully: the value stored in the
+variable is invalid.
+@end itemize
+
+If the string is empty (@var{input_len} is zero): the function returns
+successfully and stores zero in the variable referenced by @var{nump}.
+
+If the input string contains @samp{x}, @samp{X} or @samp{*}: the
+function returns successfully and stores the value @code{SEMVER_NUM_X}
+in the variable referenced by @var{nump}.
+
+The following example code parses a numeric component:
+
+@example
+static const char     input_buf[] = "123";
+int           num;
+size_t        input_off = 0;
+char          rv;
+
+rv = semver_num_read(&num, \
+       input_buf, strlen(input_buf), &input_off);
+if (0 == rv) @{
+  printf("num=%d\n", num);
+@}
+@end example
+@end deftypefun
+
+
+@defmac SEMVER_NUM_X
+Special value used to represent a numeric component specified as
+@samp{x}, @samp{X} or @samp{*}.
+@end defmac
+
+
+@deftypefun char semver_num_comp (int @var{A}, int @var{B})
+Compare the given integers.  Return @code{-1} if @var{A} is less than
+@var{B}; return @code{0} if @var{A} is equal to @var{B}; return
+@code{+1} if @var{A} is greater than @var{B}.
+@end deftypefun
 
 @c page
 @node identifiers
