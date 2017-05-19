@@ -185,7 +185,8 @@ doc_example_identifiers_7 (void)
     needed_count = (size_t)semver_id_write(id, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
-      printf("actual_count=%lu, id=", actual_count);
+      printf("len=%lu, actual_count=%lu, id=",
+	     strlen(input_str), actual_count);
       fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
       printf("\n");
     }

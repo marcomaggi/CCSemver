@@ -747,20 +747,21 @@ All the following symbols are defined in the header file
 @file{semver.h}.
 
 
-@deftypefun int semver_id_pwrite (const semver_id_t * @var{idp}, char * @var{buffer}, size_t @var{len})
+@deftypefun int semver_id_pwrite (const semver_id_t * @var{idp}, char * @var{output_buf}, size_t @var{output_len})
 Serialise the identifier @var{idp} as @ascii{} string in the memory
-block referenced by @var{buffer}, which has at least @var{len}
-characters available.  If the buffer has not enough room to hold the
-full identifier serialisation: the string is truncated to @var{len}
-characters.
+block referenced by @var{output_buf}, which has at least
+@var{output_len} characters available.  If the buffer has not enough
+room to hold the full identifier serialisation: the string is truncated
+to @var{output_len} characters.
 
 Like @cfunc{snprintf}: return the number of characters needed to hold
 the full serialisation, excluding the trailing null; if the return value
-is greater than or equal to @var{len}, the string has been truncated.
+is greater than or equal to @var{output_len}, the string has been
+truncated.
 @end deftypefun
 
 
-@deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{idp}, char * @var{buffer}, size_t @var{len})
+@deftypefn {Preprocessor Macro} int semver_id_write (semver_id_t @var{idp}, char * @var{output_buf}, size_t @var{output_len})
 Like @cfunc{semver_id_pwrite}, but accepts the identifier structure as
 argument, rather than a pointer to it.
 @end deftypefn
@@ -791,7 +792,8 @@ if (0 == rv) @{
   if (0 < needed_count) @{
     actual_count = (needed_count < buffer_len)? \
        needed_count : buffer_len;
-    printf("actual_count=%lu, id=", actual_count);
+    printf("len=%lu, actual_count=%lu, id=",
+      strlen(input_str), actual_count);
     fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
     printf("\n");
   @}
@@ -803,7 +805,7 @@ semver_id_dtor(&id);
 the code prints:
 
 @example
-actual_count=13, id=1.2.3-alpha.7
+len=13, actual_count=13, id=1.2.3-alpha.7
 @end example
 
 @c page
