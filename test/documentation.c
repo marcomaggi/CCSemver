@@ -104,11 +104,31 @@ doc_example_identifiers_4 (void)
 }
 
 void
-doc_example_identifiers_5 (void)
+doc_example_identifiers_5_1 (void)
 /* Parsing a compound identifier. */
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7";
+  semver_id_t	id;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    for (semver_id_t * iter = &id; iter; iter = iter->next) {
+      printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+	     (int)iter->numeric, iter->num, iter->len, iter->raw);
+    }
+  }
+  semver_id_dtor(&id);
+}
+
+void
+doc_example_identifiers_5_2 (void)
+/* Parsing a compound identifier with build metadata. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3-alpha.7+x86-64";
   semver_id_t	id;
   size_t	offset = 0;
   char		rv;
@@ -202,6 +222,58 @@ doc_example_identifiers_8 (void)
   semver_id_dtor(&id);
 }
 
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_identifiers_9 (void)
+/* Comparing identifiers: A < B. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str_A[] = "1.2.3";
+  static const char	input_str_B[] = "1.2.4";
+  semver_id_t	id_A, id_B;
+  size_t	offset_A = 0, offset_B = 0;
+  char		rv;
+
+  rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
+  if (0 == rv) {
+    rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
+    {
+      if (0 == rv) {
+	char	compar = semver_id_comp(id_A, id_B);
+	printf("compar=%d\n", (int)compar);
+      }
+    }
+    semver_id_dtor(&id_B);
+  }
+  semver_id_dtor(&id_A);
+}
+
+void
+doc_example_identifiers_10 (void)
+/* Comparing identifiers: A < B. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str_A[] = "1.4.0";
+  static const char	input_str_B[] = "1.2.3";
+  semver_id_t	id_A, id_B;
+  size_t	offset_A = 0, offset_B = 0;
+  char		rv;
+
+  rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
+  if (0 == rv) {
+    rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
+    {
+      if (0 == rv) {
+	char	compar = semver_id_comp(id_A, id_B);
+	printf("compar=%d\n", (int)compar);
+      }
+    }
+    semver_id_dtor(&id_B);
+  }
+  semver_id_dtor(&id_A);
+}
+
 
 /** --------------------------------------------------------------------
  ** Main.
@@ -212,10 +284,13 @@ int main(void) {
   doc_example_identifiers_2();
   doc_example_identifiers_3();
   doc_example_identifiers_4();
-  doc_example_identifiers_5();
+  doc_example_identifiers_5_1();
+  doc_example_identifiers_5_2();
   doc_example_identifiers_6();
   doc_example_identifiers_7();
   doc_example_identifiers_8();
+  doc_example_identifiers_9();
+  doc_example_identifiers_10();
 
   return EXIT_SUCCESS;
 }
