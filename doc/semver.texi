@@ -112,6 +112,7 @@ at:
 * semver::                      Semantic versioning.
 * versions::                    Parsing version specifications.
 * comparators::                 Parsing and using comparators.
+* ranges::                      Parsing and using ranges.
 * numbers::                     Parsing numeric components.
 * identifiers::                 Parsing identifiers.
 
@@ -1254,6 +1255,52 @@ the code prints:
 @example
 matches?=no
 @end example
+
+@c page
+@node ranges
+@chapter Parsing and using ranges
+
+
+The ranges @api{} does @strong{not} duplicate the input strings.
+
+@menu
+* ranges typedefs::             Type definitions.
+* ranges reading::              Parsing from a string.
+* ranges writing::              Writing to a string.
+* ranges matching::             Matching ranges and versions.
+@end menu
+
+@c page
+@node ranges typedefs
+@section Type definitions
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+@c page
+@node ranges reading
+@section Parsing from a string
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+@c page
+@node ranges writing
+@section Writing to a string
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+@c page
+@node ranges matching
+@section Matching ranges and versions
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
 
 @c page
 @node numbers
