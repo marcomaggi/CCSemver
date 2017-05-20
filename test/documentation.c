@@ -56,6 +56,45 @@ semver_id_fwrite (const semver_id_t * idp, FILE * stream)
   }
 }
 
+static int
+semver_fwrite (const semver_t * versionp, FILE * stream)
+{
+  size_t	buffer_len = 64;
+  char		buffer_ptr[buffer_len];
+  size_t	needed_count;
+
+  needed_count = (size_t)semver_pwrite(versionp, buffer_ptr, buffer_len);
+  if (0 == needed_count) {
+    return 0;
+  } else if (needed_count < buffer_len) {
+    return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
+  } else {
+    size_t	buffer_len = needed_count+1;
+    char	buffer_ptr[buffer_len];
+    size_t	actual_count = semver_pwrite(versionp, buffer_ptr, buffer_len);
+    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+  }
+}
+
+const char *
+semver_op_string (enum semver_op op)
+{
+  switch (op) {
+  case SEMVER_OP_EQ:
+    return "SEMVER_OP_EQ";
+  case SEMVER_OP_LT:
+    return "SEMVER_OP_LT";
+  case SEMVER_OP_LE:
+    return "SEMVER_OP_LE";
+  case SEMVER_OP_GT:
+    return "SEMVER_OP_GT";
+  case SEMVER_OP_GE:
+    return "SEMVER_OP_GE";
+  default:
+    return "invalid value";
+  }
+}
+
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing identifiers.
@@ -609,6 +648,207 @@ doc_example_versions_4_1 (void)
 
 
 /** --------------------------------------------------------------------
+ ** Documentation snippets: parsing comparators.
+ ** ----------------------------------------------------------------- */
+
+void
+doc_example_comparators_1_1 (void)
+{
+  semver_comp_t	comp;
+
+  semver_comp_ctor(&comp);
+  {
+    /* Do something with "comp" here. */
+  }
+  semver_comp_dtor(&comp);
+}
+
+void
+doc_example_comparators_1_2 (void)
+{
+  semver_comp_t *	compp;
+
+  compp = malloc(sizeof(semver_comp_t));
+  assert(NULL != compp);
+  {
+    semver_comp_ctor(compp);
+    {
+      /* Do something with "compp" here. */
+    }
+    semver_comp_dtor(compp);
+  }
+  free(compp);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_2_1 (void)
+/* Parsing equal comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "1.2.3";
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("operation=%s, ", semver_op_string(comp.op));
+    semver_fwrite(&comp.version, stdout);
+    printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+void
+doc_example_comparators_2_2 (void)
+/* Parsing less than comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "<1.2.3";
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("operation=%s, ", semver_op_string(comp.op));
+    semver_fwrite(&comp.version, stdout);
+    printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+void
+doc_example_comparators_2_3 (void)
+/* Parsing greater than comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = ">1.2.3";
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("operation=%s, ", semver_op_string(comp.op));
+    semver_fwrite(&comp.version, stdout);
+    printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+void
+doc_example_comparators_2_4 (void)
+/* Parsing less than or equal to comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "<=1.2.3";
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("operation=%s, ", semver_op_string(comp.op));
+    semver_fwrite(&comp.version, stdout);
+    printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+void
+doc_example_comparators_2_5 (void)
+/* Parsing greater than or equal to comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = ">=1.2.3";
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    printf("operation=%s, ", semver_op_string(comp.op));
+    semver_fwrite(&comp.version, stdout);
+    printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_3_1 (void)
+/* Writing a comparator, enough room in the buffer. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str[] = "<=1.2.3";
+  size_t	buffer_len = 32;
+  char		buffer_ptr[buffer_len];
+  semver_comp_t	comp;
+  size_t	offset = 0;
+  char		rv;
+
+  memset(buffer_ptr, 0, buffer_len);
+
+  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  if (0 == rv) {
+    size_t	needed_count;
+    size_t	actual_count;
+    needed_count = (size_t)semver_comp_write(comp, buffer_ptr, buffer_len);
+    if (0 < needed_count) {
+      actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
+      printf("len=%lu, actual_count=%lu, comp=",
+	     strlen(input_str), actual_count);
+      fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      printf("\n");
+    }
+  }
+  semver_comp_dtor(&comp);
+}
+
+
+/** --------------------------------------------------------------------
+ ** Documentation snippets: parsing ranges.
+ ** ----------------------------------------------------------------- */
+
+void
+doc_example_ranges_1_1 (void)
+{
+#if 0
+  semver_range_t	range;
+
+  semver_range_ctor(&range);
+  {
+    /* Do something with "range" here. */
+  }
+  semver_range_dtor(&range);
+#endif
+}
+
+void
+doc_example_ranges_1_2 (void)
+{
+#if 0
+  semver_range_t *	rangep;
+
+  rangep = malloc(sizeof(semver_t));
+  assert(NULL != rangep);
+  {
+    semver_range_ctor(rangep);
+    {
+      /* Do something with "rangep" here. */
+    }
+    semver_range_dtor(rangep);
+  }
+  free(rangep);
+#endif
+}
+
+
+/** --------------------------------------------------------------------
  ** Main.
  ** ----------------------------------------------------------------- */
 
@@ -646,6 +886,18 @@ main (void)
   doc_example_versions_2_4();
   doc_example_versions_3_1();
   doc_example_versions_4_1();
+
+  doc_example_comparators_1_1();
+  doc_example_comparators_1_2();
+  doc_example_comparators_2_1();
+  doc_example_comparators_2_2();
+  doc_example_comparators_2_3();
+  doc_example_comparators_2_4();
+  doc_example_comparators_2_5();
+  doc_example_comparators_3_1();
+
+  doc_example_ranges_1_1();
+  doc_example_ranges_1_2();
 
   return EXIT_SUCCESS;
 }
