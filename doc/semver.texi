@@ -976,7 +976,7 @@ assert(NULL != compp);
   @{
     /* Do something with "compp" here. */
   @}
-  semver_dtor(compp);
+  semver_comp_dtor(compp);
 @}
 free(compp);
 @end example
@@ -1278,6 +1278,63 @@ The ranges @api{} does @strong{not} duplicate the input strings.
 All the following symbols are defined in the header file
 @file{semver.h}.
 
+
+@deftp {Struct Typedef} semver_range_t
+Type of data structures representing parsed ranges; a range is a set of
+comparators.  Every instance of this structure is a node in a
+simply--linked list.  Instances of this structure are initialised with
+@cfunc{semver_range_read}.  Instances of this structure are finalised
+with @cfunc{semver_range_dtor}.
+
+It has the following public fields:
+
+@table @code
+@item semver_range_t * next
+Pointer to the next structure in the linked list; @cnull{} if this
+instance is the last in the list.
+
+@item semver_comp_t comp
+A version comparator.
+@end table
+@end deftp
+
+
+@deftypefun void semver_range_dtor (semver_range_t * @var{rangep})
+Finalise to empty a data structure representing a parsed range; calls to
+this function must match a previous call to @cfunc{semver_range_read}.
+
+All the resources associated to @var{rangep} are released, but the
+structure itself.  The following code is correct:
+
+@example
+semver_range_t  range;
+
+semver_range_read(&range, ...);
+@{
+  /* Do something with "range" here. */
+@}
+semver_range_dtor(&range);
+@end example
+
+@noindent
+the following code is also correct:
+
+@example
+semver_range_t * rangep;
+
+rangep = malloc(sizeof(semver_range_t));
+assert(NULL != rangep);
+@{
+  semver_range_read(&range, ...);
+  @{
+    /* Do something with "rangep" here. */
+  @}
+  semver_range_dtor(rangep);
+@}
+free(rangep);
+@end example
+@end deftypefun
+
 @c page
 @node ranges reading
 @section Parsing from a string
@@ -1285,6 +1342,47 @@ All the following symbols are defined in the header file
 
 All the following symbols are defined in the header file
 @file{semver.h}.
+
+
+@deftypefun char semver_range_read (semver_range_t * @var{rangep}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+Parse an input string in @ascii{} format which is meant to hold a range
+specification.  When successful: the return value is @code{0}.  If an
+error occurs: the return value is @code{1}.
+
+The results of parsing are stored in the already allocated structure
+referenced by @var{rangep}.
+
+In both the successful and unsuccessful cases: every call to this
+function must be matched by the application of @cfunc{semver_range_dtor}
+to @var{rangep}.
+
+The input string is referenced by @var{input_buf}; the length of the
+input string is @var{input_len} characters.  The argument
+@var{input_offp} is both an input and output parameter:
+
+@itemize
+@item
+Upon entering the function: the offset of the first character to parse
+in @var{input_buf} is acquired from the variable referenced by
+@var{input_offp}.
+
+@item
+When the function returns successfully: the offset of the first
+non--parsed character is stored in the variable referenced by
+@var{input_offp}; further parsing operations can use such value as
+input.
+
+@item
+When the function returns unsuccessfully: the value stored in the
+variable is invalid.
+@end itemize
+
+If the string is empty (@var{input_len} is zero): the function returns
+unsuccessfully.
+
+Internally, this function allocates memory with @cfunc{malloc}; if
+memory allocation fails: the return value is @code{1}.
+@end deftypefun
 
 @c page
 @node ranges writing
@@ -1294,6 +1392,26 @@ All the following symbols are defined in the header file
 All the following symbols are defined in the header file
 @file{semver.h}.
 
+
+@deftypefun int semver_range_pwrite (const semver_range_t * @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the range @var{rangep} as @ascii{} string in the memory block
+referenced by @var{output_buf}, which has at least @var{output_len}
+characters available.  If the buffer has not enough room to hold the
+full comparator serialisation: the string is truncated to
+@var{output_len} characters.
+
+Like @cfunc{snprintf}: return the number of characters needed to hold
+the full serialisation, excluding the trailing null; if the return value
+is greater than or equal to @var{output_len}, the string has been
+truncated.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_range_write (semver_range_t @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
+Like @cfunc{semver_range_pwrite}, but accept the range structure as
+argument, rather than a pointer to it.
+@end deftypefn
+
 @c page
 @node ranges matching
 @section Matching ranges and versions
@@ -1301,6 +1419,19 @@ All the following symbols are defined in the header file
 
 All the following symbols are defined in the header file
 @file{semver.h}.
+
+
+@deftypefun char semver_prmatch (const semver_t * @var{versionp}, const semver_range_t * @var{rangep})
+Match a version referenced by @var{versionp} against the comparators in
+the range referenced by @var{rangep}.  The return value is @code{1} if
+the version matches; it is @code{0} otherwise.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_rmatch (semver_t @var{version}, semver_range_t @var{range})
+Like @cfunc{semver_prmatch}, but accept the version and range structures
+as arguments, rather than pointers to them.
+@end deftypefn
 
 @c page
 @node numbers
