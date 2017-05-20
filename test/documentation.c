@@ -62,7 +62,7 @@ semver_id_fwrite (const semver_id_t * idp, FILE * stream)
  ** ----------------------------------------------------------------- */
 
 void
-doc_example_identifiers_1 (void)
+doc_example_identifiers_1_1 (void)
 {
   semver_id_t	id;
 
@@ -74,7 +74,7 @@ doc_example_identifiers_1 (void)
 }
 
 void
-doc_example_identifiers_2 (void)
+doc_example_identifiers_1_2 (void)
 {
   semver_id_t *	idp;
 
@@ -90,8 +90,10 @@ doc_example_identifiers_2 (void)
   free(idp);
 }
 
+/* ------------------------------------------------------------------ */
+
 void
-doc_example_identifiers_3 (void)
+doc_example_identifiers_2_1 (void)
 /* Parsing a single numeric identifier. */
 {
   printf("--- %s:\n", __func__);
@@ -110,7 +112,7 @@ doc_example_identifiers_3 (void)
 }
 
 void
-doc_example_identifiers_4 (void)
+doc_example_identifiers_2_2 (void)
 /* Parsing a single alphabetic identifier. */
 {
   printf("--- %s:\n", __func__);
@@ -129,7 +131,7 @@ doc_example_identifiers_4 (void)
 }
 
 void
-doc_example_identifiers_5_1 (void)
+doc_example_identifiers_2_3 (void)
 /* Parsing a compound identifier. */
 {
   printf("--- %s:\n", __func__);
@@ -149,7 +151,7 @@ doc_example_identifiers_5_1 (void)
 }
 
 void
-doc_example_identifiers_5_2 (void)
+doc_example_identifiers_2_4 (void)
 /* Parsing a compound identifier with build metadata. */
 {
   printf("--- %s:\n", __func__);
@@ -169,7 +171,7 @@ doc_example_identifiers_5_2 (void)
 }
 
 void
-doc_example_identifiers_6 (void)
+doc_example_identifiers_2_5 (void)
 /* Parsing the empty string. */
 {
   printf("--- %s:\n", __func__);
@@ -190,7 +192,7 @@ doc_example_identifiers_6 (void)
 }
 
 void
-doc_example_identifiers_7 (void)
+doc_example_identifiers_2_6 (void)
 /* Writing a compound identifier, enough room in the buffer. */
 {
   printf("--- %s:\n", __func__);
@@ -219,8 +221,10 @@ doc_example_identifiers_7 (void)
   semver_id_dtor(&id);
 }
 
+/* ------------------------------------------------------------------ */
+
 void
-doc_example_identifiers_8 (void)
+doc_example_identifiers_3_1 (void)
 /* Writing a compound identifier, *not* enough room in the buffer. */
 {
   printf("--- %s:\n", __func__);
@@ -251,7 +255,7 @@ doc_example_identifiers_8 (void)
 /* ------------------------------------------------------------------ */
 
 void
-doc_example_identifiers_9 (void)
+doc_example_identifiers_4_1 (void)
 /* Comparing identifiers: A < B. */
 {
   printf("--- %s:\n", __func__);
@@ -274,7 +278,7 @@ doc_example_identifiers_9 (void)
 }
 
 void
-doc_example_identifiers_10 (void)
+doc_example_identifiers_4_2 (void)
 /* Comparing identifiers: A < B. */
 {
   printf("--- %s:\n", __func__);
@@ -608,18 +612,21 @@ doc_example_versions_4_1 (void)
  ** Main.
  ** ----------------------------------------------------------------- */
 
-int main(void) {
-  doc_example_identifiers_1();
-  doc_example_identifiers_2();
-  doc_example_identifiers_3();
-  doc_example_identifiers_4();
-  doc_example_identifiers_5_1();
-  doc_example_identifiers_5_2();
-  doc_example_identifiers_6();
-  doc_example_identifiers_7();
-  doc_example_identifiers_8();
-  doc_example_identifiers_9();
-  doc_example_identifiers_10();
+int
+main (void)
+{
+  doc_example_identifiers_1_1();
+  doc_example_identifiers_1_2();
+  doc_example_identifiers_2_1();
+  doc_example_identifiers_2_2();
+  doc_example_identifiers_2_3();
+  doc_example_identifiers_2_4();
+  doc_example_identifiers_2_5();
+  doc_example_identifiers_2_6();
+  doc_example_identifiers_3_1();
+  doc_example_identifiers_4_1();
+  doc_example_identifiers_4_2();
+
 
   doc_example_numeric_components_1_1();
   doc_example_numeric_components_1_2();
