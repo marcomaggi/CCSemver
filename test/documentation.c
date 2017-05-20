@@ -76,6 +76,26 @@ semver_fwrite (const semver_t * versionp, FILE * stream)
   }
 }
 
+static int
+semver_comp_fwrite (const semver_comp_t * compp, FILE * stream)
+{
+  size_t	buffer_len = 64;
+  char		buffer_ptr[buffer_len];
+  size_t	needed_count;
+
+  needed_count = (size_t)semver_comp_pwrite(compp, buffer_ptr, buffer_len);
+  if (0 == needed_count) {
+    return 0;
+  } else if (needed_count < buffer_len) {
+    return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
+  } else {
+    size_t	buffer_len = needed_count+1;
+    char	buffer_ptr[buffer_len];
+    size_t	actual_count = semver_comp_pwrite(compp, buffer_ptr, buffer_len);
+    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+  }
+}
+
 const char *
 semver_op_string (enum semver_op op)
 {
@@ -683,7 +703,7 @@ doc_example_comparators_1_2 (void)
 /* ------------------------------------------------------------------ */
 
 void
-doc_example_comparators_2_1 (void)
+doc_example_comparators_2_1_1 (void)
 /* Parsing equal comparator. */
 {
   printf("--- %s:\n", __func__);
@@ -702,7 +722,7 @@ doc_example_comparators_2_1 (void)
 }
 
 void
-doc_example_comparators_2_2 (void)
+doc_example_comparators_2_1_2 (void)
 /* Parsing less than comparator. */
 {
   printf("--- %s:\n", __func__);
@@ -721,7 +741,7 @@ doc_example_comparators_2_2 (void)
 }
 
 void
-doc_example_comparators_2_3 (void)
+doc_example_comparators_2_1_3 (void)
 /* Parsing greater than comparator. */
 {
   printf("--- %s:\n", __func__);
@@ -740,7 +760,7 @@ doc_example_comparators_2_3 (void)
 }
 
 void
-doc_example_comparators_2_4 (void)
+doc_example_comparators_2_1_4 (void)
 /* Parsing less than or equal to comparator. */
 {
   printf("--- %s:\n", __func__);
@@ -759,7 +779,7 @@ doc_example_comparators_2_4 (void)
 }
 
 void
-doc_example_comparators_2_5 (void)
+doc_example_comparators_2_1_5 (void)
 /* Parsing greater than or equal to comparator. */
 {
   printf("--- %s:\n", __func__);
@@ -773,6 +793,37 @@ doc_example_comparators_2_5 (void)
     printf("operation=%s, ", semver_op_string(comp.op));
     semver_fwrite(&comp.version, stdout);
     printf("\n");
+  }
+  semver_comp_dtor(&comp);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_2_2_1 (void)
+/* Extending a comparator. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	input_str_1[] = ">=1.2.3";
+  static const char	input_str_2[] = "<3.0.0";
+  semver_comp_t	comp;
+  size_t	offset_1 = 0;
+  size_t	offset_2 = 0;
+  char		rv;
+
+  rv = semver_comp_read(&comp, input_str_1, strlen(input_str_1), &offset_1);
+  if (0 == rv) {
+    rv = semver_comp_and(&comp, input_str_2, strlen(input_str_2), &offset_2);
+    if (0 == rv) {
+      for (semver_comp_t * iter = &comp; iter; iter = iter->next) {
+	printf("operation=%s, ", semver_op_string(iter->op));
+	semver_fwrite(&(iter->version), stdout);
+	printf("\n");
+      }
+      printf("comparator: ");
+      semver_comp_fwrite(&comp, stdout);
+      printf("\n");
+    }
   }
   semver_comp_dtor(&comp);
 }
@@ -1139,11 +1190,12 @@ main (void)
 
   doc_example_comparators_1_1();
   doc_example_comparators_1_2();
-  doc_example_comparators_2_1();
-  doc_example_comparators_2_2();
-  doc_example_comparators_2_3();
-  doc_example_comparators_2_4();
-  doc_example_comparators_2_5();
+  doc_example_comparators_2_1_1();
+  doc_example_comparators_2_1_2();
+  doc_example_comparators_2_1_3();
+  doc_example_comparators_2_1_4();
+  doc_example_comparators_2_1_5();
+  doc_example_comparators_2_2_1();
   doc_example_comparators_3_1();
   doc_example_comparators_4_1_1();
   doc_example_comparators_4_1_2();

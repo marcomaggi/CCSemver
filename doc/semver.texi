@@ -992,8 +992,8 @@ All the following symbols are defined in the header file
 
 @deftypefun char semver_comp_read (semver_comp_t * @var{compp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
 Parse an input string in @ascii{} format which is meant to hold a
-comparator.  When successful: the return value is @code{0}.  If an error
-occurs: the return value is @code{1}.
+comparator specification.  When successful: the return value is
+@code{0}.  If an error occurs: the return value is @code{1}.
 
 The results of parsing are stored in the already allocated structure
 referenced by @var{compp}; the structure is first initialised with
@@ -1033,6 +1033,29 @@ memory allocation fails: the return value is @code{1}.
 
 @c ------------------------------------------------------------------------
 
+@deftypefun char semver_comp_and (semver_comp_t * @var{compp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+Parse an input string in @ascii{} format which is meant to hold a
+comparator specification.  When successful: the return value is
+@code{0}.  If an error occurs: the return value is @code{1}.
+
+The results of parsing are appended to the already allocated and built
+structure referenced by @var{compp}.
+
+In the unsuccessful case: the structure referenced by @var{compp} is
+left untouched.
+
+The meaning of the arguments @var{input_buf}, @var{input_len} and
+@var{input_offp} is the same as in @cfunc{semver_comp_read}.
+
+If the string is empty (@var{input_len} is zero): the function returns
+unsuccessfully.
+
+Internally, this function allocates memory with @cfunc{malloc}; if
+memory allocation fails: the return value is @code{1}.
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
 @subsubheading Example: parsing a comparator
 
 The following example parses the comparator specification
@@ -1059,6 +1082,49 @@ and it prints:
 
 @example
 operation=SEMVER_OP_LE, 1.2.3
+@end example
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: extending a comparator
+
+The following example parses the comparator specification
+@samp{<=1.2.3} and then extends it with @samp{<3.0.0}:
+
+@example
+static const char     input_str_1[] = ">=1.2.3";
+static const char     input_str_2[] = "<3.0.0";
+semver_comp_t comp;
+size_t        offset_1 = 0;
+size_t        offset_2 = 0;
+char          rv;
+
+rv = semver_comp_read(&comp, \
+        input_str_1, strlen(input_str_1), &offset_1);
+if (0 == rv) @{
+  rv = semver_comp_and(&comp, \
+          input_str_2, strlen(input_str_2), &offset_2);
+  if (0 == rv) @{
+    for (semver_comp_t * it = &comp; it; it = it->next) @{
+      printf("operation=%s, ", semver_op_string(it->op));
+      semver_fwrite(&(it->version), stdout);
+      printf("\n");
+    @}
+    printf("comparator: ");
+    semver_comp_fwrite(&comp, stdout);
+    printf("\n");
+  @}
+@}
+semver_comp_dtor(&comp);
+@end example
+
+@noindent
+and it prints:
+
+@example
+operation=SEMVER_OP_GE, 1.2.3
+operation=SEMVER_OP_LT, 3.0.0
+comparator: >=1.2.3 <3.0.0
 @end example
 
 @c page
