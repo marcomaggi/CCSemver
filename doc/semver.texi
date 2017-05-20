@@ -1384,6 +1384,36 @@ Internally, this function allocates memory with @cfunc{malloc}; if
 memory allocation fails: the return value is @code{1}.
 @end deftypefun
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: parsing a range
+
+The following example parses the range specification
+@samp{1.2.7 || >=1.2.9 <2.0.0}:
+
+@example
+static const char  input_str[] = "1.2.7 || >=1.2.9 <2.0.0";
+semver_range_t     range;
+size_t             offset = 0;
+char               rv;
+
+rv = semver_range_read(&range, \
+        input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  printf("range: ");
+  semver_range_fwrite(&range, stdout);
+  printf("\n");
+@}
+semver_range_dtor(&range);
+@end example
+
+@noindent
+and it prints:
+
+@example
+range: 1.2.7 || >=1.2.9 <2.0.0
+@end example
+
 @c page
 @node ranges writing
 @section Writing to a string
@@ -1412,6 +1442,50 @@ Like @cfunc{semver_range_pwrite}, but accept the range structure as
 argument, rather than a pointer to it.
 @end deftypefn
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: serialising a range
+
+
+The following example serialises a range:
+
+@example
+static const char     input_str[] = \
+   "1.2.7 || >=1.2.9 <2.0.0";
+size_t                buffer_len = 32;
+char                  buffer_ptr[buffer_len];
+semver_range_t        range;
+size_t                offset = 0;
+char                  rv;
+
+memset(buffer_ptr, 0, buffer_len);
+
+rv = semver_range_read(&range, \
+        input_str, strlen(input_str), &offset);
+if (0 == rv) @{
+  size_t      needed_count;
+  size_t      actual_count;
+  needed_count = (size_t)semver_range_write(range, \
+     buffer_ptr, buffer_len);
+  if (0 < needed_count) @{
+    actual_count = (needed_count < buffer_len)? \
+       needed_count : buffer_len;
+    printf("len=%lu, actual_count=%lu, range=",
+           strlen(input_str), actual_count);
+    fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    printf("\n");
+  @}
+@}
+semver_range_dtor(&range);
+@end example
+
+@noindent
+the code prints:
+
+@example
+len=23, actual_count=23, range=1.2.7 || >=1.2.9 <2.0.0
+@end example
+
 @c page
 @node ranges matching
 @section Matching ranges and versions
@@ -1432,6 +1506,42 @@ the version matches; it is @code{0} otherwise.
 Like @cfunc{semver_prmatch}, but accept the version and range structures
 as arguments, rather than pointers to them.
 @end deftypefn
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: matching a version
+
+
+The following example matches a version against a range:
+
+@example
+static const char     version_str[] = "1.4.6";
+static const char     range_str[]  = "1.2.7 || >=1.2.9 <2.0.0";
+semver_t              version;
+semver_range_t        range;
+size_t                version_off = 0, range_off = 0;
+char                  rv;
+
+rv = semver_read(&version, \
+        version_str, strlen(version_str), &version_off);
+if (0 == rv) @{
+  rv = semver_range_read(&range, \
+          range_str, strlen(range_str), &range_off);
+  if (0 == rv) @{
+    int       result = (int)semver_rmatch(version, range);
+    printf("matches?=%s\n", (result)? "yes" : "no");
+  @}
+  semver_range_dtor(&range);
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+the code prints:
+
+@example
+matches?=yes
+@end example
 
 @c page
 @node numbers
