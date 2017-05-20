@@ -1137,6 +1137,58 @@ len=7, actual_count=7, comp=<=1.2.3
 @section Matching with versions
 
 
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun char semver_pmatch (const semver_t * @var{versionp}, const semver_comp_t * @var{compp})
+Match a version referenced by @var{versionp} against all the comparators
+in the linked list referenced by @var{compp}.  The return value is
+@code{1} if the version matches; it is @code{0} otherwise.
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int semver_match (semver_t @var{version}, semver_comp_t @var{comp})
+Like @cfunc{semver_pmatch}, but accept the version and comparator
+structures as arguments, rather than pointers to them.
+@end deftypefn
+
+@c ------------------------------------------------------------------------
+
+@subsubheading Example: matching a version
+
+
+The following example matches a version against a standalone comparator:
+
+@example
+static const char     version_str[] = "1.2.3";
+static const char     compar_str[]  = ">=2.0.0";
+semver_t      version;
+semver_comp_t comp;
+size_t        version_off = 0, comp_off = 0;
+char          rv;
+
+rv = semver_read(&version, \
+        version_str, strlen(version_str), &version_off);
+if (0 == rv) @{
+  rv = semver_comp_read(&comp, \
+          compar_str, strlen(compar_str), &comp_off);
+  if (0 == rv) @{
+    int       result = (int)semver_match(version, comp);
+    printf("matches?=%s\n", (result)? "yes" : "no");
+  @}
+  semver_comp_dtor(&comp);
+@}
+semver_dtor(&version);
+@end example
+
+@noindent
+the code prints:
+
+@example
+matches?=no
+@end example
+
 @c page
 @node numbers
 @chapter Parsing numeric components

@@ -809,6 +809,256 @@ doc_example_comparators_3_1 (void)
   semver_comp_dtor(&comp);
 }
 
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_4_1_1 (void)
+/* Equality comparator, matches. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "1.2.3";
+  static const char	compar_str[]  = "1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_comparators_4_1_2 (void)
+/* Equality comparator, does not match. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "1.0.3";
+  static const char	compar_str[]  = "1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_4_2_1 (void)
+/* Less than comparator, matches. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "1.2.3";
+  static const char	compar_str[]  = "<2.0.0";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_comparators_4_2_2 (void)
+/* Less than comparator, does not match. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "2.0.0";
+  static const char	compar_str[]  = "<1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_4_3_1 (void)
+/* Greater than comparator, matches. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "2.0.0";
+  static const char	compar_str[]  = ">1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_comparators_4_3_2 (void)
+/* Greater than comparator, does not match. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "1.2.3";
+  static const char	compar_str[]  = ">2.0.0";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_4_4_1 (void)
+/* Less than or equal to comparator, matches. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "2.0.0";
+  static const char	compar_str[]  = "<=2.0.0";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_comparators_4_4_2 (void)
+/* Less than or equal to comparator, does not match. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "2.0.0";
+  static const char	compar_str[]  = "<=1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+doc_example_comparators_4_5_1 (void)
+/* Greater than or equal to comparator, matches. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "2.0.0";
+  static const char	compar_str[]  = ">=1.2.3";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
+void
+doc_example_comparators_4_5_2 (void)
+/* Greater than or equal to comparator, does not match. */
+{
+  printf("--- %s:\n", __func__);
+  static const char	version_str[] = "1.2.3";
+  static const char	compar_str[]  = ">=2.0.0";
+  semver_t	version;
+  semver_comp_t	comp;
+  size_t	version_off = 0, comp_off = 0;
+  char		rv;
+
+  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  if (0 == rv) {
+    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    if (0 == rv) {
+      int	result = (int)semver_match(version, comp);
+      printf("matches?=%s\n", (result)? "yes" : "no");
+    }
+    semver_comp_dtor(&comp);
+  }
+  semver_dtor(&version);
+}
+
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing ranges.
@@ -895,6 +1145,16 @@ main (void)
   doc_example_comparators_2_4();
   doc_example_comparators_2_5();
   doc_example_comparators_3_1();
+  doc_example_comparators_4_1_1();
+  doc_example_comparators_4_1_2();
+  doc_example_comparators_4_2_1();
+  doc_example_comparators_4_2_2();
+  doc_example_comparators_4_3_1();
+  doc_example_comparators_4_3_2();
+  doc_example_comparators_4_4_1();
+  doc_example_comparators_4_4_2();
+  doc_example_comparators_4_5_1();
+  doc_example_comparators_4_5_2();
 
   doc_example_ranges_1_1();
   doc_example_ranges_1_2();
