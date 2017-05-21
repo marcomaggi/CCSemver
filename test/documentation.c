@@ -36,10 +36,18 @@
  ** Helpers.
  ** ----------------------------------------------------------------- */
 
+#include <errno.h>
+
+#undef SEMVER_FWRITE_STACK_BUFLEN
+#define SEMVER_FWRITE_STACK_BUFLEN	2
+
 static int
 semver_id_fwrite (const semver_id_t * idp, FILE * stream)
+/* Serialise the identifier to the  STREAM.  When successful: return the
+   number  of  bytes written.   When  unsuccessful:  return -1  and  set
+   "errno". */
 {
-  size_t	buffer_len = 64;
+  size_t	buffer_len = SEMVER_FWRITE_STACK_BUFLEN;
   char		buffer_ptr[buffer_len];
   size_t	needed_count;
 
@@ -47,19 +55,30 @@ semver_id_fwrite (const semver_id_t * idp, FILE * stream)
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < buffer_len) {
+    errno = 0;
     return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
   } else {
     size_t	buffer_len = needed_count+1;
-    char	buffer_ptr[buffer_len];
-    size_t	actual_count = semver_id_pwrite(idp, buffer_ptr, buffer_len);
-    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    char *	buffer_ptr;
+    errno = 0;
+    buffer_ptr = (char *)malloc(buffer_len);
+    if (NULL == buffer_ptr) {
+      return -1;
+    } else {
+      size_t	actual_count  = semver_id_pwrite(idp, buffer_ptr, buffer_len);
+      size_t	written_count;
+      errno = 0;
+      written_count = fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      free(buffer_ptr);
+      return written_count;
+    }
   }
 }
 
 static int
 semver_fwrite (const semver_t * versionp, FILE * stream)
 {
-  size_t	buffer_len = 64;
+  size_t	buffer_len = SEMVER_FWRITE_STACK_BUFLEN;
   char		buffer_ptr[buffer_len];
   size_t	needed_count;
 
@@ -67,19 +86,30 @@ semver_fwrite (const semver_t * versionp, FILE * stream)
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < buffer_len) {
+    errno = 0;
     return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
   } else {
     size_t	buffer_len = needed_count+1;
-    char	buffer_ptr[buffer_len];
-    size_t	actual_count = semver_pwrite(versionp, buffer_ptr, buffer_len);
-    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    char *	buffer_ptr;
+    errno = 0;
+    buffer_ptr = (char *)malloc(buffer_len);
+    if (NULL == buffer_ptr) {
+      return -1;
+    } else {
+      size_t	actual_count  = semver_pwrite(versionp, buffer_ptr, buffer_len);
+      size_t	written_count;
+      errno = 0;
+      written_count = fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      free(buffer_ptr);
+      return written_count;
+    }
   }
 }
 
 static int
 semver_comp_fwrite (const semver_comp_t * compp, FILE * stream)
 {
-  size_t	buffer_len = 64;
+  size_t	buffer_len = SEMVER_FWRITE_STACK_BUFLEN;
   char		buffer_ptr[buffer_len];
   size_t	needed_count;
 
@@ -87,19 +117,30 @@ semver_comp_fwrite (const semver_comp_t * compp, FILE * stream)
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < buffer_len) {
+    errno = 0;
     return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
   } else {
     size_t	buffer_len = needed_count+1;
-    char	buffer_ptr[buffer_len];
-    size_t	actual_count = semver_comp_pwrite(compp, buffer_ptr, buffer_len);
-    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    char *	buffer_ptr;
+    errno = 0;
+    buffer_ptr = (char *)malloc(buffer_len);
+    if (NULL == buffer_ptr) {
+      return -1;
+    } else {
+      size_t	actual_count  = semver_comp_pwrite(compp, buffer_ptr, buffer_len);
+      size_t	written_count;
+      errno = 0;
+      written_count = fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      free(buffer_ptr);
+      return written_count;
+    }
   }
 }
 
 static int
 semver_range_fwrite (const semver_range_t * rangep, FILE * stream)
 {
-  size_t	buffer_len = 64;
+  size_t	buffer_len = SEMVER_FWRITE_STACK_BUFLEN;
   char		buffer_ptr[buffer_len];
   size_t	needed_count;
 
@@ -107,12 +148,23 @@ semver_range_fwrite (const semver_range_t * rangep, FILE * stream)
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < buffer_len) {
+    errno = 0;
     return fwrite(buffer_ptr, sizeof(char), needed_count, stream);
   } else {
     size_t	buffer_len = needed_count+1;
-    char	buffer_ptr[buffer_len];
-    size_t	actual_count = semver_range_pwrite(rangep, buffer_ptr, buffer_len);
-    return fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+    char *	buffer_ptr;
+    errno = 0;
+    buffer_ptr = (char *)malloc(buffer_len);
+    if (NULL == buffer_ptr) {
+      return -1;
+    } else {
+      size_t	actual_count  = semver_range_pwrite(rangep, buffer_ptr, buffer_len);
+      size_t	written_count;
+      errno = 0;
+      written_count = fwrite(buffer_ptr, sizeof(char), actual_count, stdout);
+      free(buffer_ptr);
+      return written_count;
+    }
   }
 }
 
