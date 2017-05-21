@@ -17,3 +17,7 @@ add_test(match match)
 add_executable(documentation documentation.c)
 target_link_libraries(documentation ${PROJECT_NAME})
 add_test(documentation documentation)
+
+add_executable(utils utils.c)
+target_link_libraries(utils ${PROJECT_NAME})
+add_test(utils utils)
