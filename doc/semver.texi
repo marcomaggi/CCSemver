@@ -115,6 +115,7 @@ at:
 * ranges::                      Parsing and using ranges.
 * numbers::                     Parsing numeric components.
 * identifiers::                 Parsing identifiers.
+* utilities::                   Utility functions.
 
 Appendices
 
@@ -2047,6 +2048,52 @@ and the code prints:
 @example
 compar=-1
 @end example
+
+@c page
+@node utilities
+@chapter Utility functions
+
+
+All the following symbols are defined in the header file
+@file{semver.h}.
+
+
+@deftypefun size_t semver_id_fwrite (const semver_id_t * @var{idp}, FILE * @var{stream})
+Serialise the referenced identifier to the given @var{stream}.  When
+successful: return the number of characters written and clear
+@code{errno} to zero.  If an error occurs: set @code{errno} to an
+appropriate error code.
+@end deftypefun
+
+
+@deftypefun size_t semver_fwrite (const semver_t * @var{versionp}, FILE * @var{stream})
+Serialise the referenced version to the given @var{stream}.  When
+successful: return the number of characters written and clear
+@code{errno} to zero.  If an error occurs: set @code{errno} to an
+appropriate error code.
+@end deftypefun
+
+
+@deftypefun size_t semver_comp_fwrite (const semver_comp_t * @var{compp}, FILE * @var{stream})
+Serialise the referenced comparator to the given @var{stream}.  When
+successful: return the number of characters written and clear
+@code{errno} to zero.  If an error occurs: set @code{errno} to an
+appropriate error code.
+@end deftypefun
+
+
+@deftypefun size_t semver_range_fwrite (const semver_range_t * @var{rangep}, FILE * @var{stream})
+Serialise the referenced range to the given @var{stream}.  When
+successful: return the number of characters written and clear
+@code{errno} to zero.  If an error occurs: set @code{errno} to an
+appropriate error code.
+@end deftypefun
+
+
+@deftypefun const char * semver_op_string (enum semver_op @var{op})
+Return a statically allocated @asciiz{} string representing the name of
+@var{op}.  Useful for debugging purposes.
+@end deftypefun
 
 @c page
 @node Package License
