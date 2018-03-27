@@ -2,85 +2,104 @@
 
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
-EXTRA_DIST		= INSTALL.autotools configure.sh
-dist_doc_DATA		= UNLICENSE README.md README.autotools README.forked.marcomagggi-2017-05-16
-AM_CFLAGS		= -I$(srcdir)/src -I$(srcdir)/include -Wall $(AX_CFLAGS)
+EXTRA_DIST		= INSTALL configure.sh		\
+			  meta/slackstuff/config.in	\
+			  meta/slackware/slack-desc.in
+dist_doc_DATA		= README UNLICENSE
+AM_CFLAGS		= -I$(srcdir)/src $(AX_CFLAGS)
 
 ## --------------------------------------------------------------------
 
-EXTRA_DIST		+= meta/scripts/libsv.pc.in
+EXTRA_DIST		+= meta/scripts/ccsemver.pc.in
 pkgconfigdir		= $(libdir)/pkgconfig
-nodist_pkgconfig_DATA	= meta/scripts/libsv.pc
+nodist_pkgconfig_DATA	= meta/scripts/ccsemver.pc
 
 ## --------------------------------------------------------------------
 
 AM_MAKEINFOFLAGS	= --no-split
-AM_MAKEINFOHTMLFLAGS	= -c WORDS_IN_PAGE=0 --css-ref=semver.css
 
-info_TEXINFOS		= doc/semver.texi
-doc_semver_TEXINFOS	= doc/macros.texi
-
-doc_semver_CSS		= doc/semver.css
-
-install-html-local:
-	$(MKDIR_P) "$(DESTDIR)$(htmldir)/semver.html"
-	$(INSTALL_DATA) $(srcdir)/doc/semver.css "$(DESTDIR)$(htmldir)/semver.html/semver.css"
+info_TEXINFOS		= doc/ccsemver.texi
+doc_ccsemver_TEXINFOS	= doc/macros.texi
 
 #page
 #### libraries
 
-libsv_CURRENT		= @libsv_VERSION_INTERFACE_CURRENT@
-libsv_REVISION		= @libsv_VERSION_INTERFACE_REVISION@
-libsv_AGE		= @libsv_VERSION_INTERFACE_AGE@
+ccsemver_CURRENT	= @ccsemver_VERSION_INTERFACE_CURRENT@
+ccsemver_REVISION	= @ccsemver_VERSION_INTERFACE_REVISION@
+ccsemver_AGE		= @ccsemver_VERSION_INTERFACE_AGE@
 
-include_HEADERS		= include/semver.h
+include_HEADERS		= src/ccsemver.h
 
-lib_LTLIBRARIES		= libsv.la
-libsv_la_LDFLAGS	= -version-info $(libsv_CURRENT):$(libsv_REVISION):$(libsv_AGE)
-libsv_la_SOURCES	= \
-	src/comp.c		\
-	src/id.c		\
-	src/num.c		\
-	src/range.c		\
-	src/semver.c		\
-	src/utils.c
+lib_LTLIBRARIES		= libccsemver.la
+libccsemver_la_LDFLAGS= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE)
+libccsemver_la_SOURCES= \
+	src/ccsemver.h			\
+	src/ccsemver-internals.h	\
+	src/ccsemver-version.c		\
+	src/ccsemver-comp.c		\
+	src/ccsemver-core.c		\
+	src/ccsemver-id.c		\
+	src/ccsemver-num.c		\
+	src/ccsemver-range.c		\
+	src/ccsemver-utils.c
 
 #page
-#### test
+#### tests
 
 check_PROGRAMS	= \
-	test/semver		\
-	test/comp		\
-	test/match		\
-	test/range		\
-	test/documentation	\
-	test/utils
+	tests/version		\
+	tests/comp		\
+	tests/documentation	\
+	tests/match		\
+	tests/range		\
+	tests/semver		\
+	tests/utils
 
 TESTS				= $(check_PROGRAMS)
 
-libsv_test_cppflags		= -I$(srcdir)/src -I$(srcdir)/include
-libsv_test_ldadd		= libsv.la
+ccsemver_tests_cppflags		= -I$(srcdir)/src
+ccsemver_tests_ldadd		= libccsemver.la
 
-test_semver_CPPFLAGS		= $(libsv_test_cppflags)
-test_semver_LDADD		= $(libsv_test_ldadd)
+tests_version_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_version_LDADD		= $(ccsemver_tests_ldadd)
 
-test_comp_CPPFLAGS		= $(libsv_test_cppflags)
-test_comp_LDADD			= $(libsv_test_ldadd)
+tests_comp_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_comp_LDADD		= $(ccsemver_tests_ldadd)
 
-test_match_CPPFLAGS		= $(libsv_test_cppflags)
-test_match_LDADD		= $(libsv_test_ldadd)
+tests_documentation_CPPFLAGS	= $(ccsemver_tests_cppflags)
+tests_documentation_LDADD	= $(ccsemver_tests_ldadd)
 
-test_range_CPPFLAGS		= $(libsv_test_cppflags)
-test_range_LDADD		= $(libsv_test_ldadd)
+tests_match_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_match_LDADD		= $(ccsemver_tests_ldadd)
 
-test_documentation_CPPFLAGS	= $(libsv_test_cppflags)
-test_documentation_LDADD	= $(libsv_test_ldadd)
+tests_range_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_range_LDADD		= $(ccsemver_tests_ldadd)
 
-test_utils_CPPFLAGS		= $(libsv_test_cppflags)
-test_utils_LDADD		= $(libsv_test_ldadd)
+tests_semver_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_semver_LDADD		= $(ccsemver_tests_ldadd)
 
-installcheck-local: $(TEST)
-	@for f in $(TEST); do $(builddir)/$$f; done
+tests_utils_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_utils_LDADD		= $(ccsemver_tests_ldadd)
+
+## --------------------------------------------------------------------
+
+installcheck-local: $(TESTS)
+	@for f in $(TESTS); do $(builddir)/$$f; done
+
+#page
+#### testing under GDB
+
+$(builddir)/.gdbinit:
+	ln -sv "$(top_srcdir)/gdbinit" "$(builddir)/.gdbinit"
+
+# This rule is meant to be used as:
+#
+#   $ make all gdb-test FILE=tests/inspection CFLAGS='-g'
+#
+# after having created an appropriate file "$(top_srcdir)/.gdbinit".
+#
+gdb-test: $(builddir)/.gdbinit
+	libtool --mode=execute gdb $$FILE
 
 #page
 #### Static analysis with Clang's Static Analyzer
@@ -95,12 +114,16 @@ installcheck-local: $(TEST)
 #    $ make clang-static-analysis
 #
 # The  program  "scan-build"  works  by  overriding  the  CC  and  CXX
-# environment variables.
+# environment variables.  Automake defines CXX as:
+#
+#    CXX = g++ -std=c++11
+#
+# so we override CXXFLAGS to include the language specification.
 #
 
 .PHONY: clang-static-analysis
 
 clang-static-analysis:
-	scan-build make
+	scan-build make CXXFLAGS='-std=c++11'
 
 ### end of file

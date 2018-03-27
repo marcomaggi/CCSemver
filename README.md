@@ -1,212 +1,237 @@
-# libsv
-libsv - Public domain semantic versioning in c
+# ccsemver
 
-[![Build Status](https://travis-ci.org/uael/sv.svg?branch=master)](https://travis-ci.org/uael/sv)
-[![Build status](https://ci.appveyor.com/api/projects/status/7li44f9agk0u4dxc?svg=true)](https://ci.appveyor.com/project/uael/sv)
-[![codecov](https://codecov.io/gh/uael/sv/branch/master/graph/badge.svg)](https://codecov.io/gh/uael/sv)
+[![Build Status](https://travis-ci.org/marcomaggi/ccsemver.svg?branch=master)](https://travis-ci.org/marcomaggi/ccsemver)
+[![Coverity passed](https://scan.coverity.com/projects/12801/badge.svg)](https://scan.coverity.com/projects/marcomaggi-ccsemver)
+[![codecov](https://codecov.io/gh/marcomaggi/ccsemver/branch/master/graph/badge.svg)](https://codecov.io/gh/marcomaggi/ccsemver)
+
+
+## Introduction
+
+This  package  installs a  C11  language  library implementing  semantic
+versioning as described at:
+
+[https://semver.org/](https://semver.org/)
+
+The package is a fork of the project Libsv by Lucas Abel, whose original
+source is available at:
+
+[https://github.com/uael/sv](https://github.com/uael/sv)
+
+The package uses the GNU Autotools and it is tested, using Travis CI, on
+both Ubuntu GNU+Linux systems and OS X systems.
+
+
+## License
+
+Copyright (c) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it><br/>
+Copyright (c) 2017 Lucas Abel <https://github.com/uael/><br/>
+
+This is free and unencumbered software released into the public domain.
+
+Anyone  is  free  to  copy,  modify, publish,  use,  compile,  sell,  or
+distribute this  software, either in source  code form or as  a compiled
+binary, for any purpose, commercial or non-commercial, and by any means.
+
+In jurisdictions that recognize copyright laws, the author or authors of
+this software dedicate any and all copyright interest in the software to
+the  public domain.   We make  this dedication  for the  benefit of  the
+public at  large and to the  detriment of our heirs  and successors.  We
+intend  this  dedication  to  be  an  overt  act  of  relinquishment  in
+perpetuity  of all  present and  future  rights to  this software  under
+copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR   IMPLIED,  INCLUDING   BUT  NOT   LIMITED  TO   THE  WARRANTIES   OF
+MERCHANTABILITY, FITNESS  FOR A PARTICULAR PURPOSE  AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION  OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT  OF OR  IN CONNECTION WITH  THE SOFTWARE OR  THE USE  OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+For        more        information,        please        refer        to
+[http://unlicense.org](http://unlicense.org).
+
 
 ## Install
 
-[Install xmake build system (A make-like build utility based on Lua)](http://xmake.io)
+To install from a proper release tarball, do this:
 
-```bash
-$ xmake
-$ xmake check
-$ xmake install
+```
+$ cd ccsemver-0.1.0
+$ mkdir build
+$ cd build
+$ ../configure
+$ make
+$ make check
+$ make install
 ```
 
-## API
+to inspect the available configuration options:
 
-```c
-...
-semver_t semver = {0};
-semver_range_t range = {0};
-size_t offset = 0;
-
-semver_read(&semver, "v1.2.3-alpha.1", sizeof("v1.2.3-alpha.1")-1, &offset);
-assert(1 == semver.major);
-assert(2 == semver.minor);
-assert(3 == semver.patch);
-assert(0 == memcmp("alpha", semver.prerelease.raw, sizeof("alpha")-1));
-assert(0 == memcmp("1", semver.prerelease.next->raw, sizeof("1")-1));
-
-offset = 0;
-semver_range_read(&range, "1.2.1 || >=1.2.3 <1.2.5", sizeof("1.2.1 || >=1.2.3 <1.2.5")-1, &offset);
-assert(1 == semver_rmatch(semver, range));
-
-semver_dtor(&semver);
-semver_range_dtor(&range);
-...
+```
+$ ../configure --help
 ```
 
-## Versions
+The Makefile is designed to allow parallel builds, so we can do:
 
-A "version" is described by the `v2.0.0` specification found at
-<http://semver.org/>.
+```
+$ make -j4 all && make -j4 check
+```
 
-A leading `"v"` character is stripped off and ignored.
+which,  on  a  4-core  CPU,   should  speed  up  building  and  checking
+significantly.
 
-## Ranges
+The Makefile supports the DESTDIR  environment variable to install files
+in a temporary location, example: to see what will happen:
 
-A `version range` is a set of `comparators` which specify versions
-that satisfy the range.
+```
+$ make -n install DESTDIR=/tmp/ccsemver
+```
 
-A `comparator` is composed of an `operator` and a `version`.  The set
-of primitive `operators` is:
+to really do it:
 
-* `<` Less than
-* `<=` Less than or equal to
-* `>` Greater than
-* `>=` Greater than or equal to
-* `=` Equal.  If no operator is specified, then equality is assumed,
-  so this operator is optional, but MAY be included.
+```
+$ make install DESTDIR=/tmp/ccsemver
+```
 
-For example, the comparator `>=1.2.7` would match the versions
-`1.2.7`, `1.2.8`, `2.5.3`, and `1.3.9`, but not the versions `1.2.6`
-or `1.1.0`.
+After the  installation it is  possible to verify the  installed library
+against the test suite with:
 
-Comparators can be joined by whitespace to form a `comparator set`,
-which is satisfied by the **intersection** of all of the comparators
-it includes.
+```
+$ make installcheck
+```
 
-A range is composed of one or more comparator sets, joined by `||`.  A
-version matches a range if and only if every comparator in at least
-one of the `||`-separated comparator sets is satisfied by the version.
+From a repository checkout or snapshot  (the ones from the Github site):
+we  must install  the GNU  Autotools  (GNU Automake,  GNU Autoconf,  GNU
+Libtool), then  we must first run  the script `autogen.sh` from  the top
+source directory, to generate the needed files:
 
-For example, the range `>=1.2.7 <1.3.0` would match the versions
-`1.2.7`, `1.2.8`, and `1.2.99`, but not the versions `1.2.6`, `1.3.0`,
-or `1.1.0`.
+```
+$ cd ccsemver
+$ sh autogen.sh
 
-The range `1.2.7 || >=1.2.9 <2.0.0` would match the versions `1.2.7`,
-`1.2.9`, and `1.4.6`, but not the versions `1.2.8` or `2.0.0`.
+```
 
-### Prerelease Tags
+notice  that  `autogen.sh`  will   run  the  programs  `autoreconf`  and
+`libtoolize`; the  latter is  selected through the  environment variable
+`LIBTOOLIZE`,  whose  value  can  be  customised;  for  example  to  run
+`glibtoolize` rather than `libtoolize` we do:
 
-If a version has a prerelease tag (for example, `1.2.3-alpha.3`) then
-it will only be allowed to satisfy comparator sets if at least one
-comparator with the same `[major, minor, patch]` tuple also has a
-prerelease tag.
+```
+$ LIBTOOLIZE=glibtoolize sh autogen.sh
+```
 
-For example, the range `>1.2.3-alpha.3` would be allowed to match the
-version `1.2.3-alpha.7`, but it would *not* be satisfied by
-`3.4.5-alpha.9`, even though `3.4.5-alpha.9` is technically "greater
-than" `1.2.3-alpha.3` according to the SemVer sort rules.  The version
-range only accepts prerelease tags on the `1.2.3` version.  The
-version `3.4.5` *would* satisfy the range, because it does not have a
-prerelease flag, and `3.4.5` is greater than `1.2.3-alpha.7`.
+After this  the procedure  is the same  as the one  for building  from a
+proper release tarball, but we have to enable maintainer mode:
 
-The purpose for this behavior is twofold.  First, prerelease versions
-frequently are updated very quickly, and contain many breaking changes
-that are (by the author's design) not yet fit for public consumption.
-Therefore, by default, they are excluded from range matching
-semantics.
+```
+$ ../configure --enable-maintainer-mode [options]
+$ make
+$ make check
+$ make install
+```
 
-Second, a user who has opted into using a prerelease version has
-clearly indicated the intent to use *that specific* set of
-alpha/beta/rc versions.  By including a prerelease tag in the range,
-the user is indicating that they are aware of the risk.  However, it
-is still not appropriate to assume that they have opted into taking a
-similar risk on the *next* set of prerelease versions.
+## Usage
 
-### Advanced Range Syntax
+Read the documentation generated from  the Texinfo sources.  The package
+installs the documentation  in Info format; we can  generate and install
+documentation in HTML format by running:
 
-Advanced range syntax desugars to primitive comparators in
-deterministic ways.
+```
+$ make html
+$ make install-html
+```
 
-Advanced ranges may be combined in the same way as primitive
-comparators using white space or `||`.
 
-#### Hyphen Ranges `X.Y.Z - A.B.C`
+## Credits
 
-Specifies an inclusive set.
+The original  Libsv project was created  by Lucas Abel, with  very small
+contributions by Marco Maggi.  The  forked project CCSemver is developed
+and maintained  by Marco Maggi; if  this package exists it's  because of
+the great GNU software tools that he uses all the time.
 
-* `1.2.3 - 2.3.4` := `>=1.2.3 <=2.3.4`
 
-If a partial version is provided as the first version in the inclusive
-range, then the missing pieces are replaced with zeroes.
+## Bugs, vulnerabilities and contributions
 
-* `1.2 - 2.3.4` := `>=1.2.0 <=2.3.4`
+Bug  and vulnerability  reports are  appreciated, all  the vulnerability
+reports  are  public; register  them  using  the  Issue Tracker  at  the
+project's GitHub  site.  For  contributions and  patches please  use the
+Pull Requests feature at the project's GitHub site.
 
-If a partial version is provided as the second version in the
-inclusive range, then all versions that start with the supplied parts
-of the tuple are accepted, but nothing that would be greater than the
-provided tuple parts.
 
-* `1.2.3 - 2.3` := `>=1.2.3 <2.4.0`
-* `1.2.3 - 2` := `>=1.2.3 <3.0.0`
+## Resources
 
-#### X-Ranges `1.2.x` `1.X` `1.2.*` `*`
+The latest release of this package can be downloaded from:
 
-Any of `X`, `x`, or `*` may be used to "stand in" for one of the
-numeric values in the `[major, minor, patch]` tuple.
+[https://bitbucket.org/marcomaggi/ccsemver/downloads](https://bitbucket.org/marcomaggi/ccsemver/downloads)
 
-* `*` := `>=0.0.0` (Any version satisfies)
-* `1.x` := `>=1.0.0 <2.0.0` (Matching major version)
-* `1.2.x` := `>=1.2.0 <1.3.0` (Matching major and minor versions)
+development takes place at:
 
-A partial version range is treated as an X-Range, so the special
-character is in fact optional.
+[http://github.com/marcomaggi/ccsemver/](http://github.com/marcomaggi/ccsemver/)
 
-* `""` (empty string) := `*` := `>=0.0.0`
-* `1` := `1.x.x` := `>=1.0.0 <2.0.0`
-* `1.2` := `1.2.x` := `>=1.2.0 <1.3.0`
+and as backup at:
 
-#### Tilde Ranges `~1.2.3` `~1.2` `~1`
+[https://bitbucket.org/marcomaggi/ccsemver/](https://bitbucket.org/marcomaggi/ccsemver/)
 
-Allows patch-level changes if a minor version is specified on the
-comparator.  Allows minor-level changes if not.
+the documentation is available online:
 
-* `~1.2.3` := `>=1.2.3 <1.(2+1).0` := `>=1.2.3 <1.3.0`
-* `~1.2` := `>=1.2.0 <1.(2+1).0` := `>=1.2.0 <1.3.0` (Same as `1.2.x`)
-* `~1` := `>=1.0.0 <(1+1).0.0` := `>=1.0.0 <2.0.0` (Same as `1.x`)
-* `~0.2.3` := `>=0.2.3 <0.(2+1).0` := `>=0.2.3 <0.3.0`
-* `~0.2` := `>=0.2.0 <0.(2+1).0` := `>=0.2.0 <0.3.0` (Same as `0.2.x`)
-* `~0` := `>=0.0.0 <(0+1).0.0` := `>=0.0.0 <1.0.0` (Same as `0.x`)
-* `~1.2.3-beta.2` := `>=1.2.3-beta.2 <1.3.0` Note that prereleases in
-  the `1.2.3` version will be allowed, if they are greater than or
-  equal to `beta.2`.  So, `1.2.3-beta.4` would be allowed, but
-  `1.2.4-beta.2` would not, because it is a prerelease of a
-  different `[major, minor, patch]` tuple.
+[http://marcomaggi.github.io/docs/ccsemver.html](http://marcomaggi.github.io/docs/ccsemver.html)
 
-#### Caret Ranges `^1.2.3` `^0.2.5` `^0.0.4`
+the GNU Project software can be found here:
 
-Allows changes that do not modify the left-most non-zero digit in the
-`[major, minor, patch]` tuple.  In other words, this allows patch and
-minor updates for versions `1.0.0` and above, patch updates for
-versions `0.X >=0.1.0`, and *no* updates for versions `0.0.X`.
+[http://www.gnu.org/](http://www.gnu.org/)
 
-Many authors treat a `0.x` version as if the `x` were the major
-"breaking-change" indicator.
+the original project is available at:
 
-Caret ranges are ideal when an author may make breaking changes
-between `0.2.4` and `0.3.0` releases, which is a common practice.
-However, it presumes that there will *not* be breaking changes between
-`0.2.4` and `0.2.5`.  It allows for changes that are presumed to be
-additive (but non-breaking), according to commonly observed practices.
+[https://github.com/uael/sv](https://github.com/uael/sv)
 
-* `^1.2.3` := `>=1.2.3 <2.0.0`
-* `^0.2.3` := `>=0.2.3 <0.3.0`
-* `^0.0.3` := `>=0.0.3 <0.0.4`
-* `^1.2.3-beta.2` := `>=1.2.3-beta.2 <2.0.0` Note that prereleases in
-  the `1.2.3` version will be allowed, if they are greater than or
-  equal to `beta.2`.  So, `1.2.3-beta.4` would be allowed, but
-  `1.2.4-beta.2` would not, because it is a prerelease of a
-  different `[major, minor, patch]` tuple.
-* `^0.0.3-beta` := `>=0.0.3-beta <0.0.4`  Note that prereleases in the
-  `0.0.3` version *only* will be allowed, if they are greater than or
-  equal to `beta`.  So, `0.0.3-pr.2` would be allowed.
 
-When parsing caret ranges, a missing `patch` value desugars to the
-number `0`, but will allow flexibility within that value, even if the
-major and minor versions are both `0`.
+## Badges and static analysis
 
-* `^1.2.x` := `>=1.2.0 <2.0.0`
-* `^0.0.x` := `>=0.0.0 <0.1.0`
-* `^0.0` := `>=0.0.0 <0.1.0`
+### Travis CI
 
-A missing `minor` and `patch` values will desugar to zero, but also
-allow flexibility within those values, even if the major version is
-zero.
+Travis CI is  a hosted, distributed continuous  integration service used
+to build and test software projects  hosted at GitHub.  We can find this
+project's dashboard at:
 
-* `^1.x` := `>=1.0.0 <2.0.0`
-* `^0.x` := `>=0.0.0 <1.0.0`
+[https://travis-ci.org/marcomaggi/ccsemver](https://travis-ci.org/marcomaggi/ccsemver)
+
+Usage of this  service is configured through the  file `.travis.yml` and
+additional scripts are under the directory `meta/travis-ci`.
+
+
+### Coverity Scan
+
+Coverity Scan is  a service providing the results of  static analysis on
+open source coding projects.  We can find this project's dashboard at:
+
+[https://scan.coverity.com/projects/marcomaggi-ccsemver](https://scan.coverity.com/projects/marcomaggi-ccsemver)
+
+Usage of this  service is implemented with make rules;  see the relevant
+section in the file `Makefile.am`.  To access the service a unique token
+is needed: this token is private and is owned by the current maintainer.
+
+
+### Clang's Static Analyzer
+
+The Clang Static Analyzer is a source code analysis tool that finds bugs
+in C, C++, and Objective-C programs.  It is distributed along with Clang
+and we can find it at:
+
+[http://clang-analyzer.llvm.org/](http://clang-analyzer.llvm.org/)
+
+Usage of this  service is implemented with make rules;  see the relevant
+section in the file `Makefile.am`.
+
+
+### Codecov
+
+Codecov is a service providing code  coverage reports.  We can find this
+project's dashboard at:
+
+[https://codecov.io/gh/marcomaggi/ccsemver](https://codecov.io/gh/marcomaggi/ccsemver)
+
+Usage of  this service is  implemented through direct  interface between
+GitHub and Codecov  sites; it configured through  the file `codecov.yml`
+and appropriate entries in Travis CI's matrix of builds.
+

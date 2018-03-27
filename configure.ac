@@ -2,7 +2,7 @@ dnl @configure_input@
 dnl
 
 AC_PREREQ([2.69])
-AC_INIT([Libsv],[0.0.1-forked.1],,[libsv],[http://github.com/uael/sv])
+AC_INIT([CCSemver],[0.1.0-devel.0],,[ccsemver],[http://github.com/marcomaggi/ccsemver])
 dnl This is the revision number of this configure.ac
 AC_REVISION([0.1])
 AC_COPYRIGHT([This is free and unencumbered software released into the public domain.
@@ -49,17 +49,24 @@ LT_INIT
 dnl page
 #### libraries interface version
 
-dnl This is the version stored in the pkg-config data file.
-AC_SUBST([LIBSV_PKG_CONFIG_VERSION],[0.0.1])
+MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsemver],1,0,0)
 
-MM_LIBTOOL_LIBRARY_VERSIONS([libsv],1,0,0)
+dnl This is the version stored in the pkg-config data file.
+AC_SUBST([CCSEMVER_PKG_CONFIG_VERSION],[0.1.0])
+
+AS_VAR_SET([SLACKSTUFF_PACKAGE_VERSION],[0.1d0.0])
+AC_SUBST([SLACKSTUFF_PACKAGE_VERSION])
 
 dnl page
 #### basic system inspection
 
+MMUX_CHECK_TARGET_OS
+
 AC_LANG([C])
+MMUX_LANG_C11
+AC_SUBST(AX_CFLAGS)
+
 AM_PROG_AS
-AC_PROG_CC_C99
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 
@@ -68,8 +75,11 @@ AC_CACHE_SAVE
 dnl page
 #### finish
 
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
-   [meta/scripts/libsv.pc])
+   [meta/scripts/ccsemver.pc]
+   [meta/slackstuff/config]
+   [meta/slackware/slack-desc])
 AC_OUTPUT
 
 ### end of file

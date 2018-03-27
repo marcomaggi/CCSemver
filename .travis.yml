@@ -1,207 +1,241 @@
-sudo: false
+# .travis.yml --
+#
+# Travis CI configuration for Ccsemver.
+
+#page
+#### about compiler packages
+#
+# We select build  by build the packages to install;  it should speed up
+# preparation.  By  putting a single "addons"  key at the top  level: we
+# would cause  all the compilers to  be installed for all  the builds in
+# the matrix; we do not want this.
+
+#page
+#### about compiler selection
+#
+# We select the  compiler we want with the "compiler"  key.  This should
+# set the environment variable CC to the associated compiler executable;
+# I have verified that it actually does so when the language is C.  I am
+# not sure that it actually does it when the language is C++.
+#
+# To check which C or C++ compiler  is actually selected, we can put the
+# following  in  every "script:"  key,  before  running the  "configure"
+# script as follows:
+#
+#    script: |
+#      echo CC=$CC; $CC --version;
+#      echo CXX=$CXX; $CXX --version;
+#      ./configure
+#
+
+#page
+#### about dependency packages
+#
+# We  install  dependency  packages under  "/tmp/mine",  so  appropriate
+# directories must  be added to  the global path  environment variables,
+# otherwise the installed packages will  not be found and used correctly
+# by the "configure" script.
+#
+#
+# We need the following in the global environment:
+#
+#   env:
+#     global:
+#       - PATH=/tmp/mine/bin:$PATH;
+#       - LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+#       - PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+#
+# Alternatively, we can put the following in every "script:" key, before
+# running the "configure" script as follows:
+#
+#   script: |
+#     export PATH=/tmp/mine/bin:$PATH;
+#     export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+#     export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+#     ./configure
+#
+
+#page
+#### global configuration
+
 language: c
 
-cache:
-  ccache: true
-  apt: true
-  directories:
-    - $HOME/.xmake
+# We need sudo for Coverity Scan.
+sudo: true
+
+# Let's just look at the project's dashboard at Travis CI's site.
+#
+notifications:
+  email: false
+
+# We do no git operations, so set the "git clone" depth to the minimum.
+#
+git:
+  depth: 1
+
+branches:
+  only:
+    - master
+    - coverity_scan
+
+# NOTE There must be only *one* env.global key!!!  Otherwise the earlier
+# settings will be ineffective.
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+    - PATH=/tmp/mine/bin:$PATH;
+    - LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
+    - PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "f5cEoLUmV/glyFtKYR2oBnU8X0KmNEg3mVjeK9UTXqs/hZoT94o2eVzPsg9wi/MnQf/pBo1aq9o2svJFh+FOJqz9wmzYK8zcWGxkJT9cUoBGLElbMdDdVQWd9JfIhiI9ZxReiADrpG60Axkfng3W1zoubiRByqYkrhIY2scSVu0dILpoagTHPE6WscdlHQa96fTxoVmpGBVcr1Kjg9+CqQMXmVjUroTXsKwoFvQkBNzbl6n7WGpW0n8HStTpnr78xt+2f8ZR+o01g3gfWpu7520LoewLi165h3PBcUqOReSdA487NFzS1OvbXY20nXAC362sdoHhwY1fStgMlVqmUJc8Bhheep/UHgqgdaivqVe5JQJe85y71HdlEJk9ZLW8Ig/LabpDNZ6c3lOqVFBIpcJRC6s7UEC0E2t6x7vPPZby5V0VUrun48NUb7P8JLM81VZPnIO3vnL741NKPtlY2655tZQ69X9vaTUraUGhUaK1ztvBgw/P/031Uzs4mxlEj3RgPmvhphIuTpsqzHIW4n4yV6uZ10PpTAHB+X6KZvzsEz0IhL3t9h9dAtxUOrvSXRaO0nVwGBrti+kIfgOkApHPR5UXKdD6QyyGYbc4yZ+qCLkfDYyF9fSannBH4q8SV6tFLctZwZzCheIP3yx4FwyTbYtj53B0cYVoP3a8DVc="
+
+#page
+#### Coverity Scan integration
+#
+# This is still in  development (why it is so hard to  set it up?!?).  I
+# would like to:
+#
+# - Run a single scan job when commits are pushed on the "coverity_scan"
+# branch.
+#
+# - Do  not run the scan  when commits are pushed  to branches different
+# from "coverity_scan".
+#
+# - Do not run the full matrix of scripts when commits are pushed on the
+# "coverity_scan" branch.
+#
 
 before_install:
-  - bash <(curl -s https://raw.githubusercontent.com/tboox/xmake/master/scripts/get.sh)
+  - if test "$TRAVIS_OS_NAME" != osx ; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-; else true; fi
 
-install:
-  - xmake
-  - cd build
-  - cmake ..
-  - make all
+addons:
+  coverity_scan:
+    project:
+      name: "marcomaggi/ccsemver"
+      description: "Build submitted via Travis CI"
+    notification_email: marco.maggi-ipsu@poste.it
+    # To run the scan we want to execute the following commands:
+    #
+    #   sh ./autogen.sh
+    #   ./configure --enable-maintainer-mode
+    #   make clean
+    #   cov-build make all
+    #
+    # so we put the preparation in "build_command_prepend:" and the
+    # making in "build_command:".
+    build_command_prepend: "sh ./autogen.sh; ./configure --enable-maintainer-mode; make clean"
+    build_command: "make all"
+    branch_pattern: coverity_scan
 
-script:
- - ctest --verbose
- - cd .. && xmake check
+#page
+#### dependencies management
+
+# install:
+#   - ./meta/travis-ci/install-some-dependency.sh
+#   - ./meta/travis-ci/install-ccexceptions.sh
+
+#page
+#### build scripts
+
+before_script:
+  # On Linux the GNU Libtool  preparation script is called "libtoolize",
+  # while on OS X it is called "glibtoolize".
+  - if test "$TRAVIS_OS_NAME" = osx ; then export LIBTOOLIZE=glibtoolize; else true; fi
+  - sh ./autogen.sh;
 
 matrix:
+  fast_finish: true
+
   include:
-    # coverage build
+    # Plain build under Ubuntu GNU+Linux "trusty", GCC 5.
     - os: linux
       dist: trusty
       compiler: gcc-5
       addons:
         apt:
           sources:
-            - george-edison55-precise-backports
             - ubuntu-toolchain-r-test
           packages:
-            - cmake
-            - cmake-data
+            - texinfo
             - gcc-5
-      install:
-        - mkdir build && cd build
-        - cmake -DCOVERAGE=ON -DCMAKE_BUILD_TYPE=Debug ..
-        - make
-      script:
-        - ctest --verbose
-      after_success:
-        - cd .. && bash <(curl -s https://codecov.io/bash) -xgcov-5
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Plain build under Ubuntu GNU+Linux "trusty", GCC 6.
     - os: linux
-      addons:
-        apt:
-          sources:
-            - george-edison55-precise-backports
-          packages:
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: gcc-4.9
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-          packages:
-            - gcc-4.9
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: gcc-5
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
-          packages:
-            - gcc-5
-            - cmake
-            - cmake-data
-    - os: linux
+      dist: trusty
       compiler: gcc-6
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - george-edison55-precise-backports
           packages:
+            - texinfo
             - gcc-6
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: clang-3.5
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.5
-            - george-edison55-precise-backports
-          packages:
-            - clang-3.5
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: clang-3.6
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-            - george-edison55-precise-backports
-          packages:
-            - clang-3.6
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: clang-3.7
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-            - george-edison55-precise-backports
-          packages:
-            - clang-3.7
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: clang-3.8
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-            - george-edison55-precise-backports
-          packages:
-            - clang-3.8
-            - cmake
-            - cmake-data
-    - os: linux
-      compiler: clang-3.9
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.9
-            - george-edison55-precise-backports
-          packages:
-            - clang-3.9
-            - cmake
-            - cmake-data
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Plain build under Ubuntu GNU+Linux "trusty", GCC 7.
     - os: linux
       dist: trusty
-      compiler: clang-4.0
+      compiler: gcc-7
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-4.0
           packages:
-            - clang-4.0
+            - texinfo
+            - gcc-7
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Plain build  under Ubuntu GNU+Linux "trusty",  CLang automatically
+    # selected by Travis CI.
     - os: linux
-      branches:
-        only: autotools.marcomaggi-2017-05-17
-      compiler: gcc-5
+      dist: trusty
       addons:
         apt:
-          sources: ubuntu-toolchain-r-test
-          packages: gcc-5
-      install:
-        - ./meta/travis-ci/install-autoconf.sh
-        - ./meta/travis-ci/install-automake.sh
-        - ./meta/travis-ci/install-texinfo.sh
-        - ./meta/travis-ci/install-pkg-config.sh
-      script: |
-        export PATH=/tmp/mine/bin:$PATH;
-        export LD_LIBRARY_PATH=/tmp/mine/lib:$LD_LIBRARY_PATH;
-        export PKG_CONFIG_PATH=/tmp/mine/lib/pkgconfig:$PKG_CONFIG_PATH;
-        sh ./autogen.sh;
-        ./configure --enable-maintainer-mode
-        make -j2 all;
-        make -j2 check;
-    - os: osx
-      osx_image: xcode6.4
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - texinfo
       compiler: clang
-      install:
-        - brew install ccache
-        - PATH=$PATH:/usr/local/opt/ccache/libexec
-        - xmake
-        - cd build
-        - cmake ..
-        - make all
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Plain build under OS X, XCode 7.3, CLang automatically selected by
+    # Travis CI.
     - os: osx
       osx_image: xcode7.3
       compiler: clang
-      install:
-        - brew install ccache
-        - PATH=$PATH:/usr/local/opt/ccache/libexec
-        - xmake
-        - cd build
-        - cmake ..
-        - make all
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Plain build under OS X, XCode 8.3, CLang automatically selected by
+    # Travis CI.
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      install:
-        - brew install ccache
-        - PATH=$PATH:/usr/local/opt/ccache/libexec
-        - xmake
-        - cd build
-        - cmake ..
-        - make all
+      script: "./configure --enable-maintainer-mode; make all; make check;"
+
+    # Codecov support under Ubuntu GNU+Linux "trusty", GCC 7.
+    - os: linux
+      dist: trusty
+      compiler: gcc-7
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - texinfo
+            - gcc-7
+      script: "./configure --enable-maintainer-mode CFLAGS='-O0 --coverage'; make all; make check;"
+      after_success:
+        bash <(curl -s https://codecov.io/bash) -xgcov-7
+
+#page
+#### done
+
+### end of file
+# Local Variables:
+# paragraph-start: "#[ \t].+\\|$"
+# paragraph-separate: "#[ \t]*$"
+# fill-prefix: "# "
+# page-delimiter: "^#page"
+# End:

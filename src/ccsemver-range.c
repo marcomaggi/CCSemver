@@ -1,33 +1,34 @@
 /*
- * This is free and unencumbered software released into the public domain.
+ * This  is free  and  unencumbered software  released  into the  public
+ * domain.
  *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * Anyone  is free  to copy,  modify,  publish, use,  compile, sell,  or
  * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
+ * binary, for  any purpose,  commercial or  non-commercial, and  by any
  * means.
  *
  * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
+ * of  this software  dedicate any  and  all copyright  interest in  the
+ * software  to the  public  domain.  We make  this  dedication for  the
+ * benefit of the public at large and  to the detriment of our heirs and
+ * successors.  We  intend  this  dedication  to  be  an  overt  act  of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
+ * THE  SOFTWARE IS  PROVIDED "AS  IS",  WITHOUT WARRANTY  OF ANY  KIND,
+ * EXPRESS OR  IMPLIED, INCLUDING BUT  NOT LIMITED TO THE  WARRANTIES OF
+ * MERCHANTABILITY,    FITNESS   FOR    A    PARTICULAR   PURPOSE    AND
+ * NONINFRINGEMENT.  IN  NO EVENT  SHALL THE AUTHORS  BE LIABLE  FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY,  WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR  OTHERWISE, ARISING FROM,  OUT OF  OR IN CONNECTION  WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  * For more information, please refer to <http://unlicense.org>
  */
 
+#include <ccsemver-internals.h>
 #include <string.h>
 #include <stdlib.h>
-#include <semver.h>
 #include <stdio.h>
 
 #ifdef _MSC_VER
@@ -46,7 +47,7 @@ static void semver_range_init(semver_range_t *self) {
 void semver_range_dtor(semver_range_t *self) {
   if (self && self->next) {
     semver_range_dtor(self->next);
-    sv_free(self->next);
+    free(self->next);
     self->next = NULL;
   }
 }
@@ -61,7 +62,7 @@ char semver_range_read(semver_range_t *self, const char *str, size_t len, size_t
     && *offset + 1 < len && str[*offset + 1] == '|') {
     *offset += 2;
     while (*offset < len && str[*offset] == ' ') ++*offset;
-    self->next = (semver_range_t *) sv_malloc(sizeof(semver_range_t));
+    self->next = (semver_range_t *) malloc(sizeof(semver_range_t));
     if (self->next == NULL) {
       return 1;
     }

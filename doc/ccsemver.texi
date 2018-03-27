@@ -1,7 +1,7 @@
 \input texinfo.tex
 @c %**start of header
-@setfilename semver.info
-@settitle Libsv
+@setfilename ccsemver.info
+@settitle CCSemver
 @c %**end of header
 
 @include version.texi
@@ -12,28 +12,36 @@
 @c Values.
 @c ------------------------------------------------------------
 
-@set TITLE                      Libsv
+@set TITLE                      CCSemver
 
 @c To be used as @value{PACKAGE} whenever we need to include the full
 @c name of this package.
-@set PACKAGE                    Libsv
+@set PACKAGE                    CCSemver
 
 @c To be used as @value{PACKAGE} whenever we need to include the
 @c nickname of the project: the name that is used to compose the
 @c distribution tarball or the web address.
-@set PACKAGE_NICKNAME           sv
+@set PACKAGE_NICKNAME           ccsemver
+
+@c To be used as @value{ORIGIN_AUTHOR} whenever we need to include the list of
+@c authors of this document.
+@set ORIGIN_AUTHOR              Lucas Abel
+
+@c To be used as @value{ORIGIN_AUTHOR_URL} whenever we need to include the
+@c email of the *single* author of this document.
+@set ORIGIN_AUTHOR_URL          @email{https://github.com/uael}
 
 @c To be used as @value{AUTHOR} whenever we need to include the list of
 @c authors of this document.
-@set AUTHOR                     Lucas Abel
+@set AUTHOR                     Marco Maggi
 
-@c To be used as @value{AUTHOR_URL} whenever we need to include the
+@c To be used as @value{AUTHOR_EMAIL} whenever we need to include the
 @c email of the *single* author of this document.
-@set AUTHOR_URL                 @email{https://github.com/uael}
+@set AUTHOR_EMAIL               @email{marco.maggi-ipsu@@poste.it}
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2017
+@set COPYRIGHT_YEARS            2017, 2018
 
 @c ------------------------------------------------------------
 
@@ -50,11 +58,10 @@
 @c ------------------------------------------------------------
 
 @copying
-This document describes version @value{VERSION} of @value{PACKAGE}, a C
-language library implementing semantic versioning for the C language.
+This document describes version @value{VERSION} of @value{PACKAGE}, a C11 language library
+implementing semantic versioning for the C language.
 
-The package is distributed under the terms of the Unlicense, see
-@url{http://unlicense.org}.
+The package is distributed under the terms of the Unlicense, see @url{http://unlicense.org}.
 
 The latest release, under the @gnu{} Autotools, can be downloaded from:
 
@@ -96,7 +103,7 @@ at:
 @ifinfo
 @dircategory Development
 @direntry
-* libsv: (libsv).               Libsv, semantic versioning for C.
+* ccsemver: (ccsemver).               CCSemver, semantic versioning for C.
 @end direntry
 @end ifinfo
 
@@ -160,19 +167,19 @@ searching for the installed library with the @gnu{} Autotools, we can
 add the following macro use to @file{configure.ac}:
 
 @example
-PKG_CHECK_MODULES([LIBSV],[libsv >= 3.1])
+PKG_CHECK_MODULES([CCSEMVER],[ccsemver >= 3.1])
 @end example
 
 @noindent
-which will set the variables @code{LIBSV_LIBS} and @code{LIBSV_CFLAGS}.
+which will set the variables @code{CCSEMVER_LIBS} and @code{CCSEMVER_CFLAGS}.
 
 Alternatively we can use the raw @gnu{} Autoconf macros:
 
 @example
-AC_CHECK_LIB([libsv],[semver_ctor],,
-  [AC_MSG_FAILURE([test for Libsv library failed])])
+AC_CHECK_LIB([ccsemver],[semver_ctor],,
+  [AC_MSG_FAILURE([test for CCSemver library failed])])
 AC_CHECK_HEADERS([semver.h],,
-  [AC_MSG_FAILURE([test for Libsv header failed])])
+  [AC_MSG_FAILURE([test for CCSemver header failed])])
 @end example
 
 @c ------------------------------------------------------------------------
@@ -183,8 +190,8 @@ For the one--shot compilation of a file named @file{demo.c}, we can do:
 
 @example
 gcc -std=c99 -Wall \
-   `pkg-config libsv --cflags` \
-   `pkg-config libsv --libs` \
+   `pkg-config ccsemver --cflags` \
+   `pkg-config ccsemver --libs` \
    -o demo demo.c
 @end example
 
@@ -1596,7 +1603,7 @@ If the string is empty (@var{input_len} is zero): the function returns
 successfully and stores zero in the variable referenced by @var{nump}.
 
 If the input string contains @samp{x}, @samp{X} or @samp{*}: the
-function returns successfully and stores the value @code{SEMVER_NUM_X}
+function returns successfully and stores the value @code{CCSEMVER_NUM_X}
 in the variable referenced by @var{nump}.
 
 The following example code parses a numeric component:
@@ -1616,7 +1623,7 @@ if (0 == rv) @{
 @end deftypefun
 
 
-@deftypevr {Preprocessor Symbol} int SEMVER_NUM_X
+@deftypevr {Preprocessor Symbol} int CCSEMVER_NUM_X
 Special value used to represent a numeric component specified as
 @samp{x}, @samp{X} or @samp{*}.
 @end deftypevr
@@ -1628,7 +1635,7 @@ Compare the given integers.  Return @code{-1} if @var{A} is less than
 @code{+1} if @var{A} is greater than @var{B}.
 
 The return values of this function are @strong{invalid} if one of the
-arguments is @code{SEMVER_NUM_X}.
+arguments is @code{CCSEMVER_NUM_X}.
 @end deftypefun
 
 @c page
@@ -2179,7 +2186,3 @@ at:
 @bye
 
 @c end of file
-@c Local Variables:
-@c fill-column: 72
-@c page-delimiter: "^@c page$"
-@c End:
