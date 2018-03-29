@@ -40,28 +40,28 @@
 void
 doc_example_identifiers_1_1 (void)
 {
-  semver_id_t	id;
+  ccsemver_id_t	id;
 
-  semver_id_ctor(&id);
+  ccsemver_id_ctor(&id);
   {
     /* Do something with "id" here. */
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
 doc_example_identifiers_1_2 (void)
 {
-  semver_id_t *	idp;
+  ccsemver_id_t *	idp;
 
-  idp = malloc(sizeof(semver_id_t));
+  idp = malloc(sizeof(ccsemver_id_t));
   assert(NULL != idp);
   {
-    semver_id_ctor(idp);
+    ccsemver_id_ctor(idp);
     {
       /* Do something with "idp" here. */
     }
-    semver_id_dtor(idp);
+    ccsemver_id_dtor(idp);
   }
   free(idp);
 }
@@ -74,17 +74,17 @@ doc_example_identifiers_2_1 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "123";
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
@@ -93,17 +93,17 @@ doc_example_identifiers_2_2 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "alpha";
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
@@ -112,18 +112,18 @@ doc_example_identifiers_2_3 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7";
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    for (semver_id_t * iter = &id; iter; iter = iter->next) {
+    for (ccsemver_id_t * iter = &id; iter; iter = iter->next) {
       printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
 	     (int)iter->numeric, iter->num, iter->len, iter->raw);
     }
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
@@ -132,18 +132,18 @@ doc_example_identifiers_2_4 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7+x86-64";
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    for (semver_id_t * iter = &id; iter; iter = iter->next) {
+    for (ccsemver_id_t * iter = &id; iter; iter = iter->next) {
       printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
 	     (int)iter->numeric, iter->num, iter->len, iter->raw);
     }
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
@@ -152,11 +152,11 @@ doc_example_identifiers_2_5 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "";
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
@@ -164,7 +164,7 @@ doc_example_identifiers_2_5 (void)
   } else {
     printf("invalid empty string\n");
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 void
@@ -175,17 +175,17 @@ doc_example_identifiers_2_6 (void)
   static const char	input_str[] = "1.2.3-alpha.7";
   size_t	buffer_len = 32;
   char		buffer_ptr[buffer_len];
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)semver_id_write(id, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_id_write(id, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, id=",
@@ -194,7 +194,7 @@ doc_example_identifiers_2_6 (void)
       printf("\n");
     }
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 /* ------------------------------------------------------------------ */
@@ -207,17 +207,17 @@ doc_example_identifiers_3_1 (void)
   static const char	input_str[] = "1.2.3-alpha.7";
   size_t	buffer_len = 6;
   char		buffer_ptr[buffer_len];
-  semver_id_t	id;
+  ccsemver_id_t	id;
   size_t	offset = 0;
   char		rv;
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)semver_id_write(id, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_id_write(id, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("actual_count=%lu, id=", actual_count);
@@ -225,7 +225,7 @@ doc_example_identifiers_3_1 (void)
       printf("\n");
     }
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
 }
 
 /* ------------------------------------------------------------------ */
@@ -237,20 +237,20 @@ doc_example_identifiers_4_1 (void)
   printf("--- %s:\n", __func__);
   static const char	input_str_A[] = "1.2.3";
   static const char	input_str_B[] = "1.2.4";
-  semver_id_t	id_A, id_B;
+  ccsemver_id_t	id_A, id_B;
   size_t	offset_A = 0, offset_B = 0;
   char		rv;
 
-  rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
+  rv = ccsemver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
   if (0 == rv) {
-    rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
+    rv = ccsemver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = semver_id_comp(id_A, id_B);
+      char	compar = ccsemver_id_comp(id_A, id_B);
       printf("compar=%d\n", (int)compar);
     }
-    semver_id_dtor(&id_B);
+    ccsemver_id_dtor(&id_B);
   }
-  semver_id_dtor(&id_A);
+  ccsemver_id_dtor(&id_A);
 }
 
 void
@@ -260,20 +260,20 @@ doc_example_identifiers_4_2 (void)
   printf("--- %s:\n", __func__);
   static const char	input_str_A[] = "1.4.0";
   static const char	input_str_B[] = "1.2.3";
-  semver_id_t	id_A, id_B;
+  ccsemver_id_t	id_A, id_B;
   size_t	offset_A = 0, offset_B = 0;
   char		rv;
 
-  rv = semver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
+  rv = ccsemver_id_read(&id_A, input_str_A, strlen(input_str_A), &offset_A);
   if (0 == rv) {
-    rv = semver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
+    rv = ccsemver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = semver_id_comp(id_A, id_B);
+      char	compar = ccsemver_id_comp(id_A, id_B);
       printf("compar=%d\n", (int)compar);
     }
-    semver_id_dtor(&id_B);
+    ccsemver_id_dtor(&id_B);
   }
-  semver_id_dtor(&id_A);
+  ccsemver_id_dtor(&id_A);
 }
 
 
@@ -290,7 +290,7 @@ doc_example_numeric_components_1_1 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%d\n", num);
   }
@@ -305,7 +305,7 @@ doc_example_numeric_components_1_2 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%d\n", num);
   }
@@ -320,7 +320,7 @@ doc_example_numeric_components_1_3 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%d\n", num);
   }
@@ -335,7 +335,7 @@ doc_example_numeric_components_1_4 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%d\n", num);
   }
@@ -350,7 +350,7 @@ doc_example_numeric_components_1_5 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = semver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%d\n", num);
   }
@@ -364,7 +364,7 @@ doc_example_numeric_components_2_1 (void)
   printf("--- %s:\n", __func__);
   int	A = 123;
   int	B = 456;
-  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
 void
@@ -373,7 +373,7 @@ doc_example_numeric_components_2_2 (void)
   printf("--- %s:\n", __func__);
   int	A = 456;
   int	B = 123;
-  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
 void
@@ -382,7 +382,7 @@ doc_example_numeric_components_2_3 (void)
   printf("--- %s:\n", __func__);
   int	A = 123;
   int	B = 123;
-  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
 void
@@ -391,7 +391,7 @@ doc_example_numeric_components_2_4 (void)
   printf("--- %s:\n", __func__);
   int	A = CCSEMVER_NUM_X;
   int	B = 123;
-  printf("A=%d, B=%d, compar=%d\n", A, B, (int)semver_num_comp(A, B));
+  printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
 
@@ -402,28 +402,28 @@ doc_example_numeric_components_2_4 (void)
 void
 doc_example_versions_1_1 (void)
 {
-  semver_t	version;
+  ccsemver_t	version;
 
-  semver_ctor(&version);
+  ccsemver_ctor(&version);
   {
     /* Do something with "version" here. */
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
 doc_example_versions_1_2 (void)
 {
-  semver_t *	versionp;
+  ccsemver_t *	versionp;
 
-  versionp = malloc(sizeof(semver_t));
+  versionp = malloc(sizeof(ccsemver_t));
   assert(NULL != versionp);
   {
-    semver_ctor(versionp);
+    ccsemver_ctor(versionp);
     {
       /* Do something with "versionp" here. */
     }
-    semver_dtor(versionp);
+    ccsemver_dtor(versionp);
   }
   free(versionp);
 }
@@ -435,22 +435,22 @@ doc_example_versions_2_1 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3";
-  semver_t	version;
+  ccsemver_t	version;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("major=%d, minor=%d, patch=%d, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
-    semver_id_fwrite(&version.prerelease, stdout);
+    ccsemver_id_fwrite(&version.prerelease, stdout);
     printf(", ");
     printf("build=");
-    semver_id_fwrite(&version.build, stdout);
+    ccsemver_id_fwrite(&version.build, stdout);
     printf("\n");
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -458,22 +458,22 @@ doc_example_versions_2_2 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7";
-  semver_t	version;
+  ccsemver_t	version;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("major=%d, minor=%d, patch=%d, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
-    semver_id_fwrite(&version.prerelease, stdout);
+    ccsemver_id_fwrite(&version.prerelease, stdout);
     printf(", ");
     printf("build=");
-    semver_id_fwrite(&version.build, stdout);
+    ccsemver_id_fwrite(&version.build, stdout);
     printf("\n");
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -481,22 +481,22 @@ doc_example_versions_2_3 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3-alpha.7+x86-64";
-  semver_t	version;
+  ccsemver_t	version;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("major=%d, minor=%d, patch=%d, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
-    semver_id_fwrite(&version.prerelease, stdout);
+    ccsemver_id_fwrite(&version.prerelease, stdout);
     printf(", ");
     printf("build=");
-    semver_id_fwrite(&version.build, stdout);
+    ccsemver_id_fwrite(&version.build, stdout);
     printf("\n");
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -506,24 +506,24 @@ doc_example_versions_2_4 (void)
 
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "";
-  semver_t	version;
+  ccsemver_t	version;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("major=%d, minor=%d, patch=%d, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
-    semver_id_fwrite(&version.prerelease, stdout);
+    ccsemver_id_fwrite(&version.prerelease, stdout);
     printf(", ");
     printf("build=");
-    semver_id_fwrite(&version.build, stdout);
+    ccsemver_id_fwrite(&version.build, stdout);
     printf("\n");
   } else {
     printf("invalid empty string\n");
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -536,17 +536,17 @@ doc_example_versions_3_1 (void)
   static const char	input_str[] = "1.2.3-alpha.7";
   size_t	buffer_len = 32;
   char		buffer_ptr[buffer_len];
-  semver_t	version;
+  ccsemver_t	version;
   size_t	offset = 0;
   char		rv;
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)semver_write(version, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_write(version, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, id=",
@@ -555,7 +555,7 @@ doc_example_versions_3_1 (void)
       printf("\n");
     }
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -567,20 +567,20 @@ doc_example_versions_4_1 (void)
   printf("--- %s:\n", __func__);
   static const char	input_str_A[] = "1.2.3";
   static const char	input_str_B[] = "1.2.4";
-  semver_t	version_A, version_B;
+  ccsemver_t	version_A, version_B;
   size_t	offset_A = 0, offset_B = 0;
   char		rv;
 
-  rv = semver_read(&version_A, input_str_A, strlen(input_str_A), &offset_A);
+  rv = ccsemver_read(&version_A, input_str_A, strlen(input_str_A), &offset_A);
   if (0 == rv) {
-    rv = semver_read(&version_B, input_str_B, strlen(input_str_B), &offset_B);
+    rv = ccsemver_read(&version_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = semver_comp(version_A, version_B);
+      char	compar = ccsemver_comp(version_A, version_B);
       printf("compar=%d\n", (int)compar);
     }
-    semver_dtor(&version_B);
+    ccsemver_dtor(&version_B);
   }
-  semver_dtor(&version_A);
+  ccsemver_dtor(&version_A);
 }
 
 
@@ -591,28 +591,28 @@ doc_example_versions_4_1 (void)
 void
 doc_example_comparators_1_1 (void)
 {
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
 
-  semver_comp_ctor(&comp);
+  ccsemver_comp_ctor(&comp);
   {
     /* Do something with "comp" here. */
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 void
 doc_example_comparators_1_2 (void)
 {
-  semver_comp_t *	compp;
+  ccsemver_comp_t *	compp;
 
-  compp = malloc(sizeof(semver_comp_t));
+  compp = malloc(sizeof(ccsemver_comp_t));
   assert(NULL != compp);
   {
-    semver_comp_ctor(compp);
+    ccsemver_comp_ctor(compp);
     {
       /* Do something with "compp" here. */
     }
-    semver_comp_dtor(compp);
+    ccsemver_comp_dtor(compp);
   }
   free(compp);
 }
@@ -625,17 +625,17 @@ doc_example_comparators_2_1_1 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("operation=%s, ", semver_op_string(comp.op));
-    semver_fwrite(&comp.version, stdout);
+    printf("operation=%s, ", ccsemver_op_string(comp.op));
+    ccsemver_fwrite(&comp.version, stdout);
     printf("\n");
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 void
@@ -644,17 +644,17 @@ doc_example_comparators_2_1_2 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "<1.2.3";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("operation=%s, ", semver_op_string(comp.op));
-    semver_fwrite(&comp.version, stdout);
+    printf("operation=%s, ", ccsemver_op_string(comp.op));
+    ccsemver_fwrite(&comp.version, stdout);
     printf("\n");
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 void
@@ -663,17 +663,17 @@ doc_example_comparators_2_1_3 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = ">1.2.3";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("operation=%s, ", semver_op_string(comp.op));
-    semver_fwrite(&comp.version, stdout);
+    printf("operation=%s, ", ccsemver_op_string(comp.op));
+    ccsemver_fwrite(&comp.version, stdout);
     printf("\n");
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 void
@@ -682,17 +682,17 @@ doc_example_comparators_2_1_4 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "<=1.2.3";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("operation=%s, ", semver_op_string(comp.op));
-    semver_fwrite(&comp.version, stdout);
+    printf("operation=%s, ", ccsemver_op_string(comp.op));
+    ccsemver_fwrite(&comp.version, stdout);
     printf("\n");
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 void
@@ -701,17 +701,17 @@ doc_example_comparators_2_1_5 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = ">=1.2.3";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("operation=%s, ", semver_op_string(comp.op));
-    semver_fwrite(&comp.version, stdout);
+    printf("operation=%s, ", ccsemver_op_string(comp.op));
+    ccsemver_fwrite(&comp.version, stdout);
     printf("\n");
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -723,26 +723,26 @@ doc_example_comparators_2_2_1 (void)
   printf("--- %s:\n", __func__);
   static const char	input_str_1[] = ">=1.2.3";
   static const char	input_str_2[] = "<3.0.0";
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset_1 = 0;
   size_t	offset_2 = 0;
   char		rv;
 
-  rv = semver_comp_read(&comp, input_str_1, strlen(input_str_1), &offset_1);
+  rv = ccsemver_comp_read(&comp, input_str_1, strlen(input_str_1), &offset_1);
   if (0 == rv) {
-    rv = semver_comp_and(&comp, input_str_2, strlen(input_str_2), &offset_2);
+    rv = ccsemver_comp_and(&comp, input_str_2, strlen(input_str_2), &offset_2);
     if (0 == rv) {
-      for (semver_comp_t * iter = &comp; iter; iter = iter->next) {
-	printf("operation=%s, ", semver_op_string(iter->op));
-	semver_fwrite(&(iter->version), stdout);
+      for (ccsemver_comp_t * iter = &comp; iter; iter = iter->next) {
+	printf("operation=%s, ", ccsemver_op_string(iter->op));
+	ccsemver_fwrite(&(iter->version), stdout);
 	printf("\n");
       }
       printf("comparator: ");
-      semver_comp_fwrite(&comp, stdout);
+      ccsemver_comp_fwrite(&comp, stdout);
       printf("\n");
     }
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -755,17 +755,17 @@ doc_example_comparators_3_1 (void)
   static const char	input_str[] = "<=1.2.3";
   size_t	buffer_len = 32;
   char		buffer_ptr[buffer_len];
-  semver_comp_t	comp;
+  ccsemver_comp_t	comp;
   size_t	offset = 0;
   char		rv;
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)semver_comp_write(comp, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_comp_write(comp, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, comp=",
@@ -774,7 +774,7 @@ doc_example_comparators_3_1 (void)
       printf("\n");
     }
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -786,21 +786,21 @@ doc_example_comparators_4_1_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.2.3";
   static const char	compar_str[]  = "1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -810,21 +810,21 @@ doc_example_comparators_4_1_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.0.3";
   static const char	compar_str[]  = "1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -836,21 +836,21 @@ doc_example_comparators_4_2_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.2.3";
   static const char	compar_str[]  = "<2.0.0";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -860,21 +860,21 @@ doc_example_comparators_4_2_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "2.0.0";
   static const char	compar_str[]  = "<1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -886,21 +886,21 @@ doc_example_comparators_4_3_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "2.0.0";
   static const char	compar_str[]  = ">1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -910,21 +910,21 @@ doc_example_comparators_4_3_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.2.3";
   static const char	compar_str[]  = ">2.0.0";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -936,21 +936,21 @@ doc_example_comparators_4_4_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "2.0.0";
   static const char	compar_str[]  = "<=2.0.0";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -960,21 +960,21 @@ doc_example_comparators_4_4_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "2.0.0";
   static const char	compar_str[]  = "<=1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 /* ------------------------------------------------------------------ */
@@ -986,21 +986,21 @@ doc_example_comparators_4_5_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "2.0.0";
   static const char	compar_str[]  = ">=1.2.3";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -1010,21 +1010,21 @@ doc_example_comparators_4_5_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.2.3";
   static const char	compar_str[]  = ">=2.0.0";
-  semver_t	version;
-  semver_comp_t	comp;
+  ccsemver_t	version;
+  ccsemver_comp_t	comp;
   size_t	version_off = 0, comp_off = 0;
   char		rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
+    rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)semver_match(version, comp);
+      int	result = (int)ccsemver_match(version, comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&comp);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 
@@ -1036,33 +1036,33 @@ void
 doc_example_ranges_1_1 (void)
 {
   static const char	input_str[] = "1.2.3";
-  semver_range_t	range;
+  ccsemver_range_t	range;
   size_t		offset = 0;
   char			rv;
 
-  rv = semver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     /* Do something with "range" here. */
   }
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
 }
 
 void
 doc_example_ranges_1_2 (void)
 {
   static const char	input_str[] = "1.2.3";
-  semver_range_t *	rangep;
+  ccsemver_range_t *	rangep;
   size_t		offset = 0;
   char			rv;
 
-  rangep = (semver_range_t *) malloc(sizeof(semver_range_t));
+  rangep = (ccsemver_range_t *) malloc(sizeof(ccsemver_range_t));
   assert(NULL != rangep);
   {
-    rv = semver_range_read(rangep, input_str, strlen(input_str), &offset);
+    rv = ccsemver_range_read(rangep, input_str, strlen(input_str), &offset);
     if (0 == rv) {
       /* Do something with "rangep" here. */
     }
-    semver_range_dtor(rangep);
+    ccsemver_range_dtor(rangep);
   }
   free(rangep);
 }
@@ -1075,17 +1075,17 @@ doc_example_ranges_2_1 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.3";
-  semver_range_t	range;
+  ccsemver_range_t	range;
   size_t		offset = 0;
   char			rv;
 
-  rv = semver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("range: ");
-    semver_comp_fwrite(&range.comp, stdout);
+    ccsemver_comp_fwrite(&range.comp, stdout);
     printf("\n");
   }
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
 }
 
 void
@@ -1094,17 +1094,17 @@ doc_example_ranges_2_2 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_str[] = "1.2.7 || >=1.2.9 <2.0.0";
-  semver_range_t	range;
+  ccsemver_range_t	range;
   size_t		offset = 0;
   char			rv;
 
-  rv = semver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("range: ");
-    semver_range_fwrite(&range, stdout);
+    ccsemver_range_fwrite(&range, stdout);
     printf("\n");
   }
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1117,17 +1117,17 @@ doc_example_ranges_3_1 (void)
   static const char	input_str[] = "1.2.7 || >=1.2.9 <2.0.0";
   size_t		buffer_len = 32;
   char			buffer_ptr[buffer_len];
-  semver_range_t	range;
+  ccsemver_range_t	range;
   size_t		offset = 0;
   char			rv;
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = semver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)semver_range_write(range, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_range_write(range, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, range=",
@@ -1136,7 +1136,7 @@ doc_example_ranges_3_1 (void)
       printf("\n");
     }
   }
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1148,21 +1148,21 @@ doc_example_ranges_4_1 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.4.6";
   static const char	range_str[]  = "1.2.7 || >=1.2.9 <2.0.0";
-  semver_t		version;
-  semver_range_t	range;
+  ccsemver_t		version;
+  ccsemver_range_t	range;
   size_t		version_off = 0, range_off = 0;
   char			rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_range_read(&range, range_str, strlen(range_str), &range_off);
+    rv = ccsemver_range_read(&range, range_str, strlen(range_str), &range_off);
     if (0 == rv) {
-      int	result = (int)semver_rmatch(version, range);
+      int	result = (int)ccsemver_rmatch(version, range);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_range_dtor(&range);
+    ccsemver_range_dtor(&range);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 void
@@ -1172,21 +1172,21 @@ doc_example_ranges_4_2 (void)
   printf("--- %s:\n", __func__);
   static const char	version_str[] = "1.2.8";
   static const char	range_str[]  = "1.2.7 || >=1.2.9 <2.0.0";
-  semver_t		version;
-  semver_range_t	range;
+  ccsemver_t		version;
+  ccsemver_range_t	range;
   size_t		version_off = 0, range_off = 0;
   char			rv;
 
-  rv = semver_read(&version, version_str, strlen(version_str), &version_off);
+  rv = ccsemver_read(&version, version_str, strlen(version_str), &version_off);
   if (0 == rv) {
-    rv = semver_range_read(&range, range_str, strlen(range_str), &range_off);
+    rv = ccsemver_range_read(&range, range_str, strlen(range_str), &range_off);
     if (0 == rv) {
-      int	result = (int)semver_rmatch(version, range);
+      int	result = (int)ccsemver_rmatch(version, range);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    semver_range_dtor(&range);
+    ccsemver_range_dtor(&range);
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
 }
 
 

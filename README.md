@@ -17,6 +17,9 @@ source is available at:
 
 [https://github.com/uael/sv](https://github.com/uael/sv)
 
+This  package supports  POSIX platforms.   This package  depends on  the
+package CCExceptions, at least version 0.7.1.
+
 The package uses the GNU Autotools and it is tested, using Travis CI, on
 both Ubuntu GNU+Linux systems and OS X systems.
 
@@ -180,6 +183,10 @@ the documentation is available online:
 the GNU Project software can be found here:
 
 [http://www.gnu.org/](http://www.gnu.org/)
+
+the package CCExceptions is available at:
+
+[https://github.com/marcomaggi/ccexceptions/](https://github.com/marcomaggi/ccexceptions/)
 
 the original project is available at:
 

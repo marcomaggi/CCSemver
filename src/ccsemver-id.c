@@ -36,9 +36,9 @@
 # define snprintf(s, maxlen, fmt, ...) _snprintf_s(s, _TRUNCATE, maxlen, fmt, __VA_ARGS__)
 #endif
 
-void semver_id_ctor(semver_id_t *self) {
+void ccsemver_id_ctor(ccsemver_id_t *self) {
 #ifndef _MSC_VER
-  *self = (semver_id_t) {true};
+  *self = (ccsemver_id_t) {true};
 #else
   self->next = NULL;
   self->len = 0;
@@ -48,19 +48,19 @@ void semver_id_ctor(semver_id_t *self) {
 #endif
 }
 
-void semver_id_dtor(semver_id_t *self) {
+void ccsemver_id_dtor(ccsemver_id_t *self) {
   if (self && self->next) {
-    semver_id_dtor(self->next);
+    ccsemver_id_dtor(self->next);
     free(self->next);
     self->next = NULL;
   }
 }
 
-char semver_id_read(semver_id_t *self, const char *str, size_t len, size_t *offset) {
+char ccsemver_id_read(ccsemver_id_t *self, const char *str, size_t len, size_t *offset) {
   size_t i = 0;
   char is_zero = 0;
 
-  semver_id_ctor(self);
+  ccsemver_id_ctor(self);
   while (*offset < len) {
     if (isalnum(str[*offset]) || str[*offset] == '-') {
       if (!isdigit(str[*offset])) {
@@ -87,17 +87,17 @@ char semver_id_read(semver_id_t *self, const char *str, size_t len, size_t *offs
     self->num = (int) strtol(self->raw, NULL, 0);
   }
   if (str[*offset] == '.') {
-    self->next = (semver_id_t *) malloc(sizeof(semver_id_t));
+    self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
     if (self->next == NULL) {
       return 1;
     }
     ++*offset;
-    return semver_id_read(self->next, str, len, offset);
+    return ccsemver_id_read(self->next, str, len, offset);
   }
   return 0;
 }
 
-char semver_id_pcomp(const semver_id_t *self, const semver_id_t *other) {
+char ccsemver_id_pcomp(const ccsemver_id_t *self, const ccsemver_id_t *other) {
   char s;
 
   if (!self->len && other->len) {
@@ -135,14 +135,16 @@ char semver_id_pcomp(const semver_id_t *self, const semver_id_t *other) {
     return 0;
   }
 
-  return semver_id_pcomp(self->next, other->next);
+  return ccsemver_id_pcomp(self->next, other->next);
 }
 
-int semver_id_pwrite(const semver_id_t *self, char *buffer, size_t len) {
+int ccsemver_id_pwrite(const ccsemver_id_t *self, char *buffer, size_t len) {
   char next[1024];
 
   if (self->next) {
-    return snprintf(buffer, len, "%.*s.%.*s", (int) self->len, self->raw, semver_id_pwrite(self->next, next, 1024), next);
+    return snprintf(buffer, len, "%.*s.%.*s", (int) self->len, self->raw, ccsemver_id_pwrite(self->next, next, 1024), next);
   }
   return snprintf(buffer, len, "%.*s", (int) self->len, self->raw);
 }
+
+/* end of file */

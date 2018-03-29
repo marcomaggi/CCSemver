@@ -35,7 +35,7 @@
 # define snprintf(s, maxlen, fmt, ...) _snprintf_s(s, _TRUNCATE, maxlen, fmt, __VA_ARGS__)
 #endif
 
-char semver_num_read(int *self, const char *str, size_t len, size_t *offset) {
+char ccsemver_num_read(int *self, const char *str, size_t len, size_t *offset) {
   char *endptr;
 
   *self = 0;
@@ -61,7 +61,7 @@ char semver_num_read(int *self, const char *str, size_t len, size_t *offset) {
   return 0;
 }
 
-char semver_num_comp(const int self, const int other) {
+char ccsemver_num_comp(const int self, const int other) {
   if (self == CCSEMVER_NUM_X || other == CCSEMVER_NUM_X) {
     return 0;
   }
@@ -73,3 +73,5 @@ char semver_num_comp(const int self, const int other) {
   }
   return 0;
 }
+
+/* end of file */

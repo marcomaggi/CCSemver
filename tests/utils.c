@@ -33,77 +33,77 @@
 
 int test_id_fwrite(void) {
   static const char	input_str[] = "1.2.3-alpha.1+x86-64";
-  semver_id_t		id;
+  ccsemver_id_t		id;
   size_t		offset = 0;
   int			rv;
 
-  rv = semver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("test_id_fwrite: ");
-    semver_id_fwrite(&id, stdout);
+    ccsemver_id_fwrite(&id, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  semver_id_dtor(&id);
+  ccsemver_id_dtor(&id);
   return rv;
 }
 
 int test_version_fwrite(void) {
   static const char	input_str[] = "1.2.3-alpha.1+x86-64";
-  semver_t		version;
+  ccsemver_t		version;
   size_t		offset = 0;
   int			rv;
 
-  rv = semver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("test_version_fwrite: ");
-    semver_fwrite(&version, stdout);
+    ccsemver_fwrite(&version, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  semver_dtor(&version);
+  ccsemver_dtor(&version);
   return 0;
 }
 
 int test_comparator_fwrite(void) {
   static const char	input_str[] = "<=1.2.3";
-  semver_comp_t		comp;
+  ccsemver_comp_t		comp;
   size_t		offset = 0;
   int			rv;
 
-  rv = semver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("test_comparator_fwrite: ");
-    semver_comp_fwrite(&comp, stdout);
+    ccsemver_comp_fwrite(&comp, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  semver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&comp);
   return rv;
 }
 
 int test_range_fwrite(void) {
   static const char	input_str[] = ">=1.2.3 <4.0.0";
-  semver_range_t	range;
+  ccsemver_range_t	range;
   size_t		offset = 0;
   int			rv;
 
-  rv = semver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     printf("test_range_fwrite: ");
-    semver_range_fwrite(&range, stdout);
+    ccsemver_range_fwrite(&range, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
   return rv;
 }
 

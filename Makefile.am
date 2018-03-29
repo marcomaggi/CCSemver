@@ -31,11 +31,14 @@ ccsemver_AGE		= @ccsemver_VERSION_INTERFACE_AGE@
 include_HEADERS		= src/ccsemver.h
 
 lib_LTLIBRARIES		= libccsemver.la
-libccsemver_la_LDFLAGS= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE)
-libccsemver_la_SOURCES= \
+libccsemver_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
+libccsemver_la_LDFLAGS	= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE) \
+			  $(CCEXCEPTIONS_LIBS)
+libccsemver_la_SOURCES	= \
 	src/ccsemver.h			\
 	src/ccsemver-internals.h	\
 	src/ccsemver-version.c		\
+	src/ccsemver-memory.c		\
 	src/ccsemver-comp.c		\
 	src/ccsemver-core.c		\
 	src/ccsemver-id.c		\
@@ -57,8 +60,8 @@ check_PROGRAMS	= \
 
 TESTS				= $(check_PROGRAMS)
 
-ccsemver_tests_cppflags		= -I$(srcdir)/src
-ccsemver_tests_ldadd		= libccsemver.la
+ccsemver_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS)
+ccsemver_tests_ldadd		= libccsemver.la $(CCEXCEPTIONS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_version_LDADD		= $(ccsemver_tests_ldadd)

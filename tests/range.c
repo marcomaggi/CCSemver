@@ -37,10 +37,10 @@ int test_read(const char *expected, const char *str, size_t len) {
   size_t offset = 0;
   unsigned slen;
   char buffer[1024];
-  semver_range_t range = {0};
+  ccsemver_range_t range = {0};
 
   printf("test: `%.*s`", (int) len, str);
-  if (semver_range_read(&range, str, len, &offset)) {
+  if (ccsemver_range_read(&range, str, len, &offset)) {
     puts(" \tcouldn't parse");
     return 1;
   }
@@ -48,15 +48,15 @@ int test_read(const char *expected, const char *str, size_t len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  slen = (unsigned) semver_range_write(range, buffer, 1024);
+  slen = (unsigned) ccsemver_range_write(range, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
   if (memcmp(expected, buffer, (size_t) slen > len ? slen : len) != 0) {
     printf(" != `%s`\n", expected);
-    semver_range_dtor(&range);
+    ccsemver_range_dtor(&range);
     return 1;
   }
   printf(" == `%s`\n", expected);
-  semver_range_dtor(&range);
+  ccsemver_range_dtor(&range);
   return 0;
 }
 

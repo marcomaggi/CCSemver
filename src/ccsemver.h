@@ -35,8 +35,8 @@
   For more information, please refer to <http://unlicense.org>
 */
 
-#ifndef CCTEMPLATE_H
-#define CCTEMPLATE_H 1
+#ifndef CCSEMVER_H
+#define CCSEMVER_H 1
 
 
 /** --------------------------------------------------------------------
@@ -47,7 +47,7 @@
 extern "C" {
 #endif
 
-/* The  macro  CCSEMVER_UNUSED  indicates  that a  function,  function
+/* The  macro  CCSEMVER_UNUSED  indicates   that  a  function,  function
    argument or variable may potentially be unused. Usage examples:
 
    static int unused_function (char arg) CCSEMVER_UNUSED;
@@ -96,6 +96,7 @@ extern "C" {
  ** Headers.
  ** ----------------------------------------------------------------- */
 
+#include <ccexceptions.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -119,121 +120,216 @@ ccsemver_decl int		ccsemver_version_interface_age		(void);
 
 
 /** --------------------------------------------------------------------
- ** Type definitions.
+ ** Forward type definitions.
  ** ----------------------------------------------------------------- */
 
-typedef struct semver		semver_t;
-typedef struct semver_id	semver_id_t;
-typedef struct semver_comp	semver_comp_t;
-typedef struct semver_range	semver_range_t;
+typedef struct ccsemver_t		ccsemver_t;
+typedef struct ccsemver_id_t		ccsemver_id_t;
+typedef struct ccsemver_comp_t		ccsemver_comp_t;
+typedef struct ccsemver_range_t		ccsemver_range_t;
 
-enum semver_op {
-  SEMVER_OP_EQ = 0,
-  SEMVER_OP_LT,
-  SEMVER_OP_LE,
-  SEMVER_OP_GT,
-  SEMVER_OP_GE,
+enum ccsemver_op_t {
+  CCSEMVER_OP_EQ = 0,
+  CCSEMVER_OP_LT,
+  CCSEMVER_OP_LE,
+  CCSEMVER_OP_GT,
+  CCSEMVER_OP_GE,
 };
+
+typedef enum ccsemver_op_t		ccsemver_op_t;
 
 
 /** --------------------------------------------------------------------
- ** Programming interface.
+ ** Memory allocation
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl char semver_num_read(int *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4),leaf));
-ccsemver_decl char semver_num_comp(int self, int other)
-  __attribute__((leaf,const));
+typedef struct ccsemver_allocator_t	ccsemver_allocator_t;
 
-struct semver_id {
-  bool numeric;
-  int num;
-  size_t len;
-  const char *raw;
-  struct semver_id *next;
+typedef void *	ccsemver_malloc_fun_t (ccsemver_allocator_t const * A, cce_destination_t L, size_t size);
+typedef void	ccsemver_free_fun_t   (ccsemver_allocator_t const * A, void * ptr);
+
+struct ccsemver_allocator_t {
+  ccsemver_malloc_fun_t *	malloc;
+  ccsemver_free_fun_t *		free;
 };
 
-ccsemver_decl void semver_id_ctor(semver_id_t *self)
+ccsemver_decl ccsemver_allocator_t const * const ccsemver_default_allocator;
+ccsemver_decl ccsemver_allocator_t const *       ccsemver_current_allocator;
+
+ccsemver_decl void * ccsemver_malloc (cce_destination_t L, size_t size)
+  __attribute__((__nonnull__(1),__returns_nonnull__));
+
+ccsemver_decl void   ccsemver_free   (void * ptr)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Identifiers.
+ ** ----------------------------------------------------------------- */
+
+struct ccsemver_id_t {
+  /* A boolean  value: true if the  this component is numeric;  false if
+     this component is alphabetic. */
+  bool			numeric;
+
+  /* If  this  component  is  numeric:  this  field  holds  its  numeric
+     representation.  Otherwise this field holds a meaningless value. */
+  int			num;
+
+  /* The number of  characters in the input string that  where parsed to
+     form this component. */
+  size_t		len;
+
+  /* Pointer to the character in the input string representing the first
+     character of this component. */
+  char const *		raw;
+
+  /* Pointer to the next node in the linked list of identifiers; NULL if
+     this structure is the last node. */
+  ccsemver_id_t *	next;
+};
+
+ccsemver_decl void ccsemver_id_ctor(ccsemver_id_t *self)
   __attribute__((nonnull(1),leaf));
-ccsemver_decl void semver_id_dtor(semver_id_t *self)
+
+ccsemver_decl void ccsemver_id_dtor(ccsemver_id_t *self)
   __attribute__((nonnull(1),leaf));
-ccsemver_decl char semver_id_read(semver_id_t *self, const char *str, size_t len, size_t *offset)
+
+ccsemver_decl char ccsemver_id_read(ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
-ccsemver_decl int  semver_id_pwrite(const semver_id_t *self, char *buffer, size_t len)
+
+ccsemver_decl int  ccsemver_id_pwrite(const ccsemver_id_t *self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
-ccsemver_decl char semver_id_pcomp(const semver_id_t *self, const semver_id_t *other)
+
+ccsemver_decl char ccsemver_id_pcomp(const ccsemver_id_t *self, const ccsemver_id_t *other)
   __attribute__((nonnull(1,2),leaf));
 
-#define semver_id_write(self, buffer, len) semver_id_pwrite(&(self), buffer, len)
-#define semver_id_comp(self, other) semver_id_pcomp(&(self), &(other))
+#define ccsemver_id_write(self, buffer, len) ccsemver_id_pwrite(&(self), buffer, len)
+#define ccsemver_id_comp(self, other) ccsemver_id_pcomp(&(self), &(other))
 
-struct semver {
-  int major, minor, patch;
-  semver_id_t prerelease, build;
-  size_t len;
-  const char *raw;
+
+/** --------------------------------------------------------------------
+ ** Semantic versions.
+ ** ----------------------------------------------------------------- */
+
+struct ccsemver_t {
+  /* The major version number. */
+  int		major;
+
+  /* The mino version number. */
+  int		minor;
+
+  /* The patch level. */
+  int		patch;
+
+  /* An identifier representing the prerelease tag. */
+  ccsemver_id_t	prerelease;
+
+  /* An identifier representing the build metadata. */
+  ccsemver_id_t	build;
+
+  /* The number of  characters in the input string that  where parsed to
+     form this version. */
+  size_t	len;
+
+  /* Pointer to the character in the input string representing the first
+     character of this component.  This pointer  is valid as long as the
+     input string handed to the constructor function is not mutated. */
+  char const *	raw;
 };
 
-ccsemver_decl void semver_ctor(semver_t *self)
+ccsemver_decl void ccsemver_ctor(ccsemver_t *self)
   __attribute__((nonnull(1)));
-ccsemver_decl void semver_dtor(semver_t *self)
+
+ccsemver_decl void ccsemver_dtor(ccsemver_t *self)
   __attribute__((nonnull(1)));
-ccsemver_decl char semver_read(semver_t *self, const char *str, size_t len, size_t *offset)
+
+ccsemver_decl char ccsemver_read(ccsemver_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
-ccsemver_decl int  semver_pwrite(const semver_t *self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
-ccsemver_decl char semver_pcomp(const semver_t *self, const semver_t *other)
+
+ccsemver_decl int  ccsemver_pwrite(const ccsemver_t *self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
 
-#define semver_write(self, buffer, len) semver_pwrite(&(self), buffer, len)
-#define semver_comp(self, other) semver_pcomp(&(self), &(other))
+ccsemver_decl char ccsemver_pcomp(const ccsemver_t *self, const ccsemver_t *other)
+  __attribute__((nonnull(1,2)));
 
-struct semver_comp {
-  struct semver_comp *next;
-  enum semver_op op;
-  semver_t version;
+#define ccsemver_write(self, buffer, len) ccsemver_pwrite(&(self), buffer, len)
+
+
+/** --------------------------------------------------------------------
+ ** Number parsers.
+ ** ----------------------------------------------------------------- */
+
+ccsemver_decl char ccsemver_num_read(int *self, const char *str, size_t len, size_t *offset)
+  __attribute__((nonnull(1,2,4),leaf));
+
+ccsemver_decl char ccsemver_num_comp(int self, int other)
+  __attribute__((leaf,const));
+
+
+/** --------------------------------------------------------------------
+ ** Comparators.
+ ** ----------------------------------------------------------------- */
+
+#define ccsemver_comp(self, other) ccsemver_pcomp(&(self), &(other))
+
+struct ccsemver_comp_t {
+  ccsemver_comp_t *	next;
+  ccsemver_op_t		op;
+  ccsemver_t		version;
 };
 
-ccsemver_decl void semver_comp_ctor(semver_comp_t *self)
+ccsemver_decl void ccsemver_comp_ctor(ccsemver_comp_t *self)
   __attribute__((nonnull(1)));
-ccsemver_decl void semver_comp_dtor(semver_comp_t *self)
+
+ccsemver_decl void ccsemver_comp_dtor(ccsemver_comp_t *self)
   __attribute__((nonnull(1)));
-ccsemver_decl char semver_comp_read(semver_comp_t *self, const char *str, size_t len, size_t *offset)
+
+ccsemver_decl char ccsemver_comp_read(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
-ccsemver_decl char semver_and(semver_comp_t *self, const char *str, size_t len)
-  __attribute__((nonnull(1,2)));
-ccsemver_decl char semver_comp_and(semver_comp_t *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
-ccsemver_decl int  semver_comp_pwrite(const semver_comp_t *self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
-ccsemver_decl char semver_pmatch(const semver_t *self, const semver_comp_t *comp)
+
+ccsemver_decl char ccsemver_and(ccsemver_comp_t *self, const char *str, size_t len)
   __attribute__((nonnull(1,2)));
 
-#define semver_comp_write(self, buffer, len) semver_comp_pwrite(&(self), buffer, len)
-#define semver_match(self, comp) semver_pmatch(&(self), &(comp))
+ccsemver_decl char ccsemver_comp_and(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
+  __attribute__((nonnull(1,2,4)));
 
-struct semver_range {
-  struct semver_range *next;
-  semver_comp_t comp;
+ccsemver_decl int  ccsemver_comp_pwrite(const ccsemver_comp_t *self, char *buffer, size_t len)
+  __attribute__((nonnull(1,2)));
+
+ccsemver_decl char ccsemver_pmatch(const ccsemver_t *self, const ccsemver_comp_t *comp)
+  __attribute__((nonnull(1,2)));
+
+#define ccsemver_comp_write(self, buffer, len) ccsemver_comp_pwrite(&(self), buffer, len)
+#define ccsemver_match(self, comp) ccsemver_pmatch(&(self), &(comp))
+
+
+/** --------------------------------------------------------------------
+ ** Ranges.
+ ** ----------------------------------------------------------------- */
+
+struct ccsemver_range_t {
+  ccsemver_range_t *	next;
+  ccsemver_comp_t	comp;
 };
 
-ccsemver_decl void semver_range_dtor(semver_range_t *self)
+ccsemver_decl void ccsemver_range_dtor(ccsemver_range_t *self)
   __attribute__((nonnull(1)));
-ccsemver_decl char semver_range_read(semver_range_t *self, const char *str, size_t len, size_t *offset)
+ccsemver_decl char ccsemver_range_read(ccsemver_range_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
-ccsemver_decl int  semver_range_pwrite(const semver_range_t *self, char *buffer, size_t len)
+ccsemver_decl int  ccsemver_range_pwrite(const ccsemver_range_t *self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
-ccsemver_decl char semver_prmatch(const semver_t *self, const semver_range_t *range)
+ccsemver_decl char ccsemver_prmatch(const ccsemver_t *self, const ccsemver_range_t *range)
   __attribute__((nonnull(1,2)));
 
-#define semver_range_write(self, buffer, len) semver_range_pwrite(&(self), buffer, len)
-#define semver_rmatch(self, comp) semver_prmatch(&(self), &(comp))
+#define ccsemver_range_write(self, buffer, len) ccsemver_range_pwrite(&(self), buffer, len)
+#define ccsemver_rmatch(self, comp) ccsemver_prmatch(&(self), &(comp))
 
-ccsemver_decl size_t semver_id_fwrite (const semver_id_t * idp, FILE * stream);
-ccsemver_decl size_t semver_fwrite (const semver_t * versionp, FILE * stream);
-ccsemver_decl size_t semver_comp_fwrite (const semver_comp_t * compp, FILE * stream);
-ccsemver_decl size_t semver_range_fwrite (const semver_range_t * rangep, FILE * stream);
-ccsemver_decl const char * semver_op_string (enum semver_op op);
+ccsemver_decl size_t ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream);
+ccsemver_decl size_t ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream);
+ccsemver_decl size_t ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream);
+ccsemver_decl size_t ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream);
+ccsemver_decl const char * ccsemver_op_string (ccsemver_op_t op);
 
 
 /** --------------------------------------------------------------------
@@ -244,6 +340,6 @@ ccsemver_decl const char * semver_op_string (enum semver_op op);
 } // extern "C"
 #endif
 
-#endif /* CCTEMPLATE_H */
+#endif /* CCSEMVER_H */
 
 /* end of file */
