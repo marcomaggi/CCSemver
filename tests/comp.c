@@ -48,7 +48,7 @@ int test_read(const char *expected, const char *str, size_t len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  slen = (unsigned) ccsemver_comp_write(comp, buffer, 1024);
+  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
   if (memcmp(expected, buffer, (size_t) slen > len ? slen : len) != 0) {
     printf(" != `%s`\n", expected);
@@ -79,7 +79,7 @@ int test_and(const char *expected, const char *base_str, size_t base_len, const 
     puts(" \tand failed");
     return 1;
   }
-  slen = (unsigned) ccsemver_comp_write(comp, buffer, 1024);
+  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
   if (memcmp(expected, buffer, (size_t) slen > base_len + len + 1 ? slen : base_len + len + 1) != 0) {
     printf(" != `%s`\n", expected);
@@ -111,7 +111,7 @@ int test_comp_and(const char *expected, const char *base_str, size_t base_len, c
     puts(" \tand variant failed");
     return 1;
   }
-  slen = (unsigned) ccsemver_comp_write(comp, buffer, 1024);
+  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
   if (memcmp(expected, buffer, (size_t) slen > base_len + len + 1 ? slen : base_len + len + 1) != 0) {
     printf(" != `%s`\n", expected);

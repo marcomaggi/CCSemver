@@ -355,8 +355,10 @@ char ccsemver_comp_and(ccsemver_comp_t *self, const char *str, size_t len, size_
   }
 }
 
-char ccsemver_pmatch(const ccsemver_t *self, const ccsemver_comp_t *comp) {
-  char result = ccsemver_pcomp(self, &comp->version);
+char
+ccsemver_match (ccsemver_t const * self, ccsemver_comp_t const *comp)
+{
+  char result = ccsemver_comp(self, &(comp->version));
 
   if (result < 0 && comp->op != CCSEMVER_OP_LT && comp->op != CCSEMVER_OP_LE) {
     return 0;
@@ -368,34 +370,36 @@ char ccsemver_pmatch(const ccsemver_t *self, const ccsemver_comp_t *comp) {
     return 0;
   }
   if (comp->next) {
-    return ccsemver_pmatch(self, comp->next);
+    return ccsemver_match(self, comp->next);
   }
   return 1;
 }
 
-int ccsemver_comp_pwrite(const ccsemver_comp_t *self, char *buffer, size_t len) {
+int
+ccsemver_comp_write (ccsemver_comp_t const * self, char *buffer, size_t len)
+{
   char *op = "";
   char semver[256], next[1024];
 
   switch (self->op) {
-    case CCSEMVER_OP_EQ:
-      break;
-    case CCSEMVER_OP_LT:
-      op = "<";
-      break;
-    case CCSEMVER_OP_LE:
-      op = "<=";
-      break;
-    case CCSEMVER_OP_GT:
-      op = ">";
-      break;
-    case CCSEMVER_OP_GE:
-      op = ">=";
-      break;
+  case CCSEMVER_OP_EQ:
+    break;
+  case CCSEMVER_OP_LT:
+    op = "<";
+    break;
+  case CCSEMVER_OP_LE:
+    op = "<=";
+    break;
+  case CCSEMVER_OP_GT:
+    op = ">";
+    break;
+  case CCSEMVER_OP_GE:
+    op = ">=";
+    break;
   }
-  ccsemver_write(self->version, semver, 256);
+  ccsemver_write(&(self->version), semver, 256);
   if (self->next) {
-    return snprintf(buffer, len, "%s%s %.*s", op, semver, ccsemver_comp_pwrite(self->next, next, 1024), next);
+    return snprintf(buffer, len, "%s%s %.*s", op, semver, ccsemver_comp_write(self->next, next, 1024), next);
   }
   return snprintf(buffer, len, "%s%s", op, semver);
 }

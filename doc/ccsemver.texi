@@ -776,24 +776,17 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_pwrite (const ccsemver_t * @var{versionp}, char * @var{output_buf}, size_t @var{output_len})
-Serialise the version @var{versionp} as @ascii{} string in the memory
-block referenced by @var{output_buf}, which has at least
-@var{output_len} characters available.  If the buffer has not enough
-room to hold the full version serialisation: the string is truncated to
-@var{output_len} characters.
+@deftypefun int ccsemver_write (ccsemver_t const * @var{versionp}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the version @var{versionp} as @ascii{} string in the memory block referenced by
+@var{output_buf}, which has at least @var{output_len} characters available.  If the buffer has not
+enough room to hold the full version serialisation: the string is truncated to @var{output_len}
+characters.
 
 Like @cfunc{snprintf}: return the number of characters needed to hold
 the full serialisation, excluding the trailing null; if the return value
 is greater than or equal to @var{output_len}, the string has been
 truncated.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_write (ccsemver_t @var{version}, char * @var{output_buf}, size_t @var{output_len})
-Like @cfunc{ccsemver_pwrite}, but accept the version structure as
-argument, rather than a pointer to it.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -815,7 +808,7 @@ rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
   size_t      needed_count;
   size_t      actual_count;
-  needed_count = (size_t)ccsemver_write(version, \
+  needed_count = (size_t)ccsemver_write(&version, \
      buffer_ptr, buffer_len);
   if (0 < needed_count) @{
     actual_count = (needed_count < buffer_len)? \
@@ -845,17 +838,11 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_pcomp (const ccsemver_t * @var{A}, const ccsemver_t * @var{B})
+@deftypefun char ccsemver_comp (ccsemver_t const * @var{A}, ccsemver_t const * @var{B})
 Compare the given versions.  Return @code{-1} if @var{A} is less than
 @var{B}; return @code{0} if @var{A} is equal to @var{B}; return
 @code{+1} if @var{A} is greater than @var{B}.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} char ccsemver_comp (ccsemver_t @var{A}, ccsemver_t @var{B})
-Like @cfunc{ccsemver_pcomp}, but accept the version structures as
-arguments, rather than pointers to them.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -872,12 +859,12 @@ size_t        offset_A = 0, offset_B = 0;
 char          rv;
 
 rv = ccsemver_read(&version_A, input_str_A,
-                 strlen(input_str_A), &offset_A);
+                   strlen(input_str_A), &offset_A);
 if (0 == rv) @{
   rv = ccsemver_read(&version_B, input_str_B,
                    strlen(input_str_B), &offset_B);
   if (0 == rv) @{
-    char    compar = ccsemver_comp(version_A, version_B);
+    char    compar = ccsemver_comp(&version_A, &version_B);
     printf("compar=%d\n", (int)compar);
   @}
   ccsemver_dtor(&version_B);
@@ -1187,7 +1174,7 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_comp_pwrite (const ccsemver_comp_t * @var{compp}, char * @var{output_buf}, size_t @var{output_len})
+@deftypefun int ccsemver_comp_write (ccsemver_comp_t const * @var{compp}, char * @var{output_buf}, size_t @var{output_len})
 Serialise the comparator @var{compp} as @ascii{} string in the memory
 block referenced by @var{output_buf}, which has at least
 @var{output_len} characters available.  If the buffer has not enough
@@ -1199,12 +1186,6 @@ the full serialisation, excluding the trailing null; if the return value
 is greater than or equal to @var{output_len}, the string has been
 truncated.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_comp_write (ccsemver_comp_t @var{compp}, char * @var{output_buf}, size_t @var{output_len})
-Like @cfunc{ccsemver_comp_pwrite}, but accept the comparator structure as
-argument, rather than a pointer to it.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -1228,7 +1209,7 @@ rv = ccsemver_comp_read(&comp, \
 if (0 == rv) @{
   size_t      needed_count;
   size_t      actual_count;
-  needed_count = (size_t)ccsemver_comp_write(comp, \
+  needed_count = (size_t)ccsemver_comp_write(&comp, \
                     buffer_ptr, buffer_len);
   if (0 < needed_count) @{
     actual_count = (needed_count < buffer_len)? \
@@ -1258,17 +1239,11 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_pmatch (const ccsemver_t * @var{versionp}, const ccsemver_comp_t * @var{compp})
+@deftypefun char ccsemver_match (ccsemver_t const * @var{versionp}, ccsemver_comp_t const * @var{compp})
 Match a version referenced by @var{versionp} against all the comparators
 in the linked list referenced by @var{compp}.  The return value is
 @code{1} if the version matches; it is @code{0} otherwise.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_match (ccsemver_t @var{version}, ccsemver_comp_t @var{comp})
-Like @cfunc{ccsemver_pmatch}, but accept the version and comparator
-structures as arguments, rather than pointers to them.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -1278,12 +1253,12 @@ structures as arguments, rather than pointers to them.
 The following example matches a version against a standalone comparator:
 
 @example
-static const char     version_str[] = "1.2.3";
-static const char     compar_str[]  = ">=2.0.0";
+const char      version_str[] = "1.2.3";
+const char      compar_str[]  = ">=2.0.0";
 ccsemver_t      version;
 ccsemver_comp_t comp;
-size_t        version_off = 0, comp_off = 0;
-char          rv;
+size_t          version_off = 0, comp_off = 0;
+char            rv;
 
 rv = ccsemver_read(&version, \
         version_str, strlen(version_str), &version_off);
@@ -1291,7 +1266,7 @@ if (0 == rv) @{
   rv = ccsemver_comp_read(&comp, \
           compar_str, strlen(compar_str), &comp_off);
   if (0 == rv) @{
-    int       result = (int)ccsemver_match(version, comp);
+    int       result = (int)ccsemver_match(&version, &comp);
     printf("matches?=%s\n", (result)? "yes" : "no");
   @}
   ccsemver_comp_dtor(&comp);
@@ -1473,7 +1448,7 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_range_pwrite (const ccsemver_range_t * @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
+@deftypefun int ccsemver_range_write (ccsemver_range_t const * @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
 Serialise the range @var{rangep} as @ascii{} string in the memory block
 referenced by @var{output_buf}, which has at least @var{output_len}
 characters available.  If the buffer has not enough room to hold the
@@ -1485,12 +1460,6 @@ the full serialisation, excluding the trailing null; if the return value
 is greater than or equal to @var{output_len}, the string has been
 truncated.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_range_write (ccsemver_range_t @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
-Like @cfunc{ccsemver_range_pwrite}, but accept the range structure as
-argument, rather than a pointer to it.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -1515,7 +1484,7 @@ rv = ccsemver_range_read(&range, \
 if (0 == rv) @{
   size_t      needed_count;
   size_t      actual_count;
-  needed_count = (size_t)ccsemver_range_write(range, \
+  needed_count = (size_t)ccsemver_range_write(&range, \
      buffer_ptr, buffer_len);
   if (0 < needed_count) @{
     actual_count = (needed_count < buffer_len)? \
@@ -1545,17 +1514,11 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_prmatch (const ccsemver_t * @var{versionp}, const ccsemver_range_t * @var{rangep})
+@deftypefun char ccsemver_range_match (ccsemver_t const * @var{versionp}, ccsemver_range_t const * @var{rangep})
 Match a version referenced by @var{versionp} against the comparators in
 the range referenced by @var{rangep}.  The return value is @code{1} if
 the version matches; it is @code{0} otherwise.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_rmatch (ccsemver_t @var{version}, ccsemver_range_t @var{range})
-Like @cfunc{ccsemver_prmatch}, but accept the version and range structures
-as arguments, rather than pointers to them.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -1578,7 +1541,7 @@ if (0 == rv) @{
   rv = ccsemver_range_read(&range, \
           range_str, strlen(range_str), &range_off);
   if (0 == rv) @{
-    int       result = (int)ccsemver_rmatch(version, range);
+    int       result = (int)ccsemver_range_match(&version, &range);
     printf("matches?=%s\n", (result)? "yes" : "no");
   @}
   ccsemver_range_dtor(&range);
@@ -1977,7 +1940,7 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_id_pwrite (const ccsemver_id_t * @var{idp}, char * @var{output_buf}, size_t @var{output_len})
+@deftypefun int ccsemver_id_write (ccsemver_id_t const * @var{idp}, char * @var{output_buf}, size_t @var{output_len})
 Serialise the identifier @var{idp} as @ascii{} string in the memory
 block referenced by @var{output_buf}, which has at least
 @var{output_len} characters available.  If the buffer has not enough
@@ -1989,12 +1952,6 @@ the full serialisation, excluding the trailing null; if the return value
 is greater than or equal to @var{output_len}, the string has been
 truncated.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} int ccsemver_id_write (ccsemver_id_t @var{id}, char * @var{output_buf}, size_t @var{output_len})
-Like @cfunc{ccsemver_id_pwrite}, but accept the identifier structure as
-argument, rather than a pointer to it.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -2017,7 +1974,7 @@ rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
   size_t      needed_count;
   size_t      actual_count;
-  needed_count = (size_t)ccsemver_id_write(id, \
+  needed_count = (size_t)ccsemver_id_write(&id, \
       buffer_ptr, buffer_len);
   if (0 < needed_count) @{
     actual_count = (needed_count < buffer_len)? \
@@ -2047,7 +2004,7 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_id_pcomp (const ccsemver_id_t * @var{A}, const ccsemver_id_t * @var{B})
+@deftypefun char ccsemver_id_comp (ccsemver_id_t const * @var{A}, ccsemver_id_t const * @var{B})
 Compare the numeric components of the given identifiers.  Return
 @code{-1} if @var{A} is less than @var{B}; return @code{0} if @var{A} is
 equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
@@ -2055,12 +2012,6 @@ equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 An empty identifier is less than any other identifier but the empty one;
 two empty identifiers are equal.
 @end deftypefun
-
-
-@deftypefn {Preprocessor Macro} char ccsemver_id_comp (ccsemver_id_t @var{A}, ccsemver_id_t @var{B})
-Like @cfunc{ccsemver_id_pcomp}, but accept the identifier structures as
-arguments, rather than pointers to them.
-@end deftypefn
 
 @c ------------------------------------------------------------------------
 
@@ -2082,7 +2033,7 @@ if (0 == rv) @{
   rv = ccsemver_id_read(&id_B, \
       input_str_B, strlen(input_str_B), &offset_B);
   if (0 == rv) @{
-    char    compar = ccsemver_id_comp(id_A, id_B);
+    char    compar = ccsemver_id_comp(&id_A, &id_B);
     printf("compar=%d\n", (int)compar);
   @}
   ccsemver_id_dtor(&id_B);

@@ -189,23 +189,20 @@ struct ccsemver_id_t {
   ccsemver_id_t *	next;
 };
 
-ccsemver_decl void ccsemver_id_ctor(ccsemver_id_t *self)
+ccsemver_decl void ccsemver_id_ctor (ccsemver_id_t *self)
   __attribute__((nonnull(1),leaf));
 
-ccsemver_decl void ccsemver_id_dtor(ccsemver_id_t *self)
+ccsemver_decl void ccsemver_id_dtor (ccsemver_id_t *self)
   __attribute__((nonnull(1),leaf));
 
-ccsemver_decl char ccsemver_id_read(ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
+ccsemver_decl char ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 
-ccsemver_decl int  ccsemver_id_pwrite(const ccsemver_id_t *self, char *buffer, size_t len)
+ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
 
-ccsemver_decl char ccsemver_id_pcomp(const ccsemver_id_t *self, const ccsemver_id_t *other)
+ccsemver_decl char ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t const * other)
   __attribute__((nonnull(1,2),leaf));
-
-#define ccsemver_id_write(self, buffer, len) ccsemver_id_pwrite(&(self), buffer, len)
-#define ccsemver_id_comp(self, other) ccsemver_id_pcomp(&(self), &(other))
 
 
 /** --------------------------------------------------------------------
@@ -244,16 +241,14 @@ ccsemver_decl void ccsemver_ctor(ccsemver_t *self)
 ccsemver_decl void ccsemver_dtor(ccsemver_t *self)
   __attribute__((nonnull(1)));
 
-ccsemver_decl char ccsemver_read(ccsemver_t *self, const char *str, size_t len, size_t *offset)
+ccsemver_decl char ccsemver_read(ccsemver_t *self, char const *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 
-ccsemver_decl int  ccsemver_pwrite(const ccsemver_t *self, char *buffer, size_t len)
+ccsemver_decl int  ccsemver_write (ccsemver_t const * self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
 
-ccsemver_decl char ccsemver_pcomp(const ccsemver_t *self, const ccsemver_t *other)
+ccsemver_decl char ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
   __attribute__((nonnull(1,2)));
-
-#define ccsemver_write(self, buffer, len) ccsemver_pwrite(&(self), buffer, len)
 
 
 /** --------------------------------------------------------------------
@@ -270,8 +265,6 @@ ccsemver_decl char ccsemver_num_comp(int self, int other)
 /** --------------------------------------------------------------------
  ** Comparators.
  ** ----------------------------------------------------------------- */
-
-#define ccsemver_comp(self, other) ccsemver_pcomp(&(self), &(other))
 
 struct ccsemver_comp_t {
   ccsemver_comp_t *	next;
@@ -294,14 +287,11 @@ ccsemver_decl char ccsemver_and(ccsemver_comp_t *self, const char *str, size_t l
 ccsemver_decl char ccsemver_comp_and(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 
-ccsemver_decl int  ccsemver_comp_pwrite(const ccsemver_comp_t *self, char *buffer, size_t len)
+ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
 
-ccsemver_decl char ccsemver_pmatch(const ccsemver_t *self, const ccsemver_comp_t *comp)
+ccsemver_decl char ccsemver_match (ccsemver_t const * self, ccsemver_comp_t const * comp)
   __attribute__((nonnull(1,2)));
-
-#define ccsemver_comp_write(self, buffer, len) ccsemver_comp_pwrite(&(self), buffer, len)
-#define ccsemver_match(self, comp) ccsemver_pmatch(&(self), &(comp))
 
 
 /** --------------------------------------------------------------------
@@ -315,20 +305,24 @@ struct ccsemver_range_t {
 
 ccsemver_decl void ccsemver_range_dtor(ccsemver_range_t *self)
   __attribute__((nonnull(1)));
+
 ccsemver_decl char ccsemver_range_read(ccsemver_range_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
-ccsemver_decl int  ccsemver_range_pwrite(const ccsemver_range_t *self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
-ccsemver_decl char ccsemver_prmatch(const ccsemver_t *self, const ccsemver_range_t *range)
+
+ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char *buffer, size_t len)
   __attribute__((nonnull(1,2)));
 
-#define ccsemver_range_write(self, buffer, len) ccsemver_range_pwrite(&(self), buffer, len)
-#define ccsemver_rmatch(self, comp) ccsemver_prmatch(&(self), &(comp))
+ccsemver_decl char ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
+  __attribute__((nonnull(1,2)));
 
 ccsemver_decl size_t ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream);
+
 ccsemver_decl size_t ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream);
+
 ccsemver_decl size_t ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream);
+
 ccsemver_decl size_t ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream);
+
 ccsemver_decl const char * ccsemver_op_string (ccsemver_op_t op);
 
 

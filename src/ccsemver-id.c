@@ -26,6 +26,11 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver-internals.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,19 +41,24 @@
 # define snprintf(s, maxlen, fmt, ...) _snprintf_s(s, _TRUNCATE, maxlen, fmt, __VA_ARGS__)
 #endif
 
-void ccsemver_id_ctor(ccsemver_id_t *self) {
-#ifndef _MSC_VER
-  *self = (ccsemver_id_t) {true};
-#else
-  self->next = NULL;
-  self->len = 0;
-  self->raw = NULL;
-  self->num = 0;
-  self->numeric = true;
-#endif
+
+/** --------------------------------------------------------------------
+ ** Constructors and destructors.
+ ** ----------------------------------------------------------------- */
+
+void
+ccsemver_id_ctor (ccsemver_id_t *self)
+{
+  self->next	= NULL;
+  self->len	= 0;
+  self->raw	= NULL;
+  self->num	= 0;
+  self->numeric	= true;
 }
 
-void ccsemver_id_dtor(ccsemver_id_t *self) {
+void
+ccsemver_id_dtor(ccsemver_id_t *self)
+{
   if (self && self->next) {
     ccsemver_id_dtor(self->next);
     free(self->next);
@@ -56,13 +66,15 @@ void ccsemver_id_dtor(ccsemver_id_t *self) {
   }
 }
 
-char ccsemver_id_read(ccsemver_id_t *self, const char *str, size_t len, size_t *offset) {
+char
+ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
+{
   size_t i = 0;
   char is_zero = 0;
 
   ccsemver_id_ctor(self);
   while (*offset < len) {
-    if (isalnum(str[*offset]) || str[*offset] == '-') {
+    if (isalnum(str[*offset]) || ('-' == str[*offset])) {
       if (!isdigit(str[*offset])) {
         is_zero = 0;
         self->numeric = false;
@@ -97,7 +109,9 @@ char ccsemver_id_read(ccsemver_id_t *self, const char *str, size_t len, size_t *
   return 0;
 }
 
-char ccsemver_id_pcomp(const ccsemver_id_t *self, const ccsemver_id_t *other) {
+char
+ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t const * other)
+{
   char s;
 
   if (!self->len && other->len) {
@@ -135,14 +149,16 @@ char ccsemver_id_pcomp(const ccsemver_id_t *self, const ccsemver_id_t *other) {
     return 0;
   }
 
-  return ccsemver_id_pcomp(self->next, other->next);
+  return ccsemver_id_comp(self->next, other->next);
 }
 
-int ccsemver_id_pwrite(const ccsemver_id_t *self, char *buffer, size_t len) {
+int
+ccsemver_id_write(ccsemver_id_t const * self, char *buffer, size_t len)
+{
   char next[1024];
 
   if (self->next) {
-    return snprintf(buffer, len, "%.*s.%.*s", (int) self->len, self->raw, ccsemver_id_pwrite(self->next, next, 1024), next);
+    return snprintf(buffer, len, "%.*s.%.*s", (int) self->len, self->raw, ccsemver_id_write(self->next, next, 1024), next);
   }
   return snprintf(buffer, len, "%.*s", (int) self->len, self->raw);
 }

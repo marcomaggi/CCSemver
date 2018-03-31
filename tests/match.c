@@ -56,7 +56,7 @@ int test_match(char expected, const char *ccsemver_str, size_t ccsemver_len, con
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  result = ccsemver_match(ccsemver, comp);
+  result = ccsemver_match(&ccsemver, &comp);
   printf(" \t=> %d\t", result);
   if (result != expected) {
     printf(" != `%d`\n", expected);

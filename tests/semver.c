@@ -48,7 +48,7 @@ int test_read(const char *expected, const char *str, size_t len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  slen = (unsigned) ccsemver_write(ccsemver, buffer, 1024);
+  slen = (unsigned) ccsemver_write(&ccsemver, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
   if (memcmp(expected, buffer, (size_t) slen > len ? slen : len) != 0) {
     printf(" != `%s`\n", expected);

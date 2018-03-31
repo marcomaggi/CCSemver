@@ -76,7 +76,9 @@ char ccsemver_read(ccsemver_t *self, const char *str, size_t len, size_t *offset
   return 1;
 }
 
-char ccsemver_pcomp(const ccsemver_t *self, const ccsemver_t *other) {
+char
+ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
+{
   char result;
 
   if ((result = ccsemver_num_comp(self->major, other->major)) != 0) {
@@ -88,35 +90,35 @@ char ccsemver_pcomp(const ccsemver_t *self, const ccsemver_t *other) {
   if ((result = ccsemver_num_comp(self->patch, other->patch)) != 0) {
     return result;
   }
-  if ((result = ccsemver_id_comp(self->prerelease, other->prerelease)) != 0) {
+  if ((result = ccsemver_id_comp(&(self->prerelease), &(other->prerelease))) != 0) {
     return result;
   }
-  return ccsemver_id_comp(self->build, other->build);
+  return ccsemver_id_comp(&(self->build), &(other->build));
 }
 
-int ccsemver_pwrite(const ccsemver_t *self, char *buffer, size_t len) {
-  char prerelease[256], build[256];
+int
+ccsemver_write (ccsemver_t const * self, char *buffer, size_t len)
+{
+  char	prerelease[256], build[256];
+  int	rv;
 
   if (self->prerelease.len && self->build.len) {
-    return snprintf(buffer, len, "%d.%d.%d-%.*s+%.*s",
-      self->major, self->minor, self->patch,
-      ccsemver_id_write(self->prerelease, prerelease, 256), prerelease,
-      ccsemver_id_write(self->build, build, 256), build
-    );
+    rv = snprintf(buffer, len, "%d.%d.%d-%.*s+%.*s",
+		  self->major, self->minor, self->patch,
+		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease,
+		  ccsemver_id_write(&(self->build), build, 256), build);
+  } else if (self->prerelease.len) {
+    rv = snprintf(buffer, len, "%d.%d.%d-%.*s",
+		  self->major, self->minor, self->patch,
+		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease);
+  } else if (self->build.len) {
+    rv = snprintf(buffer, len, "%d.%d.%d+%.*s",
+		  self->major, self->minor, self->patch,
+		  ccsemver_id_write(&(self->build), build, 256), build);
+  } else {
+    rv = snprintf(buffer, len, "%d.%d.%d", self->major, self->minor, self->patch);
   }
-  if (self->prerelease.len) {
-    return snprintf(buffer, len, "%d.%d.%d-%.*s",
-      self->major, self->minor, self->patch,
-      ccsemver_id_write(self->prerelease, prerelease, 256), prerelease
-    );
-  }
-  if (self->build.len) {
-    return snprintf(buffer, len, "%d.%d.%d+%.*s",
-      self->major, self->minor, self->patch,
-      ccsemver_id_write(self->build, build, 256), build
-    );
-  }
-  return snprintf(buffer, len, "%d.%d.%d", self->major, self->minor, self->patch);
+  return rv;
 }
 
 /* end of file */

@@ -185,7 +185,7 @@ doc_example_identifiers_2_6 (void)
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_id_write(id, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_id_write(&id, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, id=",
@@ -217,7 +217,7 @@ doc_example_identifiers_3_1 (void)
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_id_write(id, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_id_write(&id, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("actual_count=%lu, id=", actual_count);
@@ -245,7 +245,7 @@ doc_example_identifiers_4_1 (void)
   if (0 == rv) {
     rv = ccsemver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = ccsemver_id_comp(id_A, id_B);
+      char	compar = ccsemver_id_comp(&id_A, &id_B);
       printf("compar=%d\n", (int)compar);
     }
     ccsemver_id_dtor(&id_B);
@@ -268,7 +268,7 @@ doc_example_identifiers_4_2 (void)
   if (0 == rv) {
     rv = ccsemver_id_read(&id_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = ccsemver_id_comp(id_A, id_B);
+      char	compar = ccsemver_id_comp(&id_A, &id_B);
       printf("compar=%d\n", (int)compar);
     }
     ccsemver_id_dtor(&id_B);
@@ -546,7 +546,7 @@ doc_example_versions_3_1 (void)
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_write(version, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_write(&version, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, id=",
@@ -575,7 +575,7 @@ doc_example_versions_4_1 (void)
   if (0 == rv) {
     rv = ccsemver_read(&version_B, input_str_B, strlen(input_str_B), &offset_B);
     if (0 == rv) {
-      char	compar = ccsemver_comp(version_A, version_B);
+      char	compar = ccsemver_comp(&version_A, &version_B);
       printf("compar=%d\n", (int)compar);
     }
     ccsemver_dtor(&version_B);
@@ -765,7 +765,7 @@ doc_example_comparators_3_1 (void)
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_comp_write(comp, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_comp_write(&comp, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, comp=",
@@ -795,7 +795,7 @@ doc_example_comparators_4_1_1 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -819,7 +819,7 @@ doc_example_comparators_4_1_2 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -845,7 +845,7 @@ doc_example_comparators_4_2_1 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -869,7 +869,7 @@ doc_example_comparators_4_2_2 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -895,7 +895,7 @@ doc_example_comparators_4_3_1 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -919,7 +919,7 @@ doc_example_comparators_4_3_2 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -945,7 +945,7 @@ doc_example_comparators_4_4_1 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -969,7 +969,7 @@ doc_example_comparators_4_4_2 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -995,7 +995,7 @@ doc_example_comparators_4_5_1 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -1019,7 +1019,7 @@ doc_example_comparators_4_5_2 (void)
   if (0 == rv) {
     rv = ccsemver_comp_read(&comp, compar_str, strlen(compar_str), &comp_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_match(version, comp);
+      int	result = (int)ccsemver_match(&version, &comp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_comp_dtor(&comp);
@@ -1127,7 +1127,7 @@ doc_example_ranges_3_1 (void)
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_range_write(range, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_range_write(&range, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, range=",
@@ -1157,7 +1157,7 @@ doc_example_ranges_4_1 (void)
   if (0 == rv) {
     rv = ccsemver_range_read(&range, range_str, strlen(range_str), &range_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_rmatch(version, range);
+      int	result = (int)ccsemver_range_match(&version, &range);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_range_dtor(&range);
@@ -1181,7 +1181,7 @@ doc_example_ranges_4_2 (void)
   if (0 == rv) {
     rv = ccsemver_range_read(&range, range_str, strlen(range_str), &range_off);
     if (0 == rv) {
-      int	result = (int)ccsemver_rmatch(version, range);
+      int	result = (int)ccsemver_range_match(&version, &range);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
     ccsemver_range_dtor(&range);

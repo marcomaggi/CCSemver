@@ -71,20 +71,23 @@ char ccsemver_range_read(ccsemver_range_t *self, const char *str, size_t len, si
   return 0;
 }
 
-char ccsemver_prmatch(const ccsemver_t *self, const ccsemver_range_t *range) {
-  return (char)  (ccsemver_pmatch(self, &range->comp) ? 1 : range->next ? ccsemver_prmatch(self, range->next) : 0);
+char
+ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
+{
+  return (char)  (ccsemver_match(self, &range->comp) ? 1 : range->next ? ccsemver_range_match(self, range->next) : 0);
 }
 
-int ccsemver_range_pwrite(const ccsemver_range_t *self, char *buffer, size_t len) {
+int
+ccsemver_range_write (ccsemver_range_t const * self, char *buffer, size_t len)
+{
   char comp[1024], next[1024];
 
   if (self->next) {
     return snprintf(buffer, len, "%.*s || %.*s",
-      ccsemver_comp_write(self->comp, comp, 1024), comp,
-      ccsemver_range_pwrite(self->next, next, 1024), next
-    );
+		    ccsemver_comp_write(&(self->comp), comp, 1024), comp,
+		    ccsemver_range_write(self->next, next, 1024), next);
   }
-  return snprintf(buffer, len, "%.*s", ccsemver_comp_write(self->comp, comp, 1024), comp);
+  return snprintf(buffer, len, "%.*s", ccsemver_comp_write(&(self->comp), comp, 1024), comp);
 }
 
 /* end of file */

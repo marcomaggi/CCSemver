@@ -44,7 +44,7 @@ ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_id_pwrite(idp, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_id_write(idp, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -58,7 +58,7 @@ ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_id_pwrite(idp, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_id_write(idp, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
@@ -78,7 +78,7 @@ ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_pwrite(versionp, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_write(versionp, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -92,7 +92,7 @@ ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_pwrite(versionp, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_write(versionp, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
@@ -112,7 +112,7 @@ ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_comp_pwrite(compp, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_comp_write(compp, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -126,7 +126,7 @@ ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_comp_pwrite(compp, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_comp_write(compp, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
@@ -146,7 +146,7 @@ ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_range_pwrite(rangep, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_range_write(rangep, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -160,7 +160,7 @@ ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_range_pwrite(rangep, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_range_write(rangep, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
