@@ -1,5 +1,5 @@
 /*
-  Part of: CCTemplate
+  Part of: CCSemver
   Contents: public header file
   Date: Mar 27, 2018
 
