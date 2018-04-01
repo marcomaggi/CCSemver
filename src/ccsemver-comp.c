@@ -86,21 +86,21 @@ static char parse_partial(ccsemver_t *self, const char *str, size_t len, size_t 
   self->major = self->minor = self->patch = CCSEMVER_NUM_X;
   if (*offset < len) {
     self->raw = str + *offset;
-    if  (ccsemver_num_read(&self->major, str, len, offset)) {
+    if  (ccsemver_num_parse(&self->major, str, len, offset)) {
       return 0;
     }
     if (*offset >= len || str[*offset] != '.') {
       return 0;
     }
     ++*offset;
-    if  (ccsemver_num_read(&self->minor, str, len, offset)) {
+    if  (ccsemver_num_parse(&self->minor, str, len, offset)) {
       return 1;
     }
     if (*offset >= len || str[*offset] != '.') {
       return 0;
     }
     ++*offset;
-    if  (ccsemver_num_read(&self->patch, str, len, offset)) {
+    if  (ccsemver_num_parse(&self->patch, str, len, offset)) {
       return 1;
     }
     if ((str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset)))

@@ -49,7 +49,7 @@
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_num_read (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
 {
   *nump = 0;
   if (*input_offp >= input_len) {

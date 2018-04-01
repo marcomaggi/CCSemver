@@ -60,11 +60,11 @@ char ccsemver_read(ccsemver_t *self, const char *str, size_t len, size_t *offset
     if (str[*offset] == 'v') {
       ++*offset;
     }
-    if  (ccsemver_num_read(&self->major, str, len, offset) || self->major == CCSEMVER_NUM_X
+    if  (ccsemver_num_parse(&self->major, str, len, offset) || self->major == CCSEMVER_NUM_X
       || *offset >= len || str[*offset] != '.'
-      || ccsemver_num_read(&self->minor, str, len, (++*offset, offset)) || self->minor == CCSEMVER_NUM_X
+      || ccsemver_num_parse(&self->minor, str, len, (++*offset, offset)) || self->minor == CCSEMVER_NUM_X
       || *offset >= len || str[*offset] != '.'
-      || ccsemver_num_read(&self->patch, str, len, (++*offset, offset)) || self->patch == CCSEMVER_NUM_X
+      || ccsemver_num_parse(&self->patch, str, len, (++*offset, offset)) || self->patch == CCSEMVER_NUM_X
       || (str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset)))
       || (str[*offset] == '+' && ccsemver_id_read(&self->build, str, len, (++*offset, offset)))) {
       self->len = str + *offset - self->raw;

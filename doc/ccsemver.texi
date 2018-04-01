@@ -1570,7 +1570,7 @@ Usually we do @strong{not} need to use the numeric components parser directly.
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_num_read (long * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+@deftypefun char ccsemver_num_parse (long * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
 Parse an input string in @ascii{} format which is meant to hold a numeric component.  When
 successful: the return value is @code{0}.  If an error occurs: the return value is @code{1}.
 
@@ -1608,7 +1608,7 @@ long            num;
 size_t          input_off = 0;
 char            rv;
 
-rv = ccsemver_num_read(&num, input_str, input_len, &input_off);
+rv = ccsemver_num_parse(&num, input_str, input_len, &input_off);
 if (0 == rv) @{
   printf("num=%ld\n", num);
 @}

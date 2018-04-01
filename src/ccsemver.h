@@ -167,7 +167,7 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
  ** Number parsers.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl char ccsemver_num_read (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_decl char ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
   __attribute__((nonnull(1,2,4),leaf));
 
 ccsemver_decl char ccsemver_num_comp (long self, long other)

@@ -290,7 +290,7 @@ doc_example_numeric_components_1_1 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_parse(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%ld\n", num);
   }
@@ -305,7 +305,7 @@ doc_example_numeric_components_1_2 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_parse(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%ld\n", num);
   }
@@ -320,7 +320,7 @@ doc_example_numeric_components_1_3 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_parse(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%ld\n", num);
   }
@@ -335,7 +335,7 @@ doc_example_numeric_components_1_4 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_parse(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%ld\n", num);
   }
@@ -350,7 +350,7 @@ doc_example_numeric_components_1_5 (void)
   size_t	input_off = 0;
   char		rv;
 
-  rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
+  rv = ccsemver_num_parse(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
     printf("num=%ld\n", num);
   }
