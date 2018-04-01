@@ -116,7 +116,7 @@ ccsemver_decl int		ccsemver_version_interface_age		(void);
  ** Preprocessor constants.
  ** ----------------------------------------------------------------- */
 
-#define CCSEMVER_NUM_X (-1)
+#define CCSEMVER_NUM_X	((long)(-1))
 
 
 /** --------------------------------------------------------------------
@@ -164,6 +164,17 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
 
 
 /** --------------------------------------------------------------------
+ ** Number parsers.
+ ** ----------------------------------------------------------------- */
+
+ccsemver_decl char ccsemver_num_read (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+  __attribute__((nonnull(1,2,4),leaf));
+
+ccsemver_decl char ccsemver_num_comp (long self, long other)
+  __attribute__((leaf,const));
+
+
+/** --------------------------------------------------------------------
  ** Identifiers.
  ** ----------------------------------------------------------------- */
 
@@ -174,7 +185,7 @@ struct ccsemver_id_t {
 
   /* If  this  component  is  numeric:  this  field  holds  its  numeric
      representation.  Otherwise this field holds a meaningless value. */
-  int			num;
+  long			num;
 
   /* The number of  characters in the input string that  where parsed to
      form this component. */
@@ -211,13 +222,13 @@ ccsemver_decl char ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t c
 
 struct ccsemver_t {
   /* The major version number. */
-  int		major;
+  long		major;
 
   /* The mino version number. */
-  int		minor;
+  long		minor;
 
   /* The patch level. */
-  int		patch;
+  long		patch;
 
   /* An identifier representing the prerelease tag. */
   ccsemver_id_t	prerelease;
@@ -249,17 +260,6 @@ ccsemver_decl int  ccsemver_write (ccsemver_t const * self, char *buffer, size_t
 
 ccsemver_decl char ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
   __attribute__((nonnull(1,2)));
-
-
-/** --------------------------------------------------------------------
- ** Number parsers.
- ** ----------------------------------------------------------------- */
-
-ccsemver_decl char ccsemver_num_read(int *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4),leaf));
-
-ccsemver_decl char ccsemver_num_comp(int self, int other)
-  __attribute__((leaf,const));
 
 
 /** --------------------------------------------------------------------

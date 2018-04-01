@@ -69,18 +69,18 @@ ccsemver_id_dtor(ccsemver_id_t *self)
 char
 ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
 {
-  size_t i = 0;
-  char is_zero = 0;
+  size_t	i = 0;
+  bool		is_zero = false;
 
   ccsemver_id_ctor(self);
   while (*offset < len) {
     if (isalnum(str[*offset]) || ('-' == str[*offset])) {
       if (!isdigit(str[*offset])) {
-        is_zero = 0;
+        is_zero = false;
         self->numeric = false;
       } else {
         if (i == 0) {
-          is_zero = str[*offset] == '0';
+          is_zero = ('0' == str[*offset]);
         } else if (is_zero) {
           return 1;
         }
@@ -96,7 +96,9 @@ ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offs
   self->raw = str + *offset - i;
   self->len = i;
   if (!is_zero && self->numeric) {
-    self->num = (int) strtol(self->raw, NULL, 0);
+    /* Here we  want to parse  a raw  number, not a  "numeric component"
+       with "x", "X" or "*" elements. */
+    self->num = strtoul(self->raw, NULL, 10);
   }
   if (str[*offset] == '.') {
     self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));

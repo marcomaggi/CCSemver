@@ -80,7 +80,7 @@ doc_example_identifiers_2_1 (void)
 
   rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+    printf("numeric?=%d, num=%ld, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   }
@@ -99,7 +99,7 @@ doc_example_identifiers_2_2 (void)
 
   rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+    printf("numeric?=%d, num=%ld, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   }
@@ -119,7 +119,7 @@ doc_example_identifiers_2_3 (void)
   rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     for (ccsemver_id_t * iter = &id; iter; iter = iter->next) {
-      printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+      printf("numeric?=%d, num=%ld, len=%lu, raw=%s\n",
 	     (int)iter->numeric, iter->num, iter->len, iter->raw);
     }
   }
@@ -139,7 +139,7 @@ doc_example_identifiers_2_4 (void)
   rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
     for (ccsemver_id_t * iter = &id; iter; iter = iter->next) {
-      printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+      printf("numeric?=%d, num=%ld, len=%lu, raw=%s\n",
 	     (int)iter->numeric, iter->num, iter->len, iter->raw);
     }
   }
@@ -158,7 +158,7 @@ doc_example_identifiers_2_5 (void)
 
   rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+    printf("numeric?=%d, num=%ld, len=%lu, raw=%s, next=%p\n",
 	   (int)id.numeric, id.num, id.len, id.raw,
 	   (void *)id.next);
   } else {
@@ -286,13 +286,13 @@ doc_example_numeric_components_1_1 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_buf[] = "123";
-  int		num;
+  long		num;
   size_t	input_off = 0;
   char		rv;
 
   rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
-    printf("num=%d\n", num);
+    printf("num=%ld\n", num);
   }
 }
 
@@ -301,13 +301,13 @@ doc_example_numeric_components_1_2 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_buf[] = "x";
-  int		num;
+  long		num;
   size_t	input_off = 0;
   char		rv;
 
   rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
-    printf("num=%d\n", num);
+    printf("num=%ld\n", num);
   }
 }
 
@@ -316,13 +316,13 @@ doc_example_numeric_components_1_3 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_buf[] = "X";
-  int		num;
+  long		num;
   size_t	input_off = 0;
   char		rv;
 
   rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
-    printf("num=%d\n", num);
+    printf("num=%ld\n", num);
   }
 }
 
@@ -331,13 +331,13 @@ doc_example_numeric_components_1_4 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_buf[] = "*";
-  int		num;
+  long		num;
   size_t	input_off = 0;
   char		rv;
 
   rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
-    printf("num=%d\n", num);
+    printf("num=%ld\n", num);
   }
 }
 
@@ -346,13 +346,13 @@ doc_example_numeric_components_1_5 (void)
 {
   printf("--- %s:\n", __func__);
   static const char	input_buf[] = "";
-  int		num;
+  long		num;
   size_t	input_off = 0;
   char		rv;
 
   rv = ccsemver_num_read(&num, input_buf, strlen(input_buf), &input_off);
   if (0 == rv) {
-    printf("num=%d\n", num);
+    printf("num=%ld\n", num);
   }
 }
 
@@ -441,7 +441,7 @@ doc_example_versions_2_1 (void)
 
   rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("major=%d, minor=%d, patch=%d, ",
+    printf("major=%ld, minor=%ld, patch=%ld, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -464,7 +464,7 @@ doc_example_versions_2_2 (void)
 
   rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("major=%d, minor=%d, patch=%d, ",
+    printf("major=%ld, minor=%ld, patch=%ld, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -487,7 +487,7 @@ doc_example_versions_2_3 (void)
 
   rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("major=%d, minor=%d, patch=%d, ",
+    printf("major=%ld, minor=%ld, patch=%ld, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -512,7 +512,7 @@ doc_example_versions_2_4 (void)
 
   rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
   if (0 == rv) {
-    printf("major=%d, minor=%d, patch=%d, ",
+    printf("major=%ld, minor=%ld, patch=%ld, ",
 	   version.major, version.minor, version.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&version.prerelease, stdout);

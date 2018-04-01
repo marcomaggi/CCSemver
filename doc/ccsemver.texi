@@ -537,13 +537,13 @@ with @cfunc{ccsemver_init} or @cfunc{ccsemver_new}.  Instances of this structure
 It has the following public fields:
 
 @table @code
-@item int major
+@item long major
 An integer representing the major version number.
 
-@item int minor
+@item long minor
 An integer representing the minor version number.
 
-@item int patch
+@item long patch
 An integer representing the patch level.
 
 @item ccsemver_id_t prerelease
@@ -680,7 +680,7 @@ char          rv;
 
 rv = ccsemver_read(&version, input_str, strlen(input_str), &input_off);
 if (0 == rv) @{
-  printf("major=%d, minor=%d, patch=%d, ",
+  printf("major=%ld, minor=%ld, patch=%ld, ",
          version.major, version.minor, version.patch);
   printf("prerelease=");
   ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -714,7 +714,7 @@ char          rv;
 
 rv = ccsemver_read(&version, input_str, strlen(input_str), &input_off);
 if (0 == rv) @{
-  printf("major=%d, minor=%d, patch=%d, ",
+  printf("major=%ld, minor=%ld, patch=%ld, ",
          version.major, version.minor, version.patch);
   printf("prerelease=");
   ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -748,7 +748,7 @@ char          rv;
 
 rv = ccsemver_read(&version, input_str, strlen(input_str), &input_off);
 if (0 == rv) @{
-  printf("major=%d, minor=%d, patch=%d, ",
+  printf("major=%ld, minor=%ld, patch=%ld, ",
          version.major, version.minor, version.patch);
   printf("prerelease=");
   ccsemver_id_fwrite(&version.prerelease, stdout);
@@ -1561,51 +1561,40 @@ matches?=yes
 @chapter Parsing numeric components
 
 
-In the context of @value{PACKAGE}'s parsing functions, numeric
-components are @ascii{} strings holding: numeric characters (according
-to the standard function @cfunc{isdigit}); the standalone character
-@samp{x}; the standalone character @samp{X}; the standalone character
-@samp{*}.
+In the context of @value{PACKAGE}'s parsing functions, @dfn{numeric components} are @ascii{} strings
+holding: numeric characters (according to the standard function @cfunc{isdigit}); the standalone
+character @samp{x}; the standalone character @samp{X}; the standalone character @samp{*}.
 
-Usually we do @strong{not} need to use the numeric components parser
-directly.
+Usually we do @strong{not} need to use the numeric components parser directly.
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_num_read (int * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold an
-integer number.  When successful: the return value is @code{0}.  If an
-error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_num_read (long * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
+Parse an input string in @ascii{} format which is meant to hold a numeric component.  When
+successful: the return value is @code{0}.  If an error occurs: the return value is @code{1}.
 
-The results of parsing are stored in the variable referenced by
-@var{nump}.
+The results of parsing are stored in the variable referenced by @var{nump}.
 
-The input string is referenced by @var{input_buf}; the length of the
-input string is @var{input_len} characters.  The argument
-@var{input_offp} is both an input and output parameter:
+The input string is referenced by @var{input_buf}; the length of the input string is @var{input_len}
+characters.  The argument @var{input_offp} is both an input and output parameter:
 
 @itemize
 @item
-Upon entering the function: the offset of the first character to parse
-in @var{input_buf} is acquired from the variable referenced by
-@var{input_offp}.  If the value in the referenced variable is greater
-than @var{input_len}: the function returns unsuccessfully.
+Upon entering the function: the offset of the first character to parse in @var{input_buf} is
+acquired from the variable referenced by @var{input_offp}.  If the value in the referenced variable
+is greater than @var{input_len}: the function returns unsuccessfully.
 
 @item
-When the function returns successfully: the offset of the first
-non--parsed character is stored in the variable referenced by
-@var{input_offp}; further parsing operations can use such value as
-input.
+When the function returns successfully: the offset of the first non--parsed character is stored in
+the variable referenced by @var{input_offp}; further parsing operations can use such value as input.
 
 @item
-When the function returns unsuccessfully: the value stored in the
-variable is invalid.
+When the function returns unsuccessfully: the value stored in the variable is invalid.
 @end itemize
 
-If the string is empty (@var{input_len} is zero): the function returns
-successfully and stores zero in the variable referenced by @var{nump}.
+If the string is empty (@var{input_len} is zero): the function returns successfully and stores zero
+in the variable referenced by @var{nump}.
 
 If the input string contains @samp{x}, @samp{X} or @samp{*}: the function returns successfully and
 stores the value @code{CCSEMVER_NUM_X} in the variable referenced by @var{nump}.
@@ -1613,30 +1602,29 @@ stores the value @code{CCSEMVER_NUM_X} in the variable referenced by @var{nump}.
 The following example code parses a numeric component:
 
 @example
-static const char     input_buf[] = "123";
-int           num;
-size_t        input_off = 0;
-char          rv;
+char const      input_buf[] = "123";
+long            num;
+size_t          input_off = 0;
+char            rv;
 
-rv = ccsemver_num_read(&num, \
-       input_buf, strlen(input_buf), &input_off);
+rv = ccsemver_num_read(&num,
+                       input_buf, strlen(input_buf),
+                       &input_off);
 if (0 == rv) @{
-  printf("num=%d\n", num);
+  printf("num=%ld\n", num);
 @}
 @end example
 @end deftypefun
 
 
-@deftypevr {Preprocessor Symbol} int CCSEMVER_NUM_X
-Special value used to represent a numeric component specified as
-@samp{x}, @samp{X} or @samp{*}.
+@deftypevr {Preprocessor Symbol} long CCSEMVER_NUM_X
+Special value used to represent a numeric component specified as @samp{x}, @samp{X} or @samp{*}.
 @end deftypevr
 
 
-@deftypefun char ccsemver_num_comp (int @var{A}, int @var{B})
-Compare the given integers.  Return @code{-1} if @var{A} is less than
-@var{B}; return @code{0} if @var{A} is equal to @var{B}; return
-@code{+1} if @var{A} is greater than @var{B}.
+@deftypefun char ccsemver_num_comp (long @var{A}, long @var{B})
+Compare the given integers.  Return @code{-1} if @var{A} is less than @var{B}; return @code{0} if
+@var{A} is equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 
 The return values of this function are @strong{invalid} if one of the arguments is
 @code{CCSEMVER_NUM_X}.
@@ -1686,7 +1674,7 @@ The structure has the following public fields:
 A boolean value: @ctrue{} if the this component is numeric; @cfalse{} if
 this component is alphabetic.
 
-@item int num
+@item long num
 If this component is numeric: this field holds its numeric
 representation.  Otherwise this field holds a meaningless value.
 
@@ -1824,7 +1812,7 @@ char          rv;
 
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
-  printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+  printf("numeric?=%d, num=%ld, len=%lu, raw=%s, next=%p\n",
          (int)id.numeric, id.num, id.len, id.raw,
          (void *)id.next);
 @}
@@ -1852,7 +1840,7 @@ char          rv;
 
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
-  printf("numeric?=%d, num=%d, len=%lu, raw=%s, next=%p\n",
+  printf("numeric?=%d, num=%ld, len=%lu, raw=%s, next=%p\n",
          (int)id.numeric, id.num, id.len, id.raw,
          (void *)id.next);
 @}
@@ -1881,7 +1869,7 @@ char          rv;
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
   for (ccsemver_id_t * iter = &id; iter; iter = iter->next) @{
-    printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+    printf("numeric?=%d, num=%ld, len=%lu, raw=%s\n",
            (int)iter->numeric, iter->num, iter->len, iter->raw);
   @}
 @}
@@ -1914,7 +1902,7 @@ char          rv;
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
   for (ccsemver_id_t * iter = &id; iter; iter = iter->next) @{
-    printf("numeric?=%d, num=%d, len=%lu, raw=%s\n",
+    printf("numeric?=%d, num=%ld, len=%lu, raw=%s\n",
            (int)iter->numeric, iter->num, iter->len, iter->raw);
   @}
 @}

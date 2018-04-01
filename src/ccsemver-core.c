@@ -103,20 +103,20 @@ ccsemver_write (ccsemver_t const * self, char *buffer, size_t len)
   int	rv;
 
   if (self->prerelease.len && self->build.len) {
-    rv = snprintf(buffer, len, "%d.%d.%d-%.*s+%.*s",
+    rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s+%.*s",
 		  self->major, self->minor, self->patch,
 		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease,
 		  ccsemver_id_write(&(self->build), build, 256), build);
   } else if (self->prerelease.len) {
-    rv = snprintf(buffer, len, "%d.%d.%d-%.*s",
+    rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s",
 		  self->major, self->minor, self->patch,
 		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease);
   } else if (self->build.len) {
-    rv = snprintf(buffer, len, "%d.%d.%d+%.*s",
+    rv = snprintf(buffer, len, "%ld.%ld.%ld+%.*s",
 		  self->major, self->minor, self->patch,
 		  ccsemver_id_write(&(self->build), build, 256), build);
   } else {
-    rv = snprintf(buffer, len, "%d.%d.%d", self->major, self->minor, self->patch);
+    rv = snprintf(buffer, len, "%ld.%ld.%ld", self->major, self->minor, self->patch);
   }
   return rv;
 }
