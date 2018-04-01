@@ -61,6 +61,8 @@ int test_read(const char *expected, const char *str, size_t len) {
 }
 
 int main(void) {
+  ccsemver_init();
+
   puts("x-range:");
   if (test_read(">=0.0.0 || 1.2.3", STRNSIZE("* || 1.2.3"))) {
     return EXIT_FAILURE;

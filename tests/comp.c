@@ -124,6 +124,7 @@ int test_comp_and(const char *expected, const char *base_str, size_t base_len, c
 }
 
 int main(void) {
+  ccsemver_init();
   puts("failure:");
   if (test_read("", STRNSIZE("* ")) == 0) {
     return EXIT_FAILURE;

@@ -19,6 +19,8 @@
 int
 main (int argc CCSEMVER_UNUSED, const char *const argv[] CCSEMVER_UNUSED)
 {
+  ccsemver_init();
+
   printf("version number string: %s\n", ccsemver_version_string());
   printf("libtool version number: %d:%d:%d\n",
 	 ccsemver_version_interface_current(),

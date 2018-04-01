@@ -120,7 +120,9 @@ available at:
 
 @menu
 * overview::                    Overview of the package.
+* init::                        Library initialisation.
 * version::                     Version functions.
+* conditions::                  Exceptional condition objects.
 * semver::                      Semantic versioning.
 * versions::                    Parsing version specifications.
 * comparators::                 Parsing and using comparators.
@@ -161,6 +163,9 @@ This package supports @posix{} platforms.  This package depends on the package
 @value{PACKAGE} installs the single header file @file{ccsemver.h}.  All the function names in the
 @api{} are prefixed with @code{ccsemver_}; all the constant names are prefixed with
 @code{CCSEMVER_}; all the type names are prefixed with @code{ccsemver_} and suffixed with @code{_t}.
+
+@strong{Notice that, before using the library, we need to call the global initialisation function
+@cfunc{ccsemver_init}}.
 
 @menu
 * overview linking::            Linking code with the library.
@@ -211,6 +216,21 @@ AC_CHECK_HEADERS([ccsemver.h],,
 @end example
 
 @c page
+@node init
+@chapter Library initialisation
+
+
+@deftypefun void ccsemver_init (void)
+Initialises the internal structures of the library.  It is fine to call this function multiple
+times.
+
+@quotation
+@strong{NOTE} This function is defined with the @gcc{} attribute @code{constructor}, so, when the
+library is built with @gcc{}: it will be called automatically by the library initialisation code.
+@end quotation
+@end deftypefun
+
+@c page
 @node version
 @chapter Version functions
 
@@ -239,6 +259,56 @@ number.
 
 @deftypefun int ccsemver_version_interface_age (void)
 Return an integer representing the library interface current age.
+@end deftypefun
+
+@c page
+@node conditions
+@chapter Exceptional condition objects
+
+
+@menu
+* conditions parser::           Parser error.
+@end menu
+
+@c page
+@node conditions parser
+@section Parser error
+
+
+The @dfn{parser exceptional--condition object} has the purpose of describing an exceptional
+condition caused by attempting to parse an invalid input string.
+
+There should be only one @emph{parser error} condition object: the one predefined by
+@value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_error_t
+Structure type representing the descriptor for @emph{parser error} condition objects.  This
+descriptor has @objtype{cce_descriptor_runtime_error_t} as parent descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_error_t
+Structure type representing an @emph{parser error} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_error (ccsemver_condition_parser_error_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_error_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_error (void)
+Return a pointer to the statically allocated structure representing the single @emph{parser error}
+condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_error (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{parser error} condition object; otherwise return @cfalse{}.
 @end deftypefun
 
 @c page

@@ -108,6 +108,8 @@ int test_range_fwrite(void) {
 }
 
 int main(void) {
+  ccsemver_init();
+
   if (test_id_fwrite()) {
     return EXIT_FAILURE;
   }

@@ -1197,6 +1197,8 @@ doc_example_ranges_4_2 (void)
 int
 main (void)
 {
+  ccsemver_init();
+
   doc_example_identifiers_1_1();
   doc_example_identifiers_1_2();
   doc_example_identifiers_2_1();

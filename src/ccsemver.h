@@ -103,6 +103,14 @@ extern "C" {
 
 
 /** --------------------------------------------------------------------
+ ** Initialisation.
+ ** ----------------------------------------------------------------- */
+
+ccsemver_decl void ccsemver_init (void)
+  __attribute__((__constructor__));
+
+
+/** --------------------------------------------------------------------
  ** Version functions.
  ** ----------------------------------------------------------------- */
 
@@ -113,10 +121,28 @@ ccsemver_decl int		ccsemver_version_interface_age		(void);
 
 
 /** --------------------------------------------------------------------
- ** Preprocessor constants.
+ ** Condition objects: parser error.
  ** ----------------------------------------------------------------- */
 
-#define CCSEMVER_NUM_X	((long)(-1))
+typedef struct ccsemver_descriptor_parser_error_t	ccsemver_descriptor_parser_error_t;
+typedef struct ccsemver_condition_parser_error_t	ccsemver_condition_parser_error_t;
+
+struct ccsemver_descriptor_parser_error_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_error_t {
+  cce_condition_runtime_error_t		runtime_error;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_error (ccsemver_condition_parser_error_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_error (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
@@ -166,6 +192,8 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
 /** --------------------------------------------------------------------
  ** Number parsers.
  ** ----------------------------------------------------------------- */
+
+#define CCSEMVER_NUM_X	((long)(-1))
 
 ccsemver_decl char ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
   __attribute__((nonnull(1,2,4),leaf));

@@ -309,6 +309,12 @@
 @code{false}
 @end macro
 
+@c ------------------------------------------------------------
+
+@macro objtype{NAME}
+@code{\NAME\}
+@end macro
+
 @c page
 @c ------------------------------------------------------------
 @c Macros for references to external documents.

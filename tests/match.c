@@ -71,6 +71,8 @@ int test_match(char expected, const char *ccsemver_str, size_t ccsemver_len, con
 }
 
 int main(void) {
+  ccsemver_init();
+
   if (test_match(1, STRNSIZE("v1.2.3"), STRNSIZE("1.2.3"))) {
     return EXIT_FAILURE;
   }

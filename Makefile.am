@@ -38,6 +38,7 @@ libccsemver_la_SOURCES	= \
 	src/ccsemver.h			\
 	src/ccsemver-internals.h	\
 	src/ccsemver-version.c		\
+	src/ccsemver-conditions.c	\
 	src/ccsemver-memory.c		\
 	src/ccsemver-comp.c		\
 	src/ccsemver-core.c		\
