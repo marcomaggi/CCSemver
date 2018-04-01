@@ -1602,14 +1602,13 @@ stores the value @code{CCSEMVER_NUM_X} in the variable referenced by @var{nump}.
 The following example code parses a numeric component:
 
 @example
-char const      input_buf[] = "123";
+char const *    input_str = "123";
+size_t          input_len = strlen(input_str);
 long            num;
 size_t          input_off = 0;
 char            rv;
 
-rv = ccsemver_num_read(&num,
-                       input_buf, strlen(input_buf),
-                       &input_off);
+rv = ccsemver_num_read(&num, input_str, input_len, &input_off);
 if (0 == rv) @{
   printf("num=%ld\n", num);
 @}
