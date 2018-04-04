@@ -1704,12 +1704,28 @@ The return values of this function are @strong{invalid} if one of the arguments 
 @chapter Parsing identifiers
 
 
-In the context of @value{PACKAGE}'s parsing functions, identifiers are
-@ascii{} strings holding: alphanumeric characters (according to the
-standard function @cfunc{isalnum}); dash characters; dot characters.
-Dot characters are interpreted as separators between components.
+In the context of @value{PACKAGE}'s parsing functions, identifiers are @ascii{} strings holding:
+alphanumeric characters (according to the standard function @cfunc{isalnum}); dash characters; dot
+characters.  Dot characters are interpreted as separators between components; a plus character is
+interpreted as ending character for an identifier.
 
-The identifiers @api{} does @strong{not} duplicate the input strings.
+The semantic version string:
+
+@example
+1.2.3-alpha.7+x86-64
+@end example
+
+@noindent
+contains the identifier:
+
+@example
+alpha.7
+@end example
+
+@noindent
+which is represented as a linked list of two instances of @objtype{ccsemver_id_t}; the first
+instance references the identifier component @samp{alpha}; the second instance references the
+identifier component @samp{7}.
 
 Usually we do @strong{not} need to use the identifiers parser directly.
 
@@ -1725,48 +1741,43 @@ Usually we do @strong{not} need to use the identifiers parser directly.
 @section Type definitions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftp {Struct Typedef} ccsemver_id_t
-Type of data structures representing a single component in a parsed
-identifier; every instance of this structure is a node in a
-simply--linked list.  Instances of this structure are initialised with
-@cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.  Instances of this
-structure are finalised with @cfunc{ccsemver_id_dtor}.
+Type of data structures representing a single component in a parsed identifier; every instance of
+this structure is a node in a simply--linked list.  The identifiers @api{} does @strong{not}
+duplicate the input strings.  Instances of this structure are initialised with
+@cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.  Instances of this structure are finalised
+with @cfunc{ccsemver_id_dtor}.
 
 The structure has the following public fields:
 
 @table @code
 @item bool numeric
-A boolean value: @ctrue{} if the this component is numeric; @cfalse{} if
-this component is alphabetic.
+A boolean value: @ctrue{} if the this component is numeric; @cfalse{} if this component is
+alphabetic.
 
 @item long num
-If this component is numeric: this field holds its numeric
-representation.  Otherwise this field holds a meaningless value.
+If this component is numeric: this field holds its numeric representation.  Otherwise this field
+holds a meaningless value.
 
 @item size_t len
-The number of characters in the input string that where parsed to form
-this component.
+The number of characters in the input string that where parsed to form this component.
 
 @item const char * raw
-Pointer to the character in the input string representing the first
-character of this component.  This pointer is valid as long as the input
-string handed to @cfunc{ccsemver_id_read} is not mutated.
+Pointer to the character in the input string representing the first character of this component.
+This pointer is valid as long as the input string handed to @cfunc{ccsemver_id_read} is not mutated.
 
 @item ccsemver_id_t * next
-Pointer to the next node in the linked list; @cnull{} if this structure
-is the last node.
+Pointer to the next node in the linked list; @cnull{} if this structure is the last node.
 @end table
 @end deftp
 
 
 @deftypefun void ccsemver_id_ctor (ccsemver_id_t * @var{idp})
-Initialise to empty an already allocated data structure representing a
-parsed identifier.  Every call to this function must be matched by a
-call to @cfunc{ccsemver_id_dtor}:
+Initialise to empty an already allocated data structure representing a parsed identifier.  Every
+call to this function must be matched by a call to @cfunc{ccsemver_id_dtor}:
 
 @example
 ccsemver_id_t     id;
@@ -1781,12 +1792,11 @@ ccsemver_id_dtor(&id);
 
 
 @deftypefun void ccsemver_id_dtor(ccsemver_id_t * @var{idp})
-Finalise to empty a data structure representing a parsed identifier;
-calls to this function must match a previous call to
-@cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.
+Finalise to empty a data structure representing a parsed identifier; calls to this function must
+match a previous call to @cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.
 
-All the resources associated to @var{idp} are released, but the
-structure itself.  The following code is correct:
+All the resources associated to @var{idp} are released, but the structure itself.  The following
+code is correct:
 
 @example
 ccsemver_id_t     id;
@@ -1822,49 +1832,39 @@ free(idp);
 @section Parsing from a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftypefun char ccsemver_id_read (ccsemver_id_t * @var{idp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold an
-identifier.  When successful: the return value is @code{0}.  If an error
-occurs: the return value is @code{1}.
+Parse an input string in @ascii{} format which is meant to hold an identifier.  When successful: the
+return value is @code{0}.  If an error occurs: the return value is @code{1}.
 
-The results of parsing are stored in the already allocated structure
-referenced by @var{idp}; the structure is first initialised with
-@cfunc{ccsemver_id_ctor}.
+The results of parsing are stored in the already allocated structure referenced by @var{idp}; the
+structure is first initialised with @cfunc{ccsemver_id_ctor}.
 
-In both the successful and unsuccessful cases: every call to this
-function must be matched by the application of @cfunc{ccsemver_id_dtor} to
-@var{idp}.
+In both the successful and unsuccessful cases: every call to this function must be matched by the
+application of @cfunc{ccsemver_id_dtor} to @var{idp}.
 
-The input string is referenced by @var{input_buf}; the length of the
-input string is @var{input_len} characters.  The argument
-@var{input_offp} is both an input and output parameter:
+The input string is referenced by @var{input_buf}; the length of the input string is @var{input_len}
+characters.  The argument @var{input_offp} is both an input and output parameter:
 
 @itemize
 @item
-Upon entering the function: the offset of the first character to parse
-in @var{input_buf} is acquired from the variable referenced by
-@var{input_offp}.
+Upon entering the function: the offset of the first character to parse in @var{input_buf} is
+acquired from the variable referenced by @var{input_offp}.
 
 @item
-When the function returns successfully: the offset of the first
-non--parsed character is stored in the variable referenced by
-@var{input_offp}; further parsing operations can use such value as
-input.
+When the function returns successfully: the offset of the first non--parsed character is stored in
+the variable referenced by @var{input_offp}; further parsing operations can use such value as input.
 
 @item
-When the function returns unsuccessfully: the value stored in the
-variable is invalid.
+When the function returns unsuccessfully: the value stored in the variable is invalid.
 @end itemize
 
-If the string is empty (@var{input_len} is zero): the function returns
-unsuccessfully.
+If the string is empty (@var{input_len} is zero): the function returns unsuccessfully.
 
-Internally, this function allocates memory with @cfunc{malloc}; if
-memory allocation fails: the return value is @code{1}.
+Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
+return value is @code{1}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1927,13 +1927,14 @@ numeric?=0, num=0, len=5, raw=alpha, next=(nil)
 
 @subsubheading Example: parsing a compound identifier
 
+
 The following example parses the compound identifier @samp{1.2.3-alpha.7}:
 
 @example
-static const char     input_str[] = "1.2.3-alpha.7";
-ccsemver_id_t   id;
-size_t        offset = 0;
-char          rv;
+const char     input_str[] = "1.2.3-alpha.7";
+ccsemver_id_t  id;
+size_t         offset = 6;
+char           rv;
 
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
@@ -1949,24 +1950,22 @@ ccsemver_id_dtor(&id);
 and it prints:
 
 @example
-numeric?=1, num=1, len=1, raw=1.2.3-alpha.7
-numeric?=1, num=2, len=1, raw=2.3-alpha.7
-numeric?=0, num=0, len=7, raw=3-alpha.7
+numeric?=0, num=0, len=5, raw=alpha.7
 numeric?=1, num=7, len=1, raw=7
 @end example
 
 @c ------------------------------------------------------------------------
 
-@subsubheading Example: parsing a compound identifier with build metadata
+@subsubheading Example: parsing a compound identifier with appended build metadata
 
-The following example parses the compound identifier
-@samp{1.2.3-alpha.7+x86-64}:
+
+The following example parses the compound identifier @samp{1.2.3-alpha.7+x86-64}:
 
 @example
-static const char     input_str[] = "1.2.3-alpha.7+x86-64";
-ccsemver_id_t   id;
-size_t        offset = 0;
-char          rv;
+const char     input_str[] = "1.2.3-alpha.7+x86-64";
+ccsemver_id_t  id;
+size_t         offset = 6;
+char           rv;
 
 rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
 if (0 == rv) @{
@@ -1982,11 +1981,13 @@ ccsemver_id_dtor(&id);
 and it prints:
 
 @example
-numeric?=1, num=1, len=1, raw=1.2.3-alpha.7+x86-64
-numeric?=1, num=2, len=1, raw=2.3-alpha.7+x86-64
-numeric?=0, num=0, len=7, raw=3-alpha.7+x86-64
+numeric?=0, num=0, len=5, raw=alpha.7+x86-64
 numeric?=1, num=7, len=1, raw=7+x86-64
 @end example
+
+@noindent
+notice how parsing the identifier stops at the character @samp{+}, which delimits the beginning of
+the build metadata.
 
 @c page
 @node identifiers writing

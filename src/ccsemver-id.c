@@ -75,17 +75,17 @@ ccsemver_id_dtor (ccsemver_id_t * self)
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * offset)
+ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len, size_t * input_offp)
 {
 #undef NEXT_CHAR
-#define NEXT_CHAR		str[*offset]
+#define NEXT_CHAR		input_str[*input_offp]
   size_t	i       = 0;
   bool		is_zero = false;
 
   ccsemver_id_ctor(self);
   for (;
-       (*offset < len) && (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR));
-       ++i, ++(*offset)) {
+       (*input_offp < input_len) && (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR));
+       ++i, ++(*input_offp)) {
     if (!isdigit(NEXT_CHAR)) {
       is_zero       = false;
       self->numeric = false;
@@ -98,7 +98,7 @@ ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * o
     }
   }
 /*
-  while (*offset < len) {
+  while (*input_offp < input_len) {
     if (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR)) {
       if (!isdigit(NEXT_CHAR)) {
         is_zero       = false;
@@ -110,7 +110,7 @@ ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * o
           return 1;
         }
       }
-      ++i, ++(*offset);
+      ++i, ++(*input_offp);
       continue;
     }
     break;
@@ -119,7 +119,7 @@ ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * o
   if (!i) {
     return 1;
   }
-  self->raw = str + *offset - i;
+  self->raw = input_str + *input_offp - i;
   self->len = i;
   if (!is_zero && self->numeric) {
     /* Here we  want to parse  a raw  number, not a  "numeric component"
@@ -132,8 +132,8 @@ ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * o
     if (NULL == self->next) {
       return 1;
     } else {
-      ++(*offset);
-      return ccsemver_id_read(self->next, str, len, offset);
+      ++(*input_offp);
+      return ccsemver_id_read(self->next, input_str, input_len, input_offp);
     }
   }
   return 0;
