@@ -55,11 +55,7 @@ ccsemver_id_ctor (ccsemver_id_t *self)
   self->next	= NULL;
   self->len	= 0;
   self->raw	= NULL;
-  /* This zero  value is  to make the  code a little  bit easier  in the
-     function "ccsemver_id_read()". */
   self->num	= 0;
-  /* This true  value is  to make the  code a little  bit easier  in the
-     function "ccsemver_id_read()". */
   self->numeric	= true;
 }
 
@@ -90,8 +86,9 @@ ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len
   bool		is_zero       = false;
 
   ccsemver_id_ctor(self);
-  /* Remember that, upon arriving here:  "self->numeric" is set to true;
-     "self->num" is set to zero. */
+
+  self->num	= 0;
+  self->numeric	= true;
   for (;
        (*input_offp < input_len) && VALID_CHAR;
        ++component_len, ++(*input_offp)) {
