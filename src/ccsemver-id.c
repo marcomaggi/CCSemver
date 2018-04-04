@@ -60,9 +60,9 @@ ccsemver_id_ctor (ccsemver_id_t *self)
 }
 
 void
-ccsemver_id_dtor (ccsemver_id_t *self)
+ccsemver_id_dtor (ccsemver_id_t * self)
 {
-  if (self && self->next) {
+  if (self->next) {
     ccsemver_id_dtor(self->next);
     free(self->next);
     self->next = NULL;
@@ -75,29 +75,47 @@ ccsemver_id_dtor (ccsemver_id_t *self)
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
+ccsemver_id_read (ccsemver_id_t * self, char const * str, size_t len, size_t * offset)
 {
-  size_t	i = 0;
+#undef NEXT_CHAR
+#define NEXT_CHAR		str[*offset]
+  size_t	i       = 0;
   bool		is_zero = false;
 
   ccsemver_id_ctor(self);
+  for (;
+       (*offset < len) && (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR));
+       ++i, ++(*offset)) {
+    if (!isdigit(NEXT_CHAR)) {
+      is_zero       = false;
+      self->numeric = false;
+    } else {
+      if (i == 0) {
+	is_zero = ('0' == NEXT_CHAR);
+      } else if (is_zero) {
+	return 1;
+      }
+    }
+  }
+/*
   while (*offset < len) {
-    if (isalnum(str[*offset]) || ('-' == str[*offset])) {
-      if (!isdigit(str[*offset])) {
-        is_zero = false;
+    if (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR)) {
+      if (!isdigit(NEXT_CHAR)) {
+        is_zero       = false;
         self->numeric = false;
       } else {
         if (i == 0) {
-          is_zero = ('0' == str[*offset]);
+          is_zero = ('0' == NEXT_CHAR);
         } else if (is_zero) {
           return 1;
         }
       }
-      ++i, ++*offset;
+      ++i, ++(*offset);
       continue;
     }
     break;
   }
+*/
   if (!i) {
     return 1;
   }
@@ -105,16 +123,18 @@ ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offs
   self->len = i;
   if (!is_zero && self->numeric) {
     /* Here we  want to parse  a raw  number, not a  "numeric component"
-       with "x", "X" or "*" elements. */
-    self->num = strtoul(self->raw, NULL, 10);
+       with "x",  "X" or  "*" elements.  So  we use  "strtol()" directly
+       rather than "ccsemver_num_read()". */
+    self->num = strtol(self->raw, NULL, 10);
   }
-  if (str[*offset] == '.') {
+  if ('.' == NEXT_CHAR) {
     self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
-    if (self->next == NULL) {
+    if (NULL == self->next) {
       return 1;
+    } else {
+      ++(*offset);
+      return ccsemver_id_read(self->next, str, len, offset);
     }
-    ++*offset;
-    return ccsemver_id_read(self->next, str, len, offset);
   }
   return 0;
 }
