@@ -72,29 +72,57 @@ ccsemver_dtor (ccsemver_t * self)
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_read (ccsemver_t * self, char const * str, size_t len, size_t * offset)
+ccsemver_read (ccsemver_t * self, char const * input_str, size_t input_len, size_t * input_offp)
 {
-  if (*offset < len) {
+  if (*input_offp < input_len) {
     ccsemver_ctor(self);
-    self->raw = str + *offset;
-    if (str[*offset] == 'v') {
-      ++*offset;
+    self->raw = input_str + *input_offp;
+
+    /* Skip the initial "v" character, if any. */
+    if ('v' == input_str[*input_offp]) {
+      ++(*input_offp);
     }
-    if (ccsemver_num_parse(&self->major, str, len, offset) || self->major == CCSEMVER_NUM_X
-	|| *offset >= len || str[*offset] != '.'
-	|| ccsemver_num_parse(&self->minor, str, len, (++*offset, offset)) || self->minor == CCSEMVER_NUM_X
-	|| *offset >= len || str[*offset] != '.'
-	|| ccsemver_num_parse(&self->patch, str, len, (++*offset, offset)) || self->patch == CCSEMVER_NUM_X
-	|| (str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset)))
-	|| (str[*offset] == '+' && ccsemver_id_read(&self->build, str, len, (++*offset, offset)))) {
-      self->len = str + *offset - self->raw;
+
+    if (ccsemver_num_parse(&self->major, input_str, input_len, input_offp) || self->major == CCSEMVER_NUM_X
+	|| *input_offp >= input_len || input_str[*input_offp] != '.'
+	|| ccsemver_num_parse(&self->minor, input_str, input_len, (++*input_offp, input_offp)) || self->minor == CCSEMVER_NUM_X
+	|| *input_offp >= input_len || input_str[*input_offp] != '.'
+	|| ccsemver_num_parse(&self->patch, input_str, input_len, (++*input_offp, input_offp)) || self->patch == CCSEMVER_NUM_X
+	|| (input_str[*input_offp] == '-' && ccsemver_id_read(&self->prerelease, input_str, input_len, (++*input_offp, input_offp)))
+	|| (input_str[*input_offp] == '+' && ccsemver_id_read(&self->build, input_str, input_len, (++*input_offp, input_offp)))) {
+      self->len = input_str + *input_offp - self->raw;
       return 1;
     }
-    self->len = str + *offset - self->raw;
+    self->len = input_str + *input_offp - self->raw;
     return 0;
   }
   return 1;
 }
+
+#if 0
+{
+  if (*input_offp < input_len) {
+    ccsemver_ctor(self);
+    self->raw = input_str + *input_offp;
+    if (input_str[*input_offp] == 'v') {
+      ++*input_offp;
+    }
+    if (ccsemver_num_parse(&self->major, input_str, input_len, input_offp) || self->major == CCSEMVER_NUM_X
+	|| *input_offp >= input_len || input_str[*input_offp] != '.'
+	|| ccsemver_num_parse(&self->minor, input_str, input_len, (++*input_offp, input_offp)) || self->minor == CCSEMVER_NUM_X
+	|| *input_offp >= input_len || input_str[*input_offp] != '.'
+	|| ccsemver_num_parse(&self->patch, input_str, input_len, (++*input_offp, input_offp)) || self->patch == CCSEMVER_NUM_X
+	|| (input_str[*input_offp] == '-' && ccsemver_id_read(&self->prerelease, input_str, input_len, (++*input_offp, input_offp)))
+	|| (input_str[*input_offp] == '+' && ccsemver_id_read(&self->build, input_str, input_len, (++*input_offp, input_offp)))) {
+      self->len = input_str + *input_offp - self->raw;
+      return 1;
+    }
+    self->len = input_str + *input_offp - self->raw;
+    return 0;
+  }
+  return 1;
+}
+#endif
 
 
 /** --------------------------------------------------------------------
