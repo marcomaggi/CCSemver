@@ -90,22 +90,49 @@ int main(void) {
   if (test_read("1.2.3-al-pha.2+77.2", STRNSIZE("1.2.3-al-pha.2+77.2"))) {
     return EXIT_FAILURE;
   }
+
+  /* Bad because empty string. */
   if (test_read("", STRNSIZE("")) == 0) {
     return EXIT_FAILURE;
   }
+  /* Bad because double starting "v". */
   if (test_read("", STRNSIZE("vv1.2.3")) == 0) {
     return EXIT_FAILURE;
   }
+  /* Bad because missing minor number and patch level number. */
+  if (test_read("", STRNSIZE("v1")) == 0) {
+    return EXIT_FAILURE;
+  }
+  /* Bad because missing patch level number. */
   if (test_read("", STRNSIZE("v1.2")) == 0) {
     return EXIT_FAILURE;
   }
+  /* Bad because the patch level is not a number. */
   if (test_read("", STRNSIZE("v1.2.x")) == 0) {
     return EXIT_FAILURE;
   }
+  /* Bad because the minor number is not a number. */
+  if (test_read("", STRNSIZE("v1.x.2")) == 0) {
+    return EXIT_FAILURE;
+  }
+  /* Bad because the major number is not a number. */
+  if (test_read("", STRNSIZE("vx.1.2")) == 0) {
+    return EXIT_FAILURE;
+  }
+  /* Bad because missing identifier after the dash separator. */
   if (test_read("", STRNSIZE("v1.2.3-")) == 0) {
     return EXIT_FAILURE;
   }
+  /* Bad because an identifier component is numeric and starts with zero. */
+  if (test_read("", STRNSIZE("v1.2.3-alpha.0123")) == 0) {
+    return EXIT_FAILURE;
+  }
+  /* Bad because missing build metadata after the plus separator. */
   if (test_read("", STRNSIZE("v1.2.3+")) == 0) {
+    return EXIT_FAILURE;
+  }
+  /* Bad because missing build metadata after the plus separator. */
+  if (test_read("", STRNSIZE("v1.2.3-alpha.7+")) == 0) {
     return EXIT_FAILURE;
   }
 

@@ -198,6 +198,9 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
 ccsemver_decl char ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
   __attribute__((nonnull(1,2,4),leaf));
 
+ccsemver_decl char ccsemver_parse_number (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+  __attribute__((nonnull(1,2,4),leaf));
+
 ccsemver_decl char ccsemver_num_comp (long self, long other)
   __attribute__((leaf,const));
 

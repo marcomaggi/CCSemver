@@ -67,6 +67,16 @@ ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_
       if (isdigit(input_str[*input_offp])) {
 	char *	endptr;
 
+	/* We  have already  determined that  the first  character is  a
+	   digit, so  we know that the  return value of "strtol()"  is a
+	   positive number.
+
+	   FIXME?  Here  we are  ignoring the  possibility of  the input
+	   string overflowing  the range of  a "long" result;  we should
+	   check for "errno" after calling "strtol()".  According to the
+	   documentation:  if the  value  overflows, "strtol()"  returns
+	   LONG_MAX.   Right now  we  are accepting  LONG_MAX as  valid.
+	   (Marco Maggi; Apr 4, 2018) */
 	*nump = strtol(input_str + *input_offp, &endptr, 10);
 	*input_offp += endptr - input_str - *input_offp;
       } else {
@@ -75,6 +85,35 @@ ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_
       break;
     }
     return 0;
+  }
+}
+
+char
+ccsemver_parse_number (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+/* Parse an integer number. */
+{
+  if (*input_offp >= input_len) {
+    return 1;
+  } else {
+    if (isdigit(input_str[*input_offp])) {
+      char *	endptr;
+
+      /* We have already determined that the first character is a digit,
+	 so we  know that the return  value of "strtol()" is  a positive
+	 number.
+
+	 FIXME?   Here we  are  ignoring the  possibility  of the  input
+	 string  overflowing the  range of  a "long"  result; we  should
+	 check for  "errno" after calling "strtol()".   According to the
+	 documentation:  if  the  value  overflows,  "strtol()"  returns
+	 LONG_MAX.   Right  now  we  are accepting  LONG_MAX  as  valid.
+	 (Marco Maggi; Apr 4, 2018) */
+      *nump = strtol(input_str + *input_offp, &endptr, 10);
+      *input_offp += endptr - input_str - *input_offp;
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }
 

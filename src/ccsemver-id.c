@@ -55,7 +55,11 @@ ccsemver_id_ctor (ccsemver_id_t *self)
   self->next	= NULL;
   self->len	= 0;
   self->raw	= NULL;
+  /* This zero  value is  to make the  code a little  bit easier  in the
+     function "ccsemver_id_read()". */
   self->num	= 0;
+  /* This true  value is  to make the  code a little  bit easier  in the
+     function "ccsemver_id_read()". */
   self->numeric	= true;
 }
 
@@ -79,64 +83,80 @@ ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len
 {
 #undef NEXT_CHAR
 #define NEXT_CHAR		input_str[*input_offp]
-  size_t	i       = 0;
-  bool		is_zero = false;
+#undef VALID_CHAR
+#define VALID_CHAR		(isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR))
+  size_t	component_len = 0;
+  /* This is set to true if the input string "0". */
+  bool		is_zero       = false;
 
   ccsemver_id_ctor(self);
+  /* Remember that, upon arriving here:  "self->numeric" is set to true;
+     "self->num" is set to zero. */
   for (;
-       (*input_offp < input_len) && (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR));
-       ++i, ++(*input_offp)) {
+       (*input_offp < input_len) && VALID_CHAR;
+       ++component_len, ++(*input_offp)) {
     if (!isdigit(NEXT_CHAR)) {
       is_zero       = false;
       self->numeric = false;
     } else {
-      if (i == 0) {
+      if (0 == component_len) {
 	is_zero = ('0' == NEXT_CHAR);
       } else if (is_zero) {
+	/* We reject  identifier components  that are numeric  and start
+	   with zero, for example "0123". */
 	return 1;
       }
     }
   }
-/*
-  while (*input_offp < input_len) {
-    if (isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR)) {
-      if (!isdigit(NEXT_CHAR)) {
-        is_zero       = false;
-        self->numeric = false;
-      } else {
-        if (i == 0) {
-          is_zero = ('0' == NEXT_CHAR);
-        } else if (is_zero) {
-          return 1;
-        }
-      }
-      ++i, ++(*input_offp);
-      continue;
-    }
-    break;
-  }
-*/
-  if (!i) {
+
+  if (0 == component_len) {
+    /* If we are here: there is no identifier component at the beginning
+       of the input string. */
     return 1;
   }
-  self->raw = input_str + *input_offp - i;
-  self->len = i;
-  if (!is_zero && self->numeric) {
+
+  /* Here we know that the input string holds an identifier component of
+     length "component_len". */
+  self->raw = input_str + *input_offp - component_len;
+  self->len = component_len;
+
+  /* Only if  the identifier  component is  numeric we  convert it  to a
+     number and store it into  "self->num".  If the component represents
+     zero: we do nothing because "self->num" is already zero. */
+  if ((! is_zero) && self->numeric) {
     /* Here we  want to parse  a raw  number, not a  "numeric component"
        with "x",  "X" or  "*" elements.  So  we use  "strtol()" directly
-       rather than "ccsemver_num_read()". */
+       rather than "ccsemver_num_read()".
+
+       Also, we have already determined that the numeric string starting
+       at  "self->raw" is  a positive  number,  so the  return value  of
+       "strtol()" is a positive number.
+
+       FIXME?  Here we are ignoring  the possibility of the input string
+       overflowing the  range of  a "long" result;  we should  check for
+       "errno"   after    calling   "strtol()".    According    to   the
+       documentation:  if   the  value  overflows,   "strtol()"  returns
+       LONG_MAX.  Right now we are  accepting LONG_MAX as valid.  (Marco
+       Maggi; Apr 4, 2018)
+    */
     self->num = strtol(self->raw, NULL, 10);
   }
+
+  /* Is there another  component after this one?  If  the next character
+     is a dot: there is. */
   if ('.' == NEXT_CHAR) {
     self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
-    if (NULL == self->next) {
-      return 1;
-    } else {
+    if (self->next) {
+      /* Skip the dot. */
       ++(*input_offp);
+      /* Parse the next component. */
       return ccsemver_id_read(self->next, input_str, input_len, input_offp);
+    } else {
+      return 1;
     }
+  } else {
+    return 0;
   }
-  return 0;
 }
 
 
