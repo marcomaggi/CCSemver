@@ -312,9 +312,6 @@ ccsemver_decl void ccsemver_comp_dtor(ccsemver_comp_t *self)
 ccsemver_decl char ccsemver_comp_read(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 
-ccsemver_decl char ccsemver_and(ccsemver_comp_t *self, const char *str, size_t len)
-  __attribute__((nonnull(1,2)));
-
 ccsemver_decl char ccsemver_comp_and(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 

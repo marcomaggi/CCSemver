@@ -1,6 +1,7 @@
 /*
   Part of: CCSemver
-  Contents: public header file
+  Contents: parsing ranges and creating range objects
+
 
   This  is  free and  unencumbered  software  released into  the  public
   domain.

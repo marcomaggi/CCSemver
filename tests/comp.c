@@ -60,37 +60,6 @@ int test_read(const char *expected, const char *str, size_t len) {
   return 0;
 }
 
-int test_and(const char *expected, const char *base_str, size_t base_len, const char *str, size_t len) {
-  size_t offset = 0;
-  unsigned slen;
-  char buffer[1024];
-  ccsemver_comp_t comp = {0};
-
-  printf("test and: `%.*s`", (int) base_len, base_str);
-  if (ccsemver_comp_read(&comp, base_str, base_len, &offset)) {
-    puts(" \tcouldn't parse base");
-    return 1;
-  }
-  if (offset != base_len) {
-    puts(" \tcouldn't parse fully base");
-    return 1;
-  }
-  if (ccsemver_and(&comp, str, len)) {
-    puts(" \tand failed");
-    return 1;
-  }
-  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
-  printf(" \t=> \t`%.*s`", slen, buffer);
-  if (memcmp(expected, buffer, (size_t) slen > base_len + len + 1 ? slen : base_len + len + 1) != 0) {
-    printf(" != `%s`\n", expected);
-    ccsemver_comp_dtor(&comp);
-    return 1;
-  }
-  printf(" == `%s`\n", expected);
-  ccsemver_comp_dtor(&comp);
-  return 0;
-}
-
 int test_comp_and(const char *expected, const char *base_str, size_t base_len, const char *str, size_t len) {
   size_t offset = 0;
   unsigned slen;
@@ -290,29 +259,6 @@ int main(void) {
   }
 
   puts("\nand:");
-  if (test_and(">=0.0.0 >=0.0.3 <0.0.4", STRNSIZE("*"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and(">=1.0.0 <2.0.0 >=0.0.3 <0.0.4", STRNSIZE("1.x"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and(">=1.2.0 <1.3.0 >=0.0.3 <0.0.4", STRNSIZE("1.2.x"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and(">=1.2.0 <1.3.0 >=1.2.0 <1.3.0 >=0.0.3 <0.0.4", STRNSIZE("1.2 1.2.x"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and(">=1.0.0 <2.0.0 >=0.0.3 <0.0.4", STRNSIZE("1"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and(">=1.2.0 <1.3.0 >=0.0.3 <0.0.4", STRNSIZE("1.2"), STRNSIZE("^0.0.3"))) {
-    return EXIT_FAILURE;
-  }
-  if (test_and("", STRNSIZE("1.2"), STRNSIZE("")) == 0) {
-    return EXIT_FAILURE;
-  }
-
-  puts("\nand variant:");
   if (test_comp_and(">=0.0.0 >=0.0.3 <0.0.4", STRNSIZE("*"), STRNSIZE("^0.0.3"))) {
     return EXIT_FAILURE;
   }
