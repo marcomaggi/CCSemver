@@ -97,7 +97,8 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
       if (parse_caret(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      return comp_parse_next_if_any(cmp->next, input_str, input_len, input_offp);
+      cmp = cmp->next;
+      break;
 
     case '~':
       /* Skip the tilde. */
@@ -107,7 +108,8 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
       if (parse_tilde(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      return comp_parse_next_if_any(cmp->next, input_str, input_len, input_offp);
+      cmp = cmp->next;
+      break;
 
     case '>':
       /* Skip the greater-than. */
@@ -128,7 +130,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 	}
 	ccsemver_xrevert(&cmp->version);
       }
-      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
+      break;
 
     case '<':
       /* Skip the less-than. */
@@ -149,7 +151,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 	}
 	ccsemver_xrevert(&cmp->version);
       }
-      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
+      break;
 
     case '=':
       /* Skip the equal. */
@@ -163,7 +165,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 	}
 	ccsemver_xrevert(&cmp->version);
       }
-      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
+      break;
 
     default:
       /* Here  we assume  the comparator  is either  a straight  partial
@@ -204,9 +206,12 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 	  return 1;
 	}
       }
-
-      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
+      break;
     }
+
+    /* Upon  arriving   here  CMP  is   already  filled  with   a  valid
+       comparator. */
+    return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
   } else {
     return 1;
   }
@@ -215,7 +220,8 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 
 static char
 comp_parse_next_if_any (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
-/* Either we are done or we parse the next comparator. */
+/* Either we  are done or we  parse the next comparator.   Upon entering
+   this function CMP is already filled with a valid comparator. */
 {
   /* If  input  continues  with  one  space followed  by  at  least  one
      character that is neither a space nor a vertical bar... */
