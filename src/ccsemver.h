@@ -334,10 +334,10 @@ struct ccsemver_range_t {
   ccsemver_comp_t	comp;
 };
 
-ccsemver_decl void ccsemver_range_dtor(ccsemver_range_t *self)
+ccsemver_decl void ccsemver_range_dtor (ccsemver_range_t *self)
   __attribute__((nonnull(1)));
 
-ccsemver_decl char ccsemver_range_read(ccsemver_range_t *self, const char *str, size_t len, size_t *offset)
+ccsemver_decl char ccsemver_range_read (ccsemver_range_t *self, const char *str, size_t len, size_t *offset)
   __attribute__((nonnull(1,2,4)));
 
 ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char *buffer, size_t len)
@@ -346,15 +346,25 @@ ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char *bu
 ccsemver_decl char ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
   __attribute__((nonnull(1,2)));
 
-ccsemver_decl size_t ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream);
+
+/** --------------------------------------------------------------------
+ ** Input/output.
+ ** ----------------------------------------------------------------- */
 
-ccsemver_decl size_t ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream);
+ccsemver_decl size_t ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream);
+ccsemver_decl size_t ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream);
+ccsemver_decl size_t ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl const char * ccsemver_op_string (ccsemver_op_t op);
+ccsemver_decl size_t ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
+  __attribute__((__nonnull__(1,2)));
+
+ccsemver_decl char const * ccsemver_op_string (ccsemver_op_t op)
+  __attribute__((__returns_nonnull__));
 
 
 /** --------------------------------------------------------------------
