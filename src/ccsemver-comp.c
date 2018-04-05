@@ -78,9 +78,15 @@ static char comp_parse_next_if_any (ccsemver_comp_t * cmp, char const * input_st
 
 char
 ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
-/* Parse a  comparator, which is either  standalone or part of  a range.
-   Comparators  in  a  range  are  separated by  white  spaces  or  "||"
-   operators: here we handle a vertical bar as an ending separator. */
+/* Parse a comparator, which is either standalone or part of a range.
+
+   Compound  comparators  are  simple  comparators  separated  by  white
+   spaces.  Here  we parse all  the simple comparators appending  to the
+   linked list CMP.
+
+   Comparators  in a  range are  separated  by "||"  operators: here  we
+   handle  a  vertical bar  as  an  ending  separator, we  stop  parsing
+   there. */
 {
   ccsemver_comp_ctor(cmp);
   if (0 == input_len) {
@@ -263,14 +269,27 @@ ccsemver_xrevert (ccsemver_t * sv)
 
 static ccsemver_comp_t *
 expand_straight_or_xrange_comp (ccsemver_comp_t * cmp)
-/* */
+/* Having already parsed a comparator into the struct referenced by CMP:
+ * we handle it as a straight partial version number, like:
+ *
+ *	'1.2.3'
+ *	'1.2'
+ *
+ * or an X-range like:
+ *
+ *	'1.x'
+ *	'1.2.*'
+ */
 {
+  /* If it is an X-range like: X.2.3 ... */
   if (CCSEMVER_NUM_X == cmp->version.major) {
     cmp->op = CCSEMVER_OP_GE;
     ccsemver_xrevert(&cmp->version);
     return cmp;
   }
-  if (CCSEMVER_NUM_X == cmp->version.minor) {
+
+  /* If it is an X-range like: 1.X.3 ... */
+  else if (CCSEMVER_NUM_X == cmp->version.minor) {
     ccsemver_xrevert(&cmp->version);
     cmp->op = CCSEMVER_OP_GE;
     cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
@@ -283,7 +302,9 @@ expand_straight_or_xrange_comp (ccsemver_comp_t * cmp)
     ++cmp->next->version.major;
     return cmp->next;
   }
-  if (CCSEMVER_NUM_X == cmp->version.patch) {
+
+  /* If it is an X-range like: 1.2.X ... */
+  else if (CCSEMVER_NUM_X == cmp->version.patch) {
     ccsemver_xrevert(&cmp->version);
     cmp->op = CCSEMVER_OP_GE;
     cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
@@ -295,7 +316,10 @@ expand_straight_or_xrange_comp (ccsemver_comp_t * cmp)
     cmp->next->version = cmp->version;
     ++cmp->next->version.minor;
     return cmp->next;
-  } else {
+  }
+
+  /* If it is a straight semantic version... */
+  else {
     cmp->op = CCSEMVER_OP_EQ;
     return cmp;
   }
@@ -562,6 +586,9 @@ parse_hyphen_tail (ccsemver_comp_t * cmp, char const * input_str, size_t input_l
 
 char
 ccsemver_comp_and (ccsemver_comp_t * cmp, char const * str, size_t len, size_t * offset)
+/* Given an already built and  initalised comparator, referenced by CMP:
+   read a new comparator from the input and append it to the linked list
+   CMP. */
 {
   if (0 < len) {
     ccsemver_comp_t *	new;
