@@ -82,7 +82,9 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
   while (*input_offp < input_len) {
     switch (input_str[*input_offp]) {
     case '^':
+      /* Skip the caret. */
       ++(*input_offp);
+
       if (parse_caret(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
@@ -90,6 +92,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
       goto next;
 
     case '~':
+      /* Skip the tilde. */
       ++(*input_offp);
       if (parse_tilde(cmp, input_str, input_len, input_offp)) {
 	return 1;
@@ -312,63 +315,58 @@ parse_partial_semver (ccsemver_t * sv, char const * input_str, size_t input_len,
 
 
 static char
-parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+parse_caret (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
+/* Caret ranges are such that:
+ *
+ *	'^1.2.3' := '>=1.2.3 <2.0.0'
+ *	'^0.2.3' := '>=0.2.3 <0.3.0'
+ *	'^0.0.3' := '>=0.0.3 <0.0.4'
+ *
+ * Upon arriving here we have already consumed the '^' from the input.
+ *
+ * A single caret range is expanded into two comparators: a greater than
+ * or  equal to  (GE); a  less  than (LT).   We have  to initialise  the
+ * comparator referenced  by CMP with  the GE specification; we  have to
+ * build and  initialise a new  comparator referenced by  CMP->NEXT with
+ * the LT specification.
+ */
 {
-  ccsemver_t partial;
-
-  if (parse_partial_semver(&partial, str, len, offset)) {
+  /* Right  after the  caret character  we expect  a, possibly  partial,
+     semantic version specification. */
+  if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
     return 1;
   }
-  self->op = CCSEMVER_OP_GE;
-  ccsemver_xrevert(&self->version);
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  if (CCSEMVER_NUM_X == partial.minor) {
-    self->next->version.major = partial.major + 1;
-  } else if (CCSEMVER_NUM_X == partial.patch) {
-    self->next->version.major = partial.major;
-    self->next->version.minor = partial.minor + 1;
-  } else {
-    self->next->op = CCSEMVER_OP_LE;
-    self->next->version = partial;
+
+  /* Initialise the GT comparator. */
+  {
+    ccsemver_xrevert(&cmp->version);
+    cmp->op = CCSEMVER_OP_GE;
   }
 
-  return 0;
-}
+  /* Build the new LT comparator. */
+  {
+    ccsemver_t	ltsv = cmp->version;
 
-
-static char
-parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
-{
-  ccsemver_t	partial;
+    if (ltsv.major != 0) {
+      ++ltsv.major;
+      ltsv.minor = ltsv.patch = 0;
+    } else if (ltsv.minor != 0) {
+      ++ltsv.minor;
+      ltsv.patch = 0;
+    } else {
+      ++ltsv.patch;
+    }
 
-  if (parse_partial_semver(&self->version, str, len, offset)) {
-    return 1;
+    cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (cmp->next) {
+      ccsemver_comp_ctor(cmp->next);
+      cmp->next->op      = CCSEMVER_OP_LT;
+      cmp->next->version = ltsv;
+      return 0;
+    } else {
+      return 1;
+    }
   }
-  ccsemver_xrevert(&self->version);
-  self->op = CCSEMVER_OP_GE;
-  partial = self->version;
-  if (partial.major != 0) {
-    ++partial.major;
-    partial.minor = partial.patch = 0;
-  } else if (partial.minor != 0) {
-    ++partial.minor;
-    partial.patch = 0;
-  } else {
-    ++partial.patch;
-  }
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  self->next->version = partial;
-  return 0;
 }
 
 
@@ -397,6 +395,36 @@ parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offs
   ccsemver_comp_ctor(self->next);
   self->next->op = CCSEMVER_OP_LT;
   self->next->version = partial;
+  return 0;
+}
+
+
+static char
+parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+{
+  ccsemver_t partial;
+
+  if (parse_partial_semver(&partial, str, len, offset)) {
+    return 1;
+  }
+  self->op = CCSEMVER_OP_GE;
+  ccsemver_xrevert(&self->version);
+  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (self->next == NULL) {
+    return 1;
+  }
+  ccsemver_comp_ctor(self->next);
+  self->next->op = CCSEMVER_OP_LT;
+  if (CCSEMVER_NUM_X == partial.minor) {
+    self->next->version.major = partial.major + 1;
+  } else if (CCSEMVER_NUM_X == partial.patch) {
+    self->next->version.major = partial.major;
+    self->next->version.minor = partial.minor + 1;
+  } else {
+    self->next->op = CCSEMVER_OP_LE;
+    self->next->version = partial;
+  }
+
   return 0;
 }
 
