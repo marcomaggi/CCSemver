@@ -68,117 +68,129 @@ ccsemver_comp_dtor (ccsemver_comp_t * self)
  ** Parser.
  ** ----------------------------------------------------------------- */
 
-static void ccsemver_xrevert (ccsemver_t * semver);
-static ccsemver_comp_t * ccsemver_xconvert (ccsemver_comp_t * self);
-static char parse_partial (ccsemver_t * self, char const * str, size_t len, size_t * offset);
-static char parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
-static char parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
-static char parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
+static void ccsemver_xrevert (ccsemver_t * sv);
+static ccsemver_comp_t * ccsemver_xconvert (ccsemver_comp_t * cmp);
+static char parse_partial (ccsemver_t * sv,       char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_hiphen  (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_tilde   (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_caret   (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
 
 char
-ccsemver_comp_read (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
 {
-  ccsemver_comp_ctor(self);
-  while (*offset < len) {
-    switch (str[*offset]) {
+  ccsemver_comp_ctor(cmp);
+  while (*input_offp < input_len) {
+    switch (input_str[*input_offp]) {
     case '^':
-      ++*offset;
-      if (parse_tilde(self, str, len, offset)) {
+      ++(*input_offp);
+      if (parse_tilde(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      self = self->next;
+      cmp = cmp->next;
       goto next;
+
     case '~':
-      ++*offset;
-      if (parse_caret(self, str, len, offset)) {
+      ++(*input_offp);
+      if (parse_caret(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      self = self->next;
+      cmp = cmp->next;
       goto next;
+
     case '>':
-      ++*offset;
-      if (*offset < len && str[*offset] == '=') {
-	++*offset;
-	self->op = CCSEMVER_OP_GE;
+      ++(*input_offp);
+      if ((*input_offp < input_len) && ('=' == input_str[*input_offp])) {
+	++(*input_offp);
+	cmp->op = CCSEMVER_OP_GE;
       } else {
-	self->op = CCSEMVER_OP_GT;
+	cmp->op = CCSEMVER_OP_GT;
       }
-      if (parse_partial(&self->version, str, len, offset)) {
+      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
-      ccsemver_xrevert(&self->version);
+      ccsemver_xrevert(&cmp->version);
       goto next;
+
     case '<':
-      ++*offset;
-      if (*offset < len && str[*offset] == '=') {
-	++*offset;
-	self->op = CCSEMVER_OP_LE;
+      ++(*input_offp);
+      if ((*input_offp < input_len) && ('=' == input_str[*input_offp])) {
+	++(*input_offp);
+	cmp->op = CCSEMVER_OP_LE;
       } else {
-	self->op = CCSEMVER_OP_LT;
+	cmp->op = CCSEMVER_OP_LT;
       }
-      if (parse_partial(&self->version, str, len, offset)) {
+      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
-      ccsemver_xrevert(&self->version);
+      ccsemver_xrevert(&cmp->version);
       goto next;
+
     case '=':
-      ++*offset;
-      self->op = CCSEMVER_OP_EQ;
-      if (parse_partial(&self->version, str, len, offset)) {
+      ++(*input_offp);
+      cmp->op = CCSEMVER_OP_EQ;
+      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
-      ccsemver_xrevert(&self->version);
+      ccsemver_xrevert(&cmp->version);
       goto next;
+
     default:
       goto range;
     }
   }
 
  range:
-  if (parse_partial(&self->version, str, len, offset)) {
+  if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
     return 1;
   }
-  if (*offset < len && str[*offset] == ' '
-      && *offset + 1 < len && str[*offset + 1] == '-'
-      && *offset + 2 < len && str[*offset + 2] == ' ') {
-    *offset += 3;
-    if (parse_hiphen(self, str, len, offset)) {
+  if ((*input_offp < input_len) && input_str[*input_offp] == ' '
+      && *input_offp + 1 < input_len && input_str[*input_offp + 1] == '-'
+      && *input_offp + 2 < input_len && input_str[*input_offp + 2] == ' ') {
+    *input_offp += 3;
+    if (parse_hiphen(cmp, input_str, input_len, input_offp)) {
       return 1;
     }
-    self = self->next;
+    cmp = cmp->next;
   } else {
-    self = ccsemver_xconvert(self);
-    if (self == NULL) {
+    cmp = ccsemver_xconvert(cmp);
+    if (cmp == NULL) {
       return 1;
     }
   }
 
  next:
-  if (*offset < len && str[*offset] == ' '
-      && *offset < len + 1 && str[*offset + 1] != ' ' && str[*offset + 1] != '|') {
-    ++*offset;
-    if (*offset < len) {
-      self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-      if (self->next == NULL) {
+  /* If input continues with one space followed by a non-space and non-vertical bar... */
+  if ((*input_offp     < input_len) && input_str[*input_offp]     == ' ' &&
+      (*input_offp + 1 < input_len) && input_str[*input_offp + 1] != ' ' && input_str[*input_offp + 1] != '|') {
+    /* Skip the white space. */
+    ++(*input_offp);
+    /* There  must  be  more  input  so  that  we  can  parse  the  next
+       comparator. */
+    if (*input_offp < input_len) {
+      cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+      if (cmp->next) {
+	return ccsemver_comp_read(cmp->next, input_str, input_len, input_offp);
+      } else {
         return 1;
       }
-      return ccsemver_comp_read(self->next, str, len, offset);
+    } else {
+      return 1;
     }
-    return 1;
+  } else {
+    return 0;
   }
-  return 0;
 }
 
 
 static void
-ccsemver_xrevert (ccsemver_t * semver)
+ccsemver_xrevert (ccsemver_t * sv)
 {
-  if (CCSEMVER_NUM_X == semver->major) {
-    semver->major = semver->minor = semver->patch = 0;
-  } else if (CCSEMVER_NUM_X == semver->minor) {
-    semver->minor = semver->patch = 0;
-  } else if (CCSEMVER_NUM_X == semver->patch) {
-    semver->patch = 0;
+  if (CCSEMVER_NUM_X == sv->major) {
+    sv->major = sv->minor = sv->patch = 0;
+  } else if (CCSEMVER_NUM_X == sv->minor) {
+    sv->minor = sv->patch = 0;
+  } else if (CCSEMVER_NUM_X == sv->patch) {
+    sv->patch = 0;
   }
 }
 

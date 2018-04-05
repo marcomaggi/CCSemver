@@ -83,14 +83,6 @@ skip_blank_characters (char const * input_str, size_t input_len, size_t * input_
   }
 }
 
-__attribute__((__always_inline__,__nonnull__(1,3)))
-static inline bool
-looking_at_OR (char const * input_str, size_t input_len, size_t * input_offp)
-{
-  return ((*input_offp     < input_len)	&& ('|' == NEXT_CHAR) &&
-	  (*input_offp + 1 < input_len)	&& ('|' == input_str[*input_offp + 1]));
-}
-
 char
 ccsemver_range_read (ccsemver_range_t * self, char const * input_str, size_t input_len, size_t * input_offp)
 /* Parse a range from the input string.  A range is defined as follows:
