@@ -69,103 +69,154 @@ ccsemver_comp_dtor (ccsemver_comp_t * self)
  ** ----------------------------------------------------------------- */
 
 static void ccsemver_xrevert (ccsemver_t * sv);
-static ccsemver_comp_t * ccsemver_xconvert (ccsemver_comp_t * cmp);
-static char parse_partial_semver (ccsemver_t * sv,       char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_hiphen         (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_caret          (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_tilde          (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static ccsemver_comp_t * expand_straight_or_xrange_comp (ccsemver_comp_t * cmp);
+static char parse_partial_semver   (ccsemver_t      * sv,  char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_hyphen_tail      (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_caret            (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_tilde            (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char comp_parse_next_if_any (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
 
 char
 ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
+/* Parse a  comparator, which is either  standalone or part of  a range.
+   Comparators  in  a  range  are  separated by  white  spaces  or  "||"
+   operators: here we handle a vertical bar as an ending separator. */
 {
   ccsemver_comp_ctor(cmp);
-  while (*input_offp < input_len) {
+  if (0 == input_len) {
+    cmp->op = CCSEMVER_OP_GE;
+    return 0;
+  } else if (*input_offp < input_len) {
     switch (input_str[*input_offp]) {
+
     case '^':
       /* Skip the caret. */
       ++(*input_offp);
-
+      /* Parse the caret comparator specification and expand it into two
+	 appropriate comparators in the linked list CMP. */
       if (parse_caret(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      cmp = cmp->next;
-      goto next;
+      return comp_parse_next_if_any(cmp->next, input_str, input_len, input_offp);
 
     case '~':
       /* Skip the tilde. */
       ++(*input_offp);
+      /* Parse the tilde comparator specification and expand it into two
+	 appropriate comparators in the linked list CMP. */
       if (parse_tilde(cmp, input_str, input_len, input_offp)) {
 	return 1;
       }
-      cmp = cmp->next;
-      goto next;
+      return comp_parse_next_if_any(cmp->next, input_str, input_len, input_offp);
 
     case '>':
+      /* Skip the greater-than. */
       ++(*input_offp);
+      /* Determine if it is a ">" or ">=" comparator. */
       if ((*input_offp < input_len) && ('=' == input_str[*input_offp])) {
+	/* Skip the equal. */
 	++(*input_offp);
 	cmp->op = CCSEMVER_OP_GE;
       } else {
 	cmp->op = CCSEMVER_OP_GT;
       }
-      if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
-	return 1;
+      /* Parse the comparator specification and  expand it into a single
+	 appropriate comparator in CMP. */
+      {
+	if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
+	  return 1;
+	}
+	ccsemver_xrevert(&cmp->version);
       }
-      ccsemver_xrevert(&cmp->version);
-      goto next;
+      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
 
     case '<':
+      /* Skip the less-than. */
       ++(*input_offp);
+      /* Determine if it is a "<" or "<=" comparator. */
       if ((*input_offp < input_len) && ('=' == input_str[*input_offp])) {
+	/* Skip the equal. */
 	++(*input_offp);
 	cmp->op = CCSEMVER_OP_LE;
       } else {
 	cmp->op = CCSEMVER_OP_LT;
       }
-      if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
-	return 1;
+      /* Parse the comparator specification and  expand it into a single
+	 appropriate comparator in CMP. */
+      {
+	if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
+	  return 1;
+	}
+	ccsemver_xrevert(&cmp->version);
       }
-      ccsemver_xrevert(&cmp->version);
-      goto next;
+      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
 
     case '=':
+      /* Skip the equal. */
       ++(*input_offp);
       cmp->op = CCSEMVER_OP_EQ;
+      /* Parse the comparator specification and  expand it into a single
+	 appropriate comparator in CMP. */
+      {
+	if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
+	  return 1;
+	}
+	ccsemver_xrevert(&cmp->version);
+      }
+      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
+
+    default:
+      /* Here  we assume  the comparator  is either  a straight  partial
+       * version number, like:
+       *
+       *	'1.2.3'
+       *	'1.2'
+       *
+       * or an X-range like:
+       *
+       *	'1.x'
+       *	'1.2.*'
+       *
+       * or a hyphen range, like:
+       *
+       *	'1.2.3 - 2.3.4' := '>=1.2.3 <=2.3.4'
+       *
+       * so we start by parsing a partial semantic version specification.
+       */
       if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
-      ccsemver_xrevert(&cmp->version);
-      goto next;
+      /* If input continues with at least 3 characters being: a space, a
+	 dash, a space, then it is a hyphen range. */
+      if ((*input_offp     < input_len) && (input_str[*input_offp]     == ' ') &&
+	  (*input_offp + 1 < input_len) && (input_str[*input_offp + 1] == '-') &&
+	  (*input_offp + 2 < input_len) && (input_str[*input_offp + 2] == ' ')) {
+	/* Skip space+dash+space. */
+	*input_offp += 3;
+	if (parse_hyphen_tail(cmp, input_str, input_len, input_offp)) {
+	  return 1;
+	}
+	cmp = cmp->next;
+      } else {
+	/* It is a straight partial version number or an X-range. */
+	cmp = expand_straight_or_xrange_comp(cmp);
+	if (NULL == cmp) {
+	  return 1;
+	}
+      }
 
-    default:
-      goto range;
+      return comp_parse_next_if_any(cmp, input_str, input_len, input_offp);
     }
-  }
-
- range:
-  if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
+  } else {
     return 1;
   }
-  /* If input  continues with at  least 3  characters being: a  space, a
-     dash, a space, then ... */
-  if ((*input_offp     < input_len) && (input_str[*input_offp]     == ' ') &&
-      (*input_offp + 1 < input_len) && (input_str[*input_offp + 1] == '-') &&
-      (*input_offp + 2 < input_len) && (input_str[*input_offp + 2] == ' ')) {
-    /* Skip space+dash+space. */
-    *input_offp += 3;
-    if (parse_hiphen(cmp, input_str, input_len, input_offp)) {
-      return 1;
-    }
-    cmp = cmp->next;
-  } else {
-    cmp = ccsemver_xconvert(cmp);
-    if (NULL == cmp) {
-      return 1;
-    }
-  }
+}
 
-  /* Either we are done or we parse the next comparator. */
- next:
+
+static char
+comp_parse_next_if_any (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
+/* Either we are done or we parse the next comparator. */
+{
   /* If  input  continues  with  one  space followed  by  at  least  one
      character that is neither a space nor a vertical bar... */
   if ((*input_offp     < input_len) && input_str[*input_offp]     == ' ' &&
@@ -187,6 +238,12 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
 
 static void
 ccsemver_xrevert (ccsemver_t * sv)
+/* Normalise the version numbers in SV so that:
+ *
+ *    X.2.3	--> 0.0.0
+ *    1.X.3	--> 1.0.0
+ *    1.2.X	--> 1.2.0
+ */
 {
   if (CCSEMVER_NUM_X == sv->major) {
     sv->major = sv->minor = sv->patch = 0;
@@ -199,41 +256,43 @@ ccsemver_xrevert (ccsemver_t * sv)
 
 
 static ccsemver_comp_t *
-ccsemver_xconvert (ccsemver_comp_t * self)
+expand_straight_or_xrange_comp (ccsemver_comp_t * cmp)
+/* */
 {
-  if (CCSEMVER_NUM_X == self->version.major) {
-    self->op = CCSEMVER_OP_GE;
-    ccsemver_xrevert(&self->version);
-    return self;
+  if (CCSEMVER_NUM_X == cmp->version.major) {
+    cmp->op = CCSEMVER_OP_GE;
+    ccsemver_xrevert(&cmp->version);
+    return cmp;
   }
-  if (CCSEMVER_NUM_X == self->version.minor) {
-    ccsemver_xrevert(&self->version);
-    self->op = CCSEMVER_OP_GE;
-    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (self->next == NULL) {
+  if (CCSEMVER_NUM_X == cmp->version.minor) {
+    ccsemver_xrevert(&cmp->version);
+    cmp->op = CCSEMVER_OP_GE;
+    cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (cmp->next == NULL) {
       return NULL;
     }
-    ccsemver_comp_ctor(self->next);
-    self->next->op = CCSEMVER_OP_LT;
-    self->next->version = self->version;
-    ++self->next->version.major;
-    return self->next;
+    ccsemver_comp_ctor(cmp->next);
+    cmp->next->op = CCSEMVER_OP_LT;
+    cmp->next->version = cmp->version;
+    ++cmp->next->version.major;
+    return cmp->next;
   }
-  if (CCSEMVER_NUM_X == self->version.patch) {
-    ccsemver_xrevert(&self->version);
-    self->op = CCSEMVER_OP_GE;
-    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (self->next == NULL) {
+  if (CCSEMVER_NUM_X == cmp->version.patch) {
+    ccsemver_xrevert(&cmp->version);
+    cmp->op = CCSEMVER_OP_GE;
+    cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (cmp->next == NULL) {
       return NULL;
     }
-    ccsemver_comp_ctor(self->next);
-    self->next->op = CCSEMVER_OP_LT;
-    self->next->version = self->version;
-    ++self->next->version.minor;
-    return self->next;
+    ccsemver_comp_ctor(cmp->next);
+    cmp->next->op = CCSEMVER_OP_LT;
+    cmp->next->version = cmp->version;
+    ++cmp->next->version.minor;
+    return cmp->next;
+  } else {
+    cmp->op = CCSEMVER_OP_EQ;
+    return cmp;
   }
-  self->op = CCSEMVER_OP_EQ;
-  return self;
 }
 
 
@@ -374,61 +433,120 @@ parse_caret (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, si
 
 
 static char
-parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+parse_tilde (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
+/* Tilde ranges are such that:
+ *
+ *	'~1.2.3' := '>=1.2.3 <1.3.0'
+ *	'~1.2'   := '>=1.2.0 <1.3.0'
+ *	'~1'     := '>=1.0.0 <2.0.0'
+ *
+ * Upon arriving here we have already consumed the '~' from the input.
+ *
+ * A single tilde range is expanded into two comparators: a greater than
+ * or  equal to  (GE); a  less  than (LT).   We have  to initialise  the
+ * comparator referenced  by CMP with  the GE specification; we  have to
+ * build and  initialise a new  comparator referenced by  CMP->NEXT with
+ * the LT specification.
+ */
 {
-  ccsemver_t	partial;
+  /* Right  after the  tilde character  we expect  a, possibly  partial,
+     semantic version specification. */
+  if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
+    return 1;
+  }
 
-  if (parse_partial_semver(&self->version, str, len, offset)) {
-    return 1;
+  /* Initialise  the GT  comparator.   If some  version  numbers are  X:
+     convert  them  to  0  so  they are  a  right-side  limit  for  ">="
+     operations. */
+  {
+    cmp->op = CCSEMVER_OP_GE;
+    ccsemver_xrevert(&cmp->version);
   }
-  ccsemver_xrevert(&self->version);
-  self->op = CCSEMVER_OP_GE;
-  partial = self->version;
-  if (partial.minor || partial.patch) {
-    ++partial.minor;
-    partial.patch = 0;
+
+  /* Build the new LT comparator. */
+  cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (cmp->next) {
+    ccsemver_comp_ctor(cmp->next);
+    cmp->next->op = CCSEMVER_OP_LT;
+    {
+      ccsemver_t *	ltsv = &(cmp->next->version);
+
+      *ltsv = cmp->version;
+      /* Adjust   the  numbers   to   be  right-side   limits  for   ">"
+	 operations. */
+      if (ltsv->minor || ltsv->patch) {
+	++(ltsv->minor);
+	ltsv->patch = 0;
+      } else {
+	++(ltsv->major);
+	ltsv->minor = ltsv->patch = 0;
+      }
+    }
+    return 0;
   } else {
-    ++partial.major;
-    partial.minor = partial.patch = 0;
-  }
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
     return 1;
   }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  self->next->version = partial;
-  return 0;
 }
 
 
 static char
-parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+parse_hyphen_tail (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
+/* Hyphen ranges are such that:
+ *
+ *	'1.2.3 - 2.3.4' := '>=1.2.3 <=2.3.4'
+ *
+ * Upon arriving here we have already parsed the left limit and consumed
+ * the '-' from the input.
+ *
+ * A single  hyphen range  is expanded into  two comparators:  a greater
+ * than or equal to (GE); a less than (LT).
+ *
+ * Upon entering this function: the left  limit is already stored in the
+ * comparator  referenced by  CMP,  we  have to  normalise  it  as a  GE
+ * comparator.
+ *
+ * We  have to  build  and  initialise a  new  comparator referenced  by
+ * CMP->NEXT with the LT specification.
+ */
 {
-  ccsemver_t partial;
-
-  if (parse_partial_semver(&partial, str, len, offset)) {
-    return 1;
-  }
-  self->op = CCSEMVER_OP_GE;
-  ccsemver_xrevert(&self->version);
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  if (CCSEMVER_NUM_X == partial.minor) {
-    self->next->version.major = partial.major + 1;
-  } else if (CCSEMVER_NUM_X == partial.patch) {
-    self->next->version.major = partial.major;
-    self->next->version.minor = partial.minor + 1;
-  } else {
-    self->next->op = CCSEMVER_OP_LE;
-    self->next->version = partial;
+  /* Convert CMP into  a GT comparator.  If some version  numbers are X:
+     convert  them  to  0  so  they are  a  right-side  limit  for  ">="
+     operations. */
+  {
+    cmp->op = CCSEMVER_OP_GE;
+    ccsemver_xrevert(&cmp->version);
   }
 
-  return 0;
+  {
+    ccsemver_t	partial_sv;
+
+    /* Right after the space+dash+space  character we expect a, possibly
+       partial, semantic version specification. */
+    if (parse_partial_semver(&partial_sv, input_str, input_len, input_offp)) {
+      return 1;
+    }
+
+    /* Build the new LT comparator. */
+    cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (cmp->next) {
+      ccsemver_comp_ctor(cmp->next);
+      cmp->next->op = CCSEMVER_OP_LT;
+
+      /* Adjust the numbers to be right-side limits for ">" operations. */
+      if (CCSEMVER_NUM_X == partial_sv.minor) {
+	cmp->next->version.major = partial_sv.major + 1;
+      } else if (CCSEMVER_NUM_X == partial_sv.patch) {
+	cmp->next->version.major = partial_sv.major;
+	cmp->next->version.minor = partial_sv.minor + 1;
+      } else {
+	cmp->next->op = CCSEMVER_OP_LE;
+	cmp->next->version = partial_sv;
+      }
+      return 0;
+    } else {
+      return 1;
+    }
+  }
 }
 
 

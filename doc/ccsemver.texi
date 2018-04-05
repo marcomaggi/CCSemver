@@ -1155,8 +1155,8 @@ left untouched.
 The meaning of the arguments @var{input_buf}, @var{input_len} and
 @var{input_offp} is the same as in @cfunc{ccsemver_comp_read}.
 
-If the string is empty (@var{input_len} is zero): the function returns
-unsuccessfully.
+If the string is empty (@var{input_len} is zero): the comparator is initialised as if the input is
+@samp{>=0.0.0}.
 
 Internally, this function allocates memory with @cfunc{malloc}; if
 memory allocation fails: the return value is @code{1}.
