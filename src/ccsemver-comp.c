@@ -337,35 +337,38 @@ parse_caret (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, si
     return 1;
   }
 
-  /* Initialise the GT comparator. */
+  /* Initialise  the GT  comparator.   If some  version  numbers are  X:
+     convert  them  to  0  so  they are  a  right-side  limit  for  ">="
+     operations. */
   {
-    ccsemver_xrevert(&cmp->version);
     cmp->op = CCSEMVER_OP_GE;
+    ccsemver_xrevert(&cmp->version);
   }
 
   /* Build the new LT comparator. */
-  {
-    ccsemver_t	ltsv = cmp->version;
+  cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (cmp->next) {
+    ccsemver_comp_ctor(cmp->next);
+    cmp->next->op = CCSEMVER_OP_LT;
+    {
+      ccsemver_t *	ltsv = &(cmp->next->version);
 
-    if (ltsv.major != 0) {
-      ++ltsv.major;
-      ltsv.minor = ltsv.patch = 0;
-    } else if (ltsv.minor != 0) {
-      ++ltsv.minor;
-      ltsv.patch = 0;
-    } else {
-      ++ltsv.patch;
+      *ltsv = cmp->version;
+      /* Adjust   the  numbers   to   be  right-side   limits  for   ">"
+	 operations. */
+      if (ltsv->major) {
+	++(ltsv->major);
+	ltsv->minor = ltsv->patch = 0;
+      } else if (ltsv->minor) {
+	++(ltsv->minor);
+	ltsv->patch = 0;
+      } else {
+	++(ltsv->patch);
+      }
     }
-
-    cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (cmp->next) {
-      ccsemver_comp_ctor(cmp->next);
-      cmp->next->op      = CCSEMVER_OP_LT;
-      cmp->next->version = ltsv;
-      return 0;
-    } else {
-      return 1;
-    }
+    return 0;
+  } else {
+    return 1;
   }
 }
 
