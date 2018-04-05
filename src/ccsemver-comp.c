@@ -279,46 +279,63 @@ expand_straight_or_xrange_comp (ccsemver_comp_t * cmp)
  *
  *	'1.x'
  *	'1.2.*'
+ *
+ * Return the new last node in the  linked list CMP, or NULL if an error
+ * occurs.
  */
 {
-  /* If it is an X-range like: X.2.3 ... */
+  /* If it is an X-range like: X.2.3 convert it into:
+   *
+   *	>0.0.0
+   */
   if (CCSEMVER_NUM_X == cmp->version.major) {
     cmp->op = CCSEMVER_OP_GE;
     ccsemver_xrevert(&cmp->version);
     return cmp;
   }
 
-  /* If it is an X-range like: 1.X.3 ... */
+  /* If it is an X-range like: 1.X.3 convert it into:
+   *
+   *	>=1.0.0 <2.0.0
+   */
   else if (CCSEMVER_NUM_X == cmp->version.minor) {
     ccsemver_xrevert(&cmp->version);
-    cmp->op = CCSEMVER_OP_GE;
+    cmp->op   = CCSEMVER_OP_GE;
     cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (cmp->next == NULL) {
+    if (cmp->next) {
+      ccsemver_comp_ctor(cmp->next);
+      cmp->next->op      = CCSEMVER_OP_LT;
+      cmp->next->version = cmp->version;
+      ++(cmp->next->version.major);
+      return cmp->next;
+    } else {
       return NULL;
     }
-    ccsemver_comp_ctor(cmp->next);
-    cmp->next->op = CCSEMVER_OP_LT;
-    cmp->next->version = cmp->version;
-    ++cmp->next->version.major;
-    return cmp->next;
   }
 
-  /* If it is an X-range like: 1.2.X ... */
+  /* If it is an X-range like: 1.2.X convert it into.
+   *
+   *	>= 1.2.0 <1.3.0
+   */
   else if (CCSEMVER_NUM_X == cmp->version.patch) {
     ccsemver_xrevert(&cmp->version);
-    cmp->op = CCSEMVER_OP_GE;
+    cmp->op   = CCSEMVER_OP_GE;
     cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (cmp->next == NULL) {
+    if (cmp->next) {
+      ccsemver_comp_ctor(cmp->next);
+      cmp->next->op      = CCSEMVER_OP_LT;
+      cmp->next->version = cmp->version;
+      ++(cmp->next->version.minor);
+      return cmp->next;
+    } else {
       return NULL;
     }
-    ccsemver_comp_ctor(cmp->next);
-    cmp->next->op = CCSEMVER_OP_LT;
-    cmp->next->version = cmp->version;
-    ++cmp->next->version.minor;
-    return cmp->next;
   }
 
-  /* If it is a straight semantic version... */
+  /* If it is a straight semantic version like: 1.2.3 convert it into:
+   *
+   *	=1.2.3
+   */
   else {
     cmp->op = CCSEMVER_OP_EQ;
     return cmp;

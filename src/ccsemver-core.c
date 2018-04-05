@@ -99,31 +99,6 @@ ccsemver_read (ccsemver_t * self, char const * input_str, size_t input_len, size
   return 1;
 }
 
-#if 0
-{
-  if (*input_offp < input_len) {
-    ccsemver_ctor(self);
-    self->raw = input_str + *input_offp;
-    if (input_str[*input_offp] == 'v') {
-      ++*input_offp;
-    }
-    if (ccsemver_num_parse(&self->major, input_str, input_len, input_offp) || self->major == CCSEMVER_NUM_X
-	|| *input_offp >= input_len || input_str[*input_offp] != '.'
-	|| ccsemver_num_parse(&self->minor, input_str, input_len, (++*input_offp, input_offp)) || self->minor == CCSEMVER_NUM_X
-	|| *input_offp >= input_len || input_str[*input_offp] != '.'
-	|| ccsemver_num_parse(&self->patch, input_str, input_len, (++*input_offp, input_offp)) || self->patch == CCSEMVER_NUM_X
-	|| (input_str[*input_offp] == '-' && ccsemver_id_read(&self->prerelease, input_str, input_len, (++*input_offp, input_offp)))
-	|| (input_str[*input_offp] == '+' && ccsemver_id_read(&self->build, input_str, input_len, (++*input_offp, input_offp)))) {
-      self->len = input_str + *input_offp - self->raw;
-      return 1;
-    }
-    self->len = input_str + *input_offp - self->raw;
-    return 0;
-  }
-  return 1;
-}
-#endif
-
 
 /** --------------------------------------------------------------------
  ** Comparision.
