@@ -70,10 +70,10 @@ ccsemver_comp_dtor (ccsemver_comp_t * self)
 
 static void ccsemver_xrevert (ccsemver_t * sv);
 static ccsemver_comp_t * ccsemver_xconvert (ccsemver_comp_t * cmp);
-static char parse_partial (ccsemver_t * sv,       char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_hiphen  (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_caret   (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
-static char parse_tilde   (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_partial_semver (ccsemver_t * sv,       char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_hiphen         (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_caret          (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
+static char parse_tilde          (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp);
 
 char
 ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_len, size_t * input_offp)
@@ -105,7 +105,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
       } else {
 	cmp->op = CCSEMVER_OP_GT;
       }
-      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
+      if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
       ccsemver_xrevert(&cmp->version);
@@ -119,7 +119,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
       } else {
 	cmp->op = CCSEMVER_OP_LT;
       }
-      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
+      if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
       ccsemver_xrevert(&cmp->version);
@@ -128,7 +128,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
     case '=':
       ++(*input_offp);
       cmp->op = CCSEMVER_OP_EQ;
-      if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
+      if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
 	return 1;
       }
       ccsemver_xrevert(&cmp->version);
@@ -140,7 +140,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, char const * input_str, size_t input_
   }
 
  range:
-  if (parse_partial(&cmp->version, input_str, input_len, input_offp)) {
+  if (parse_partial_semver(&cmp->version, input_str, input_len, input_offp)) {
     return 1;
   }
   /* If input  continues with at  least 3  characters being: a  space, a
@@ -235,38 +235,79 @@ ccsemver_xconvert (ccsemver_comp_t * self)
 
 
 static char
-parse_partial (ccsemver_t * self, char const * str, size_t len, size_t * offset)
+parse_partial_semver (ccsemver_t * sv, char const * input_str, size_t input_len, size_t * input_offp)
+/* Initialise the already allocated "ccsemver_t" struct referenced by SV
+   with data from the input.
+
+   It is  fine if there is  no input: in this  case SV is filled  with X
+   specifications as numbers.
+
+   It is fine  if the input is not a  full semantic version specifiction
+   because of missing minor version or missing patch level: in this case
+   SV  is filled  with  X  specifications as  minor  and/or patch  level
+   numbers.
+
+   If is fine if the input is not a semantic version: in this case SV is
+   filled with X specifications as numbers.
+
+   Whatever input is after the partial semantic version: leave it alone.
+*/
 {
-  ccsemver_ctor(self);
-  self->major = self->minor = self->patch = CCSEMVER_NUM_X;
-  if (*offset < len) {
-    self->raw = str + *offset;
-    if (ccsemver_num_parse(&self->major, str, len, offset)) {
+  ccsemver_ctor(sv);
+
+  /* If there is no input*/
+  sv->major = sv->minor = sv->patch = CCSEMVER_NUM_X;
+
+  if (*input_offp < input_len) {
+    sv->raw = input_str + *input_offp;
+
+    /* Parse the major number. */
+    if (ccsemver_num_parse(&sv->major, input_str, input_len, input_offp)) {
       return 0;
     }
-    if (*offset >= len || str[*offset] != '.') {
+
+    /* If no more input or input is not a dot: return successfully. */
+    if (*input_offp >= input_len || input_str[*input_offp] != '.') {
       return 0;
     }
-    ++*offset;
-    if (ccsemver_num_parse(&self->minor, str, len, offset)) {
+
+    /* Skip the dot. */
+    ++(*input_offp);
+
+    /* Parse the minor number. */
+    if (ccsemver_num_parse(&sv->minor, input_str, input_len, input_offp)) {
       return 1;
     }
-    if (*offset >= len || str[*offset] != '.') {
+
+    /* If no more input or input is not a dot: return successfully. */
+    if (*input_offp >= input_len || input_str[*input_offp] != '.') {
       return 0;
     }
-    ++*offset;
-    if  (ccsemver_num_parse(&self->patch, str, len, offset)) {
+
+    /* Skip the dot. */
+    ++(*input_offp);
+
+    /* Parse the patch level number. */
+    if  (ccsemver_num_parse(&sv->patch, input_str, input_len, input_offp)) {
       return 1;
     }
-    if ((str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset))) ||
-	(str[*offset] == '+' && ccsemver_id_read(&self->build,      str, len, (++*offset, offset)))) {
+
+    /* If there  is a  prerelease tag:  parse it.  If  there is  a build
+       metadata: parse it. */
+    if ((input_str[*input_offp] == '-' && ccsemver_id_read(&sv->prerelease, input_str, input_len, (++*input_offp, input_offp))) ||
+	(input_str[*input_offp] == '+' && ccsemver_id_read(&sv->build,      input_str, input_len, (++*input_offp, input_offp)))) {
+      /* Error parsing the prerelease tag or the build metadata. */
       return 1;
     } else {
-      self->len = str + *offset - self->raw;
+      /* Either ther is no prerelease tag or we have successfully parsed
+	 a prerelease tag.  Either there is no build metadata or we have
+	 successfully parsed a build metadata. */
+      sv->len = input_str + *input_offp - sv->raw;
       return 0;
     }
+  } else {
+    return 0;
   }
-  return 0;
 }
 
 
@@ -275,7 +316,7 @@ parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * off
 {
   ccsemver_t partial;
 
-  if (parse_partial(&partial, str, len, offset)) {
+  if (parse_partial_semver(&partial, str, len, offset)) {
     return 1;
   }
   self->op = CCSEMVER_OP_GE;
@@ -305,7 +346,7 @@ parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offs
 {
   ccsemver_t	partial;
 
-  if (parse_partial(&self->version, str, len, offset)) {
+  if (parse_partial_semver(&self->version, str, len, offset)) {
     return 1;
   }
   ccsemver_xrevert(&self->version);
@@ -336,7 +377,7 @@ parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offs
 {
   ccsemver_t	partial;
 
-  if (parse_partial(&self->version, str, len, offset)) {
+  if (parse_partial_semver(&self->version, str, len, offset)) {
     return 1;
   }
   ccsemver_xrevert(&self->version);
