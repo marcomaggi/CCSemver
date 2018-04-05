@@ -41,179 +41,6 @@
 #include <stdio.h>
 
 
-
-static void
-ccsemver_xrevert (ccsemver_t * semver)
-{
-  if (CCSEMVER_NUM_X == semver->major) {
-    semver->major = semver->minor = semver->patch = 0;
-  } else if (CCSEMVER_NUM_X == semver->minor) {
-    semver->minor = semver->patch = 0;
-  } else if (CCSEMVER_NUM_X == semver->patch) {
-    semver->patch = 0;
-  }
-}
-
-static ccsemver_comp_t *
-ccsemver_xconvert (ccsemver_comp_t * self)
-{
-  if (CCSEMVER_NUM_X == self->version.major) {
-    self->op = CCSEMVER_OP_GE;
-    ccsemver_xrevert(&self->version);
-    return self;
-  }
-  if (CCSEMVER_NUM_X == self->version.minor) {
-    ccsemver_xrevert(&self->version);
-    self->op = CCSEMVER_OP_GE;
-    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (self->next == NULL) {
-      return NULL;
-    }
-    ccsemver_comp_ctor(self->next);
-    self->next->op = CCSEMVER_OP_LT;
-    self->next->version = self->version;
-    ++self->next->version.major;
-    return self->next;
-  }
-  if (CCSEMVER_NUM_X == self->version.patch) {
-    ccsemver_xrevert(&self->version);
-    self->op = CCSEMVER_OP_GE;
-    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-    if (self->next == NULL) {
-      return NULL;
-    }
-    ccsemver_comp_ctor(self->next);
-    self->next->op = CCSEMVER_OP_LT;
-    self->next->version = self->version;
-    ++self->next->version.minor;
-    return self->next;
-  }
-  self->op = CCSEMVER_OP_EQ;
-  return self;
-}
-
-static char
-parse_partial (ccsemver_t * self, char const * str, size_t len, size_t * offset)
-{
-  ccsemver_ctor(self);
-  self->major = self->minor = self->patch = CCSEMVER_NUM_X;
-  if (*offset < len) {
-    self->raw = str + *offset;
-    if  (ccsemver_num_parse(&self->major, str, len, offset)) {
-      return 0;
-    }
-    if (*offset >= len || str[*offset] != '.') {
-      return 0;
-    }
-    ++*offset;
-    if  (ccsemver_num_parse(&self->minor, str, len, offset)) {
-      return 1;
-    }
-    if (*offset >= len || str[*offset] != '.') {
-      return 0;
-    }
-    ++*offset;
-    if  (ccsemver_num_parse(&self->patch, str, len, offset)) {
-      return 1;
-    }
-    if ((str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset)))
-	|| (str[*offset] == '+' && ccsemver_id_read(&self->build, str, len, (++*offset, offset)))) {
-      return 1;
-    }
-    self->len = str + *offset - self->raw;
-    return 0;
-  }
-  return 0;
-}
-
-static char
-parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
-{
-  ccsemver_t partial;
-
-  if (parse_partial(&partial, str, len, offset)) {
-    return 1;
-  }
-  self->op = CCSEMVER_OP_GE;
-  ccsemver_xrevert(&self->version);
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  if (CCSEMVER_NUM_X == partial.minor) {
-    self->next->version.major = partial.major + 1;
-  } else if (CCSEMVER_NUM_X == partial.patch) {
-    self->next->version.major = partial.major;
-    self->next->version.minor = partial.minor + 1;
-  } else {
-    self->next->op = CCSEMVER_OP_LE;
-    self->next->version = partial;
-  }
-
-  return 0;
-}
-
-static char
-parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
-{
-  ccsemver_t	partial;
-
-  if (parse_partial(&self->version, str, len, offset)) {
-    return 1;
-  }
-  ccsemver_xrevert(&self->version);
-  self->op = CCSEMVER_OP_GE;
-  partial = self->version;
-  if (partial.major != 0) {
-    ++partial.major;
-    partial.minor = partial.patch = 0;
-  } else if (partial.minor != 0) {
-    ++partial.minor;
-    partial.patch = 0;
-  } else {
-    ++partial.patch;
-  }
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  self->next->version = partial;
-  return 0;
-}
-
-static char
-parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
-{
-  ccsemver_t	partial;
-
-  if (parse_partial(&self->version, str, len, offset)) {
-    return 1;
-  }
-  ccsemver_xrevert(&self->version);
-  self->op = CCSEMVER_OP_GE;
-  partial = self->version;
-  if (partial.minor || partial.patch) {
-    ++partial.minor;
-    partial.patch = 0;
-  } else {
-    ++partial.major;
-    partial.minor = partial.patch = 0;
-  }
-  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
-  if (self->next == NULL) {
-    return 1;
-  }
-  ccsemver_comp_ctor(self->next);
-  self->next->op = CCSEMVER_OP_LT;
-  self->next->version = partial;
-  return 0;
-}
-
-
 /** --------------------------------------------------------------------
  ** Constructor and destructor.
  ** ----------------------------------------------------------------- */
@@ -240,6 +67,13 @@ ccsemver_comp_dtor (ccsemver_comp_t * self)
 /** --------------------------------------------------------------------
  ** Parser.
  ** ----------------------------------------------------------------- */
+
+static void ccsemver_xrevert (ccsemver_t * semver);
+static ccsemver_comp_t * ccsemver_xconvert (ccsemver_comp_t * self);
+static char parse_partial (ccsemver_t * self, char const * str, size_t len, size_t * offset);
+static char parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
+static char parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
+static char parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset);
 
 char
 ccsemver_comp_read (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
@@ -332,6 +166,183 @@ ccsemver_comp_read (ccsemver_comp_t * self, char const * str, size_t len, size_t
     }
     return 1;
   }
+  return 0;
+}
+
+
+static void
+ccsemver_xrevert (ccsemver_t * semver)
+{
+  if (CCSEMVER_NUM_X == semver->major) {
+    semver->major = semver->minor = semver->patch = 0;
+  } else if (CCSEMVER_NUM_X == semver->minor) {
+    semver->minor = semver->patch = 0;
+  } else if (CCSEMVER_NUM_X == semver->patch) {
+    semver->patch = 0;
+  }
+}
+
+
+static ccsemver_comp_t *
+ccsemver_xconvert (ccsemver_comp_t * self)
+{
+  if (CCSEMVER_NUM_X == self->version.major) {
+    self->op = CCSEMVER_OP_GE;
+    ccsemver_xrevert(&self->version);
+    return self;
+  }
+  if (CCSEMVER_NUM_X == self->version.minor) {
+    ccsemver_xrevert(&self->version);
+    self->op = CCSEMVER_OP_GE;
+    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (self->next == NULL) {
+      return NULL;
+    }
+    ccsemver_comp_ctor(self->next);
+    self->next->op = CCSEMVER_OP_LT;
+    self->next->version = self->version;
+    ++self->next->version.major;
+    return self->next;
+  }
+  if (CCSEMVER_NUM_X == self->version.patch) {
+    ccsemver_xrevert(&self->version);
+    self->op = CCSEMVER_OP_GE;
+    self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+    if (self->next == NULL) {
+      return NULL;
+    }
+    ccsemver_comp_ctor(self->next);
+    self->next->op = CCSEMVER_OP_LT;
+    self->next->version = self->version;
+    ++self->next->version.minor;
+    return self->next;
+  }
+  self->op = CCSEMVER_OP_EQ;
+  return self;
+}
+
+
+static char
+parse_partial (ccsemver_t * self, char const * str, size_t len, size_t * offset)
+{
+  ccsemver_ctor(self);
+  self->major = self->minor = self->patch = CCSEMVER_NUM_X;
+  if (*offset < len) {
+    self->raw = str + *offset;
+    if  (ccsemver_num_parse(&self->major, str, len, offset)) {
+      return 0;
+    }
+    if (*offset >= len || str[*offset] != '.') {
+      return 0;
+    }
+    ++*offset;
+    if  (ccsemver_num_parse(&self->minor, str, len, offset)) {
+      return 1;
+    }
+    if (*offset >= len || str[*offset] != '.') {
+      return 0;
+    }
+    ++*offset;
+    if  (ccsemver_num_parse(&self->patch, str, len, offset)) {
+      return 1;
+    }
+    if ((str[*offset] == '-' && ccsemver_id_read(&self->prerelease, str, len, (++*offset, offset)))
+	|| (str[*offset] == '+' && ccsemver_id_read(&self->build, str, len, (++*offset, offset)))) {
+      return 1;
+    }
+    self->len = str + *offset - self->raw;
+    return 0;
+  }
+  return 0;
+}
+
+
+static char
+parse_hiphen (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+{
+  ccsemver_t partial;
+
+  if (parse_partial(&partial, str, len, offset)) {
+    return 1;
+  }
+  self->op = CCSEMVER_OP_GE;
+  ccsemver_xrevert(&self->version);
+  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (self->next == NULL) {
+    return 1;
+  }
+  ccsemver_comp_ctor(self->next);
+  self->next->op = CCSEMVER_OP_LT;
+  if (CCSEMVER_NUM_X == partial.minor) {
+    self->next->version.major = partial.major + 1;
+  } else if (CCSEMVER_NUM_X == partial.patch) {
+    self->next->version.major = partial.major;
+    self->next->version.minor = partial.minor + 1;
+  } else {
+    self->next->op = CCSEMVER_OP_LE;
+    self->next->version = partial;
+  }
+
+  return 0;
+}
+
+
+static char
+parse_tilde (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+{
+  ccsemver_t	partial;
+
+  if (parse_partial(&self->version, str, len, offset)) {
+    return 1;
+  }
+  ccsemver_xrevert(&self->version);
+  self->op = CCSEMVER_OP_GE;
+  partial = self->version;
+  if (partial.major != 0) {
+    ++partial.major;
+    partial.minor = partial.patch = 0;
+  } else if (partial.minor != 0) {
+    ++partial.minor;
+    partial.patch = 0;
+  } else {
+    ++partial.patch;
+  }
+  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (self->next == NULL) {
+    return 1;
+  }
+  ccsemver_comp_ctor(self->next);
+  self->next->op = CCSEMVER_OP_LT;
+  self->next->version = partial;
+  return 0;
+}
+
+
+static char
+parse_caret (ccsemver_comp_t * self, char const * str, size_t len, size_t * offset)
+{
+  ccsemver_t	partial;
+
+  if (parse_partial(&self->version, str, len, offset)) {
+    return 1;
+  }
+  ccsemver_xrevert(&self->version);
+  self->op = CCSEMVER_OP_GE;
+  partial = self->version;
+  if (partial.minor || partial.patch) {
+    ++partial.minor;
+    partial.patch = 0;
+  } else {
+    ++partial.major;
+    partial.minor = partial.patch = 0;
+  }
+  self->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
+  if (self->next == NULL) {
+    return 1;
+  }
+  ccsemver_comp_ctor(self->next);
+  self->next->op = CCSEMVER_OP_LT;
+  self->next->version = partial;
   return 0;
 }
 
