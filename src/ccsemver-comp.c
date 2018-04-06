@@ -380,7 +380,7 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
     }
 
     /* If no more input or input is not a dot: return successfully. */
-    if (input->off >= input->len || ccsemver_input_next(input) != '.') {
+    if (ccsemver_input_at_end(input) || (ccsemver_input_next(input) != '.')) {
       return 0;
     }
 
