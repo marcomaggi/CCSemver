@@ -71,7 +71,7 @@ __attribute__((__always_inline__,__nonnull__(1)))
 static inline void
 skip_blank_characters (ccsemver_input_t * input)
 {
-  while ((input->off < input->len) &&
+  while (ccsemver_input_more(input) &&
 	 ((' '  == ccsemver_input_next(input)) ||
 	  ('\t' == ccsemver_input_next(input)) ||
 	  ('\r' == ccsemver_input_next(input)) ||

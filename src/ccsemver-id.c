@@ -88,7 +88,7 @@ ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
   self->num	= 0;
   self->numeric	= true;
   for (;
-       (input->off < input->len) && VALID_CHAR;
+       ccsemver_input_more(input) && VALID_CHAR;
        ++component_len, ++(input->off)) {
     if (!isdigit(ccsemver_input_next(input))) {
       is_zero       = false;

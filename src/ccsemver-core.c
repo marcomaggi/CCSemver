@@ -74,7 +74,7 @@ ccsemver_dtor (ccsemver_t * self)
 char
 ccsemver_read (ccsemver_t * self, ccsemver_input_t * input)
 {
-  if (input->off < input->len) {
+  if (ccsemver_input_more(input)) {
     ccsemver_ctor(self);
     self->raw = input->str + input->off;
 

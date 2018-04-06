@@ -121,7 +121,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       /* Skip the greater-than. */
       ++(input->off);
       /* Determine if it is a ">" or ">=" comparator. */
-      if ((input->off < input->len) && ('=' == ccsemver_input_next(input))) {
+      if (ccsemver_input_more(input) && ('=' == ccsemver_input_next(input))) {
 	/* Skip the equal. */
 	++(input->off);
 	cmp->op = CCSEMVER_OP_GE;
@@ -142,7 +142,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       /* Skip the less-than. */
       ++(input->off);
       /* Determine if it is a "<" or "<=" comparator. */
-      if ((input->off < input->len) && ('=' == ccsemver_input_next(input))) {
+      if (ccsemver_input_more(input) && ('=' == ccsemver_input_next(input))) {
 	/* Skip the equal. */
 	++(input->off);
 	cmp->op = CCSEMVER_OP_LE;
@@ -367,7 +367,7 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
   /* If there is no input*/
   sv->major = sv->minor = sv->patch = CCSEMVER_NUM_X;
 
-  if (input->off < input->len) {
+  if (ccsemver_input_more(input)) {
     sv->raw = input->str + input->off;
 
     /* Parse the major number. */
