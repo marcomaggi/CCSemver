@@ -103,7 +103,7 @@ ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
 char
 ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
 {
-  return (char)  (ccsemver_match(self, &range->comp) ? 1 : range->next ? ccsemver_range_match(self, range->next) : 0);
+  return (char)  (ccsemver_match(self, &range->comp) ? 1 : (range->next ? ccsemver_range_match(self, range->next) : 0));
 }
 
 
