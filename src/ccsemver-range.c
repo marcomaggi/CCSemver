@@ -71,7 +71,7 @@ char
 ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
 /* Parse a range from the input string.  A range is defined as follows:
  *
- *    <range> := <comparator> ("||" <range>)
+ *    <range> := <comparator> (<blanks> "||" <blanks> <range>)
  */
 {
   ccsemver_range_init(self);
@@ -81,12 +81,9 @@ ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
     return 1;
   }
 
-  ccsemver_input_parse_blanks(input);
-
-  /* Check if there is a "||" operator after the first comparator. */
-  if (looking_at_OR(input)) {
-    input->off += 2;
-    ccsemver_input_parse_blanks(input);
+  /* Check if  there is a "||"  operator after the first  comparator; if
+     there is: parse te next comparator. */
+  if (ccsemver_input_parse_blanked_OR(input)) {
     self->next = (ccsemver_range_t *) malloc(sizeof(ccsemver_range_t));
     if (self->next) {
       return ccsemver_range_read(self->next, input);

@@ -258,7 +258,13 @@ ccsemver_decl bool ccsemver_input_parse_blanks (ccsemver_input_t * input)
 ccsemver_decl bool ccsemver_input_parse_dash (ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
+ccsemver_decl bool ccsemver_input_parse_bar (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
 ccsemver_decl bool ccsemver_input_parse_blanked_dash (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_blanked_OR (ccsemver_input_t * that_input)
   __attribute__((__nonnull__(1)));
 
 ccsemver_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t * input)

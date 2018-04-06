@@ -84,6 +84,19 @@ ccsemver_input_parse_dash (ccsemver_input_t * input)
 }
 
 bool
+ccsemver_input_parse_bar (ccsemver_input_t * input)
+/* If the next character is a  bar: advance the parsing position over it
+   and return true; otherwise return false. */
+{
+  if (ccsemver_input_more(input) && ('|' == ccsemver_input_next(input))) {
+    ++(input->off);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool
 ccsemver_input_parse_blanks (ccsemver_input_t * input)
 /* Advance  the  parsing position  skipping  all  the blank  characters.
    Return  true  if at  least  one  blank  was found;  otherwise  return
@@ -105,16 +118,31 @@ ccsemver_input_parse_blanks (ccsemver_input_t * input)
 bool
 ccsemver_input_parse_blanked_dash (ccsemver_input_t * that_input)
 /* If the input is a sequence: at  least one blank, a dash, at least one
-   blank parse it and return true; otherwise return false.
-
-   Return true if there are at least 3 more characters in the input: one
-   or  more blanks,  one dash,  one  or more  blanks.  Otherwise  return
-   false. */
+   blank parse it and return true; otherwise return false. */
 {
   ccsemver_input_t	input = *that_input;
 
   if (ccsemver_input_parse_blanks (&input)	&&
       ccsemver_input_parse_dash   (&input)	&&
+      ccsemver_input_parse_blanks (&input)) {
+    that_input->off = input.off;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool
+ccsemver_input_parse_blanked_OR (ccsemver_input_t * that_input)
+/* If the  input is a  sequence: at least one  blank, a vertical  bar, a
+   vertical bar, at least one blank  parse it and return true; otherwise
+   return false. */
+{
+  ccsemver_input_t	input = *that_input;
+
+  if (ccsemver_input_parse_blanks (&input)	&&
+      ccsemver_input_parse_bar    (&input)	&&
+      ccsemver_input_parse_bar    (&input)	&&
       ccsemver_input_parse_blanks (&input)) {
     that_input->off = input.off;
     return true;
