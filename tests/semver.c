@@ -52,7 +52,7 @@ test_read (char const * const expected, char const * const input_str, size_t con
     puts(" \tcouldn't parse");
     return 1;
   }
-  if (input.off != input.len) {
+  if (ccsemver_input_more(&input)) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }

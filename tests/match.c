@@ -54,17 +54,17 @@ test_match (char expected,
     puts(" \tcouldn't parse semantic version specification");
     return 1;
   }
-  if (sv_input.off != sv_input.len) {
-    puts(" \tunable to parse the whole semantic version specification");
+  if (ccsemver_input_more(&sv_input)) {
+    puts("\tunable to parse the whole semantic version specification");
     return 1;
   }
 
   if (ccsemver_comp_read(&cmp, &cmp_input)) {
-    puts(" \tcouldn't parse comparator specification");
+    puts("\tcouldn't parse comparator specification");
     return 1;
   }
-  if (cmp_input.off != cmp_input.len) {
-    puts(" \tunable to parse the whole comparator specification");
+  if (ccsemver_input_more(&cmp_input)) {
+    puts("\tunable to parse the whole comparator specification");
     return 1;
   }
 

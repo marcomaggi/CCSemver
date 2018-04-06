@@ -49,11 +49,11 @@ test_read (char const * const expected, char const * const input_str, size_t con
 
   printf("test: len=%lu, str='%s'", input_len, input_str);
   if (ccsemver_comp_read(&cmp, &input)) {
-    puts(" \tcouldn't parse");
+    puts("\tunable to parser the comparator specification");
     return 1;
   }
-  if (input.off != input.len) {
-    puts(" \tcouldn't parse fully base");
+  if (ccsemver_input_more(&input)) {
+    puts("\tunable to parse the whole comparator specification");
     return 1;
   }
   slen = (unsigned) ccsemver_comp_write(&cmp, buffer, 1024);

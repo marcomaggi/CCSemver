@@ -196,10 +196,10 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
 
 struct ccsemver_input_t {
   /* Pointer to the first character in the input string. */
-  char const *	str;
+  char const * const	str;
 
   /* Number of character in the input string. */
-  size_t	len;
+  size_t const		len;
 
   /* Offset of the next character to parse in the input string. */
   size_t	off;
@@ -215,6 +215,34 @@ ccsemver_input_new (char const * str, size_t len, size_t off)
     .off	= off
   };
   return input;
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline char
+ccsemver_input_next (ccsemver_input_t * input)
+{
+  return input->str[input->off];
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline bool
+ccsemver_input_more (ccsemver_input_t * input)
+{
+  return (input->len > input->off);
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline bool
+ccsemver_input_at_end (ccsemver_input_t * input)
+{
+  return (input->len == input->off);
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline bool
+ccsemver_input_is_empty (ccsemver_input_t * input)
+{
+  return (0 == input->len);
 }
 
 

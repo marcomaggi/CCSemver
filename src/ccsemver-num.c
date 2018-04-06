@@ -51,8 +51,7 @@
 char
 ccsemver_num_parse (long * nump, ccsemver_input_t * input)
 {
-  *nump = 0;
-  if (input->off >= input->len) {
+  if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
     return 1;
   } else {
     switch (input->str[input->off]) {
@@ -92,7 +91,7 @@ char
 ccsemver_parse_number (long * nump, ccsemver_input_t * input)
 /* Parse an integer number. */
 {
-  if (input->off >= input->len) {
+  if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
     return 1;
   } else {
     if (isdigit(input->str[input->off])) {

@@ -124,6 +124,7 @@ available at:
 * version::                     Version functions.
 * conditions::                  Exceptional condition objects.
 * semver::                      Semantic versioning.
+* input::                       Parser input specification.
 * versions::                    Parsing version specifications.
 * comparators::                 Parsing and using comparators.
 * ranges::                      Parsing and using ranges.
@@ -578,6 +579,74 @@ zero.
 @end table
 
 @c page
+@node input
+@chapter Parser input specification
+
+
+@deftp {Struct Typedef} ccsemver_input_t
+Type of @code{struct} representing the input for the parser functions; the input is meant to be a
+string in @ascii{} format.  It has the following public fields:
+
+@table @code
+@item char const * const str
+Pointer to the first character in the input string.  Parser functions never mutate this value.
+
+@item size_t const len
+Number of character in the input string.  Parser functions never mutate this value.
+
+@item size_t off
+Offset of the next character to parse in the input string.  This value is mutated by every parser
+function.
+@end table
+
+For every parser function: the input string is referenced by @code{str}; the length of the input
+string is @code{len} characters; the field @code{off} is both an input and output parameter:
+
+@itemize
+@item
+Upon entering the function: @code{off} is the offset of the first character to parse in @code{str}.
+
+@item
+When the function returns successfully: @code{off} is the offset of the first non--parsed character;
+further parsing operations can use such value as input.
+
+@item
+When the function returns unsuccessfully: @code{off} is invalid.
+@end itemize
+
+Unless otherwise specified, for every parser function: if the input string is empty (@code{len} is
+zero), the function returns unsuccessfully.
+@end deftp
+
+
+@deftypefun ccsemver_input_t ccsemver_input_new (char const * @var{str}, size_t @var{len}, size_t @var{off})
+Build and return a new instance of @objtype{ccsemver_input_t}.
+@end deftypefun
+
+
+@deftypefun char ccsemver_input_next (ccsemver_input_t * @var{input})
+Return the next character to parse.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_input_more (ccsemver_input_t * @var{input})
+Return @ctrue{} if there is more input to be parsed; return @cfalse{} if all the input has been
+processed.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_input_at_end (ccsemver_input_t * @var{input})
+Return @ctrue{} if there is @strong{no} more input to be parsed; return @cfalse{} if there is more
+input to be processed.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_input_is_empty (ccsemver_input_t * @var{input})
+Return @ctrue{} if the input string has zero length; return @cfalse{} if there is more input to be
+processed.  Notice that ``zero length'' is different from ``no more input''.
+@end deftypefun
+
+@c page
 @node versions
 @chapter Parsing version specifications
 
@@ -601,8 +670,7 @@ All the following symbols are defined in the header file @file{ccsemver.h}.
 
 @deftp {Struct Typedef} ccsemver_t
 Type of data structures representing parsed versions.  Instances of this structure are initialised
-with @cfunc{ccsemver_init} or @cfunc{ccsemver_new}.  Instances of this structure are finalised with
-@cfunc{ccsemver_delete}.
+with @cfunc{ccsemver_ctor}.  Instances of this structure are finalised with @cfunc{ccsemver_dtor}.
 
 It has the following public fields:
 
@@ -625,64 +693,62 @@ An identifier representing the build metadata.
 @item size_t len
 The number of characters in the input string that where parsed to form this version.
 
-@item const char * raw
+@item char const * raw
 Pointer to the character in the input string representing the first character of this component.
 This pointer is valid as long as the input string handed to the constructor function is not mutated.
 @end table
 @end deftp
 
 
-@deftypefun void ccsemver_ctor (ccsemver_t * @var{versionp})
-Initialise to empty an already allocated data structure representing a
-parsed version.  Every call to this function must be matched by a call
-to @cfunc{ccsemver_dtor}:
+@deftypefun void ccsemver_ctor (ccsemver_t * @var{sv})
+Initialise to empty an already allocated data structure representing a parsed version.  Every call
+to this function must be matched by a call to @cfunc{ccsemver_dtor}:
 
 @example
-ccsemver_t        version;
+ccsemver_t        sv;
 
-ccsemver_ctor(&version);
+ccsemver_ctor(&sv);
 @{
-  /* Do something with "version" here. */
+  /* Do something with "sv" here. */
 @}
-ccsemver_dtor(&version);
+ccsemver_dtor(&sv);
 @end example
 @end deftypefun
 
 
-@deftypefun void ccsemver_dtor (ccsemver_t * @var{versionp})
-Finalise to empty a data structure representing a parsed version; calls
-to this function must match a previous call to @cfunc{ccsemver_ctor} or
-@cfunc{ccsemver_read}.
+@deftypefun void ccsemver_dtor (ccsemver_t * @var{sv})
+Finalise to empty a data structure representing a parsed version; calls to this function must match
+a previous call to @cfunc{ccsemver_ctor} or @cfunc{ccsemver_read}.
 
-All the resources associated to @var{versionp} are released, but the
-structure itself.  The following code is correct:
+All the resources associated to @var{sv} are released, but the structure itself.  The following code
+is correct:
 
 @example
-ccsemver_t        version;
+ccsemver_t        sv;
 
-ccsemver_ctor(&version);
+ccsemver_ctor(&sv);
 @{
-  /* Do something with "version" here. */
+  /* Do something with "sv" here. */
 @}
-ccsemver_dtor(&version);
+ccsemver_dtor(&sv);
 @end example
 
 @noindent
 the following code is also correct:
 
 @example
-ccsemver_t *      versionp;
+ccsemver_t *      svp;
 
-versionp = malloc(sizeof(ccsemver_t));
-assert(NULL != versionp);
+svp = malloc(sizeof(ccsemver_t));
+assert(NULL != svp);
 @{
-  ccsemver_ctor(versionp);
+  ccsemver_ctor(svp);
   @{
-    /* Do something with "versionp" here. */
+    /* Do something with "svp" here. */
   @}
-  ccsemver_dtor(versionp);
+  ccsemver_dtor(svp);
 @}
-free(versionp);
+free(svp);
 @end example
 @end deftypefun
 
@@ -691,49 +757,21 @@ free(versionp);
 @section Parsing from a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_read (ccsemver_t * @var{versionp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a
-version specification.  When successful: the return value is @code{0}.
-If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_read (ccsemver_t * @var{sv}, ccsemver_input_t * @var{input})
+Parse input expecting a semantic version specification.  When successful: the return value is
+@code{0}.  If an error occurs: the return value is @code{1}.
 
-The results of parsing are stored in the already allocated structure
-referenced by @var{versionp}; the structure is first initialised with
-@cfunc{ccsemver_ctor}.
+The results of parsing are stored in the already allocated structure referenced by @var{sv}; the
+structure is first initialised with @cfunc{ccsemver_ctor}.
 
-In both the successful and unsuccessful cases: every call to this
-function must be matched by the application of @cfunc{ccsemver_dtor} to
-@var{versionp}.
+In both the successful and unsuccessful cases: every call to this function must be matched by the
+application of @cfunc{ccsemver_dtor} to @var{sv}.
 
-The input string is referenced by @var{input_buf}; the length of the
-input string is @var{input_len} characters.  The argument
-@var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse
-in @var{input_buf} is acquired from the variable referenced by
-@var{input_offp}.
-
-@item
-When the function returns successfully: the offset of the first
-non--parsed character is stored in the variable referenced by
-@var{input_offp}; further parsing operations can use such value as
-input.
-
-@item
-When the function returns unsuccessfully: the value stored in the
-variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns
-unsuccessfully.
-
-Internally, this function allocates memory with @cfunc{malloc}; if
-memory allocation fails: the return value is @code{1}.
+Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
+return value is @code{1}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -743,23 +781,23 @@ memory allocation fails: the return value is @code{1}.
 The following example parses the numeric version @samp{1.2.3}:
 
 @example
-char const    input_str[] = "1.2.3";
-ccsemver_t      version;
-size_t        input_off = 0;
-char          rv;
+char const            input_str[] = "1.2.3";
+ccsemver_input_t      input =
+  ccsemver_input_new(input_str, strlen(input_str), 0);
+ccsemver_t            sv;
+char                  rv;
 
-rv = ccsemver_read(&version, input_str, strlen(input_str), &input_off);
+rv = ccsemver_read(&sv, &input);
 if (0 == rv) @{
   printf("major=%ld, minor=%ld, patch=%ld, ",
-         version.major, version.minor, version.patch);
+         sv.major, sv.minor, sv.patch);
   printf("prerelease=");
-  ccsemver_id_fwrite(&version.prerelease, stdout);
-  printf(", ");
-  printf("build=");
-  ccsemver_id_fwrite(&version.build, stdout);
+  ccsemver_id_fwrite(&sv.prerelease, stdout);
+  printf(", build=");
+  ccsemver_id_fwrite(&sv.build, stdout);
   printf("\n");
 @}
-ccsemver_dtor(&version);
+ccsemver_dtor(&sv);
 @end example
 
 @noindent
@@ -778,22 +816,22 @@ a prerelease tag:
 
 @example
 char const    input_str[] = "1.2.3-alpha.7";
-ccsemver_t      version;
-size_t        input_off = 0;
-char          rv;
+ccsemver_input_t      input =
+  ccsemver_input_new(input_str, strlen(input_str), 0);
+ccsemver_t            sv;
+char                  rv;
 
-rv = ccsemver_read(&version, input_str, strlen(input_str), &input_off);
+rv = ccsemver_read(&sv, &input);
 if (0 == rv) @{
   printf("major=%ld, minor=%ld, patch=%ld, ",
-         version.major, version.minor, version.patch);
+         sv.major, sv.minor, sv.patch);
   printf("prerelease=");
-  ccsemver_id_fwrite(&version.prerelease, stdout);
-  printf(", ");
-  printf("build=");
-  ccsemver_id_fwrite(&version.build, stdout);
+  ccsemver_id_fwrite(&sv.prerelease, stdout);
+  printf(", build=");
+  ccsemver_id_fwrite(&sv.build, stdout);
   printf("\n");
 @}
-ccsemver_dtor(&version);
+ccsemver_dtor(&sv);
 @end example
 
 @noindent
@@ -842,20 +880,18 @@ major=1, minor=2, patch=3, prerelease=alpha.7, build=x86-64
 @section Writing to a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_write (ccsemver_t const * @var{versionp}, char * @var{output_buf}, size_t @var{output_len})
-Serialise the version @var{versionp} as @ascii{} string in the memory block referenced by
+@deftypefun int ccsemver_write (ccsemver_t const * @var{sv}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the version @var{sv} as @ascii{} string in the memory block referenced by
 @var{output_buf}, which has at least @var{output_len} characters available.  If the buffer has not
 enough room to hold the full version serialisation: the string is truncated to @var{output_len}
 characters.
 
-Like @cfunc{snprintf}: return the number of characters needed to hold
-the full serialisation, excluding the trailing null; if the return value
-is greater than or equal to @var{output_len}, the string has been
-truncated.
+Like @cfunc{snprintf}: return the number of characters needed to hold the full serialisation,
+excluding the trailing null; if the return value is greater than or equal to @var{output_len}, the
+string has been truncated.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -904,14 +940,12 @@ len=13, actual_count=13, id=1.2.3-alpha.7
 @section Versions comparison
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftypefun char ccsemver_comp (ccsemver_t const * @var{A}, ccsemver_t const * @var{B})
-Compare the given versions.  Return @code{-1} if @var{A} is less than
-@var{B}; return @code{0} if @var{A} is equal to @var{B}; return
-@code{+1} if @var{A} is greater than @var{B}.
+Compare the given versions.  Return @code{-1} if @var{A} is less than @var{B}; return @code{0} if
+@var{A} is equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -969,37 +1003,35 @@ The comparators @api{} does @strong{not} duplicate the input strings.
 @section Constants definitions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftp {Enumeration} ccsemver_op
-Type of enumeration representing the comparison criteria for
-comparators.
+@deftp Enumeration ccsemver_op_t
+Type of enumeration representing the comparison criteria for comparators.
 @end deftp
 
 
-@deftypevr {Enumerated Constant} {enum ccsemver_op} CCSEMVER_OP_EQ
+@deftypevr {Enumerated Constant} ccsemver_op_t CCSEMVER_OP_EQ
 Represent the ``equality'' operator.
 @end deftypevr
 
 
-@deftypevr {Enumerated Constant} {enum ccsemver_op} CCSEMVER_OP_LT
+@deftypevr {Enumerated Constant} ccsemver_op_t CCSEMVER_OP_LT
 Represent the ``less than'' operator.
 @end deftypevr
 
 
-@deftypevr {Enumerated Constant} {enum ccsemver_op} CCSEMVER_OP_LE
+@deftypevr {Enumerated Constant} ccsemver_op_t CCSEMVER_OP_LE
 Represent the ``less than or equal to'' operator.
 @end deftypevr
 
 
-@deftypevr {Enumerated Constant} {enum ccsemver_op} CCSEMVER_OP_GT
+@deftypevr {Enumerated Constant} ccsemver_op_t CCSEMVER_OP_GT
 Represent the ``greater than'' operator.
 @end deftypevr
 
 
-@deftypevr {Enumerated Constant} {enum ccsemver_op} CCSEMVER_OP_GE
+@deftypevr {Enumerated Constant} ccsemver_op_t CCSEMVER_OP_GE
 Represent the ``greater than or equal to'' operator.
 @end deftypevr
 
@@ -1008,25 +1040,23 @@ Represent the ``greater than or equal to'' operator.
 @section Type definitions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftp {Struct Typedef} ccsemver_comp_t
-Type of data structures representing parsed comparators.  Every instance
-of this structure is a node in a simply--linked list.  Instances of this
-structure are initialised with @cfunc{ccsemver_comp_ctor} or
-@cfunc{ccsemver_comp_read}.  Instances of this structure are finalised
+Type of @code{struct} representing parsed comparators.  Every instance of this structure is a node
+in a simply--linked list.  Instances of this structure are initialised with
+@cfunc{ccsemver_comp_ctor} or @cfunc{ccsemver_comp_read}.  Instances of this structure are finalised
 with @cfunc{ccsemver_comp_dtor}.
 
 It has the following public fields:
 
 @table @code
 @item ccsemver_comp_t * next
-Pointer to the next comparator in the linked list; @cnull{} if this
-instance is the last in the list.
+Pointer to the next comparator in the linked list; @cnull{} if this instance is the last in the
+list.
 
-@item enum ccsemver_op op
+@item ccsemver_op_t op
 The operator specification for this comparator.
 
 @item ccsemver_t version
@@ -1035,10 +1065,9 @@ The version specification for this comparator.
 @end deftp
 
 
-@deftypefun void ccsemver_comp_ctor (ccsemver_comp_t * @var{compp})
-Initialise to empty an already allocated data structure representing a
-parsed comparator.  Every call to this function must be matched by a
-call to @cfunc{ccsemver_comp_dtor}:
+@deftypefun void ccsemver_comp_ctor (ccsemver_comp_t * @var{cmp})
+Initialise to empty an already allocated data structure representing a parsed comparator.  Every
+call to this function must be matched by a call to @cfunc{ccsemver_comp_dtor}:
 
 @example
 ccsemver_comp_t   comp;
@@ -1052,13 +1081,12 @@ ccsemver_comp_dtor(&comp);
 @end deftypefun
 
 
-@deftypefun void ccsemver_comp_dtor (ccsemver_comp_t * @var{compp})
-Finalise to empty a data structure representing a parsed comparator;
-calls to this function must match a previous call to
-@cfunc{ccsemver_comp_ctor} or @cfunc{ccsemver_comp_read}.
+@deftypefun void ccsemver_comp_dtor (ccsemver_comp_t * @var{cmp})
+Finalise to empty a data structure representing a parsed comparator; calls to this function must
+match a previous call to @cfunc{ccsemver_comp_ctor} or @cfunc{ccsemver_comp_read}.
 
-All the resources associated to @var{compp} are released, but the
-structure itself.  The following code is correct:
+All the resources associated to @var{cmp} are released, but the structure itself.  The following
+code is correct:
 
 @example
 ccsemver_comp_t   comp;
@@ -1074,18 +1102,18 @@ ccsemver_comp_dtor(&comp);
 the following code is also correct:
 
 @example
-ccsemver_comp_t * compp;
+ccsemver_comp_t * cmp;
 
-compp = malloc(sizeof(ccsemver_comp_t));
-assert(NULL != compp);
+cmp = malloc(sizeof(ccsemver_comp_t));
+assert(NULL != cmp);
 @{
-  ccsemver_comp_ctor(compp);
+  ccsemver_comp_ctor(cmp);
   @{
-    /* Do something with "compp" here. */
+    /* Do something with "cmp" here. */
   @}
-  ccsemver_comp_dtor(compp);
+  ccsemver_comp_dtor(cmp);
 @}
-free(compp);
+free(cmp);
 @end example
 @end deftypefun
 
@@ -1094,72 +1122,38 @@ free(compp);
 @section Parsing from a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_comp_read (ccsemver_comp_t * @var{compp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a
-comparator specification.  When successful: the return value is
-@code{0}.  If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_comp_read (ccsemver_comp_t * @var{cmp}, ccsemver_input_t * @var{input})
+Parse input expecting a comparator specification.  When successful: the return value is @code{0}.
+If an error occurs: the return value is @code{1}.
 
-The results of parsing are stored in the already allocated structure
-referenced by @var{compp}; the structure is first initialised with
-@cfunc{ccsemver_comp_ctor}.
+The results of parsing are stored in the already allocated structure referenced by @var{cmp}; the
+structure is first initialised with @cfunc{ccsemver_comp_ctor}.
 
-In both the successful and unsuccessful cases: every call to this
-function must be matched by the application of @cfunc{ccsemver_comp_dtor}
-to @var{compp}.
+In both the successful and unsuccessful cases: every call to this function must be matched by the
+application of @cfunc{ccsemver_comp_dtor} to @var{cmp}.
 
-The input string is referenced by @var{input_buf}; the length of the
-input string is @var{input_len} characters.  The argument
-@var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse
-in @var{input_buf} is acquired from the variable referenced by
-@var{input_offp}.
-
-@item
-When the function returns successfully: the offset of the first
-non--parsed character is stored in the variable referenced by
-@var{input_offp}; further parsing operations can use such value as
-input.
-
-@item
-When the function returns unsuccessfully: the value stored in the
-variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns
-unsuccessfully.
-
-Internally, this function allocates memory with @cfunc{malloc}; if
-memory allocation fails: the return value is @code{1}.
+Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
+return value is @code{1}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
 
-@deftypefun char ccsemver_comp_and (ccsemver_comp_t * @var{compp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a
-comparator specification.  When successful: the return value is
-@code{0}.  If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_comp_and (ccsemver_comp_t * @var{cmp}, ccsemver_input_t * @var{input})
+Parse input expecting a comparator specification.  When successful: the return value is @code{0}.
+If an error occurs: the return value is @code{1}.
 
-The results of parsing are appended to the already allocated and built
-structure referenced by @var{compp}.
+The results of parsing are appended to the already allocated and built structure referenced by
+@var{cmp}.
 
-In the unsuccessful case: the structure referenced by @var{compp} is
-left untouched.
+In the unsuccessful case: the structure referenced by @var{cmp} is left untouched.
 
-The meaning of the arguments @var{input_buf}, @var{input_len} and
-@var{input_offp} is the same as in @cfunc{ccsemver_comp_read}.
+If the input is empty: the comparator is initialised as if the input is @samp{>=0.0.0}.
 
-If the string is empty (@var{input_len} is zero): the comparator is initialised as if the input is
-@samp{>=0.0.0}.
-
-Internally, this function allocates memory with @cfunc{malloc}; if
-memory allocation fails: the return value is @code{1}.
+Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
+return value is @code{1}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1240,21 +1234,18 @@ comparator: >=1.2.3 <3.0.0
 @section Writing to a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_comp_write (ccsemver_comp_t const * @var{compp}, char * @var{output_buf}, size_t @var{output_len})
-Serialise the comparator @var{compp} as @ascii{} string in the memory
-block referenced by @var{output_buf}, which has at least
-@var{output_len} characters available.  If the buffer has not enough
-room to hold the full comparator serialisation: the string is truncated
-to @var{output_len} characters.
+@deftypefun int ccsemver_comp_write (ccsemver_comp_t const * @var{cmp}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the comparator @var{cmp} as @ascii{} string in the memory block referenced by
+@var{output_buf}, which has at least @var{output_len} characters available.  If the buffer has not
+enough room to hold the full comparator serialisation: the string is truncated to @var{output_len}
+characters.
 
-Like @cfunc{snprintf}: return the number of characters needed to hold
-the full serialisation, excluding the trailing null; if the return value
-is greater than or equal to @var{output_len}, the string has been
-truncated.
+Like @cfunc{snprintf}: return the number of characters needed to hold the full serialisation,
+excluding the trailing null; if the return value is greater than or equal to @var{output_len}, the
+string has been truncated.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1305,14 +1296,12 @@ len=7, actual_count=7, comp=<=1.2.3
 @section Matching with versions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_match (ccsemver_t const * @var{versionp}, ccsemver_comp_t const * @var{compp})
-Match a version referenced by @var{versionp} against all the comparators
-in the linked list referenced by @var{compp}.  The return value is
-@code{1} if the version matches; it is @code{0} otherwise.
+@deftypefun char ccsemver_match (ccsemver_t const * @var{sv}, ccsemver_comp_t const * @var{cmp})
+Match a version referenced by @var{sv} against all the comparators in the linked list referenced by
+@var{cmp}.  The return value is @code{1} if the version matches; it is @code{0} otherwise.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1370,23 +1359,20 @@ The ranges @api{} does @strong{not} duplicate the input strings.
 @section Type definitions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftp {Struct Typedef} ccsemver_range_t
-Type of data structures representing parsed ranges; a range is a set of
-comparators.  Every instance of this structure is a node in a
-simply--linked list.  Instances of this structure are initialised with
-@cfunc{ccsemver_range_read}.  Instances of this structure are finalised
-with @cfunc{ccsemver_range_dtor}.
+Type of @code{struct} representing parsed ranges; a range is a set of comparators.  Every instance
+of this structure is a node in a simply--linked list.  Instances of this structure are initialised
+with @cfunc{ccsemver_range_read}.  Instances of this structure are finalised with
+@cfunc{ccsemver_range_dtor}.
 
 It has the following public fields:
 
 @table @code
 @item ccsemver_range_t * next
-Pointer to the next structure in the linked list; @cnull{} if this
-instance is the last in the list.
+Pointer to the next structure in the linked list; @cnull{} if this instance is the last in the list.
 
 @item ccsemver_comp_t comp
 A version comparator.
@@ -1394,12 +1380,12 @@ A version comparator.
 @end deftp
 
 
-@deftypefun void ccsemver_range_dtor (ccsemver_range_t * @var{rangep})
-Finalise to empty a data structure representing a parsed range; calls to
-this function must match a previous call to @cfunc{ccsemver_range_read}.
+@deftypefun void ccsemver_range_dtor (ccsemver_range_t * @var{rn})
+Finalise to empty a data structure representing a parsed range; calls to this function must match a
+previous call to @cfunc{ccsemver_range_read}.
 
-All the resources associated to @var{rangep} are released, but the
-structure itself.  The following code is correct:
+All the resources associated to @var{rn} are released, but the structure itself.  The following code
+is correct:
 
 @example
 ccsemver_range_t  range;
@@ -1415,18 +1401,18 @@ ccsemver_range_dtor(&range);
 the following code is also correct:
 
 @example
-ccsemver_range_t * rangep;
+ccsemver_range_t * rn;
 
-rangep = malloc(sizeof(ccsemver_range_t));
-assert(NULL != rangep);
+rn = malloc(sizeof(ccsemver_range_t));
+assert(NULL != rn);
 @{
   ccsemver_range_read(&range, ...);
   @{
-    /* Do something with "rangep" here. */
+    /* Do something with "rn" here. */
   @}
-  ccsemver_range_dtor(rangep);
+  ccsemver_range_dtor(rn);
 @}
-free(rangep);
+free(rn);
 @end example
 @end deftypefun
 
@@ -1435,56 +1421,27 @@ free(rangep);
 @section Parsing from a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_range_read (ccsemver_range_t * @var{rangep}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a range
-specification.  When successful: the return value is @code{0}.  If an
+@deftypefun char ccsemver_range_read (ccsemver_range_t * @var{rn}, ccsemver_input_t * @var{input})
+Parse input expecting a range specification.  When successful: the return value is @code{0}.  If an
 error occurs: the return value is @code{1}.
 
-The results of parsing are stored in the already allocated structure
-referenced by @var{rangep}.
+The results of parsing are stored in the already allocated structure referenced by @var{rn}.
 
-In both the successful and unsuccessful cases: every call to this
-function must be matched by the application of @cfunc{ccsemver_range_dtor}
-to @var{rangep}.
+In both the successful and unsuccessful cases: every call to this function must be matched by the
+application of @cfunc{ccsemver_range_dtor} to @var{rn}.
 
-The input string is referenced by @var{input_buf}; the length of the
-input string is @var{input_len} characters.  The argument
-@var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse
-in @var{input_buf} is acquired from the variable referenced by
-@var{input_offp}.
-
-@item
-When the function returns successfully: the offset of the first
-non--parsed character is stored in the variable referenced by
-@var{input_offp}; further parsing operations can use such value as
-input.
-
-@item
-When the function returns unsuccessfully: the value stored in the
-variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns
-unsuccessfully.
-
-Internally, this function allocates memory with @cfunc{malloc}; if
-memory allocation fails: the return value is @code{1}.
+Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
+return value is @code{1}.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
 
 @subsubheading Example: parsing a range
 
-The following example parses the range specification
-@samp{1.2.7 || >=1.2.9 <2.0.0}:
+The following example parses the range specification @samp{1.2.7 || >=1.2.9 <2.0.0}:
 
 @example
 static const char  input_str[] = "1.2.7 || >=1.2.9 <2.0.0";
@@ -1514,21 +1471,17 @@ range: 1.2.7 || >=1.2.9 <2.0.0
 @section Writing to a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_range_write (ccsemver_range_t const * @var{rangep}, char * @var{output_buf}, size_t @var{output_len})
-Serialise the range @var{rangep} as @ascii{} string in the memory block
-referenced by @var{output_buf}, which has at least @var{output_len}
-characters available.  If the buffer has not enough room to hold the
-full comparator serialisation: the string is truncated to
-@var{output_len} characters.
+@deftypefun int ccsemver_range_write (ccsemver_range_t const * @var{rn}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the range @var{rn} as @ascii{} string in the memory block referenced by @var{output_buf},
+which has at least @var{output_len} characters available.  If the buffer has not enough room to hold
+the full comparator serialisation: the string is truncated to @var{output_len} characters.
 
-Like @cfunc{snprintf}: return the number of characters needed to hold
-the full serialisation, excluding the trailing null; if the return value
-is greater than or equal to @var{output_len}, the string has been
-truncated.
+Like @cfunc{snprintf}: return the number of characters needed to hold the full serialisation,
+excluding the trailing null; if the return value is greater than or equal to @var{output_len}, the
+string has been truncated.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1580,14 +1533,13 @@ len=23, actual_count=23, range=1.2.7 || >=1.2.9 <2.0.0
 @section Matching ranges and versions
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_range_match (ccsemver_t const * @var{versionp}, ccsemver_range_t const * @var{rangep})
-Match a version referenced by @var{versionp} against the comparators in
-the range referenced by @var{rangep}.  The return value is @code{1} if
-the version matches; it is @code{0} otherwise.
+@deftypefun char ccsemver_range_match (ccsemver_t const * @var{sv}, ccsemver_range_t const * @var{rangep})
+Match a version referenced by @var{sv} against the comparators in the range referenced by
+@var{rangep}.  The return value is @code{1} if the version matches at least one comparator; it is
+@code{0} otherwise.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -1640,31 +1592,11 @@ Usually we do @strong{not} need to use the numeric components parser directly.
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_parse_number (long * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a plain number.  When successful:
-the return value is @code{0}.  If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_parse_number (long * @var{nump}, ccsemver_input_t * @var{input})
+Parse input expecting plain number.  When successful: the return value is @code{0}.  If an error
+occurs: the return value is @code{1}.
 
 The results of parsing are stored in the variable referenced by @var{nump}.
-
-The input string is referenced by @var{input_buf}; the length of the input string is @var{input_len}
-characters.  The argument @var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse in @var{input_buf} is
-acquired from the variable referenced by @var{input_offp}.  If the value in the referenced variable
-is greater than @var{input_len}: the function returns unsuccessfully.
-
-@item
-When the function returns successfully: the offset of the first non--parsed character is stored in
-the variable referenced by @var{input_offp}; further parsing operations can use such value as input.
-
-@item
-When the function returns unsuccessfully: the value stored in the variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns successfully and stores zero
-in the variable referenced by @var{nump}.
 
 The following example code parses a numeric component:
 
@@ -1683,31 +1615,11 @@ if (0 == rv) @{
 @end deftypefun
 
 
-@deftypefun char ccsemver_num_parse (long * @var{nump}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold a numeric component.  When
-successful: the return value is @code{0}.  If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_num_parse (long * @var{nump}, ccsemver_input_t * @var{input})
+Parse input expecting a numeric component.  When successful: the return value is @code{0}.  If an
+error occurs: the return value is @code{1}.
 
 The results of parsing are stored in the variable referenced by @var{nump}.
-
-The input string is referenced by @var{input_buf}; the length of the input string is @var{input_len}
-characters.  The argument @var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse in @var{input_buf} is
-acquired from the variable referenced by @var{input_offp}.  If the value in the referenced variable
-is greater than @var{input_len}: the function returns unsuccessfully.
-
-@item
-When the function returns successfully: the offset of the first non--parsed character is stored in
-the variable referenced by @var{input_offp}; further parsing operations can use such value as input.
-
-@item
-When the function returns unsuccessfully: the value stored in the variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns successfully and stores zero
-in the variable referenced by @var{nump}.
 
 If the input string contains @samp{x}, @samp{X} or @samp{*}: the function returns successfully and
 stores the value @code{CCSEMVER_NUM_X} in the variable referenced by @var{nump}.
@@ -1759,7 +1671,7 @@ The semantic version string:
 @end example
 
 @noindent
-contains the identifier:
+contains as ``prerelease tag'' the identifier:
 
 @example
 alpha.7
@@ -1788,11 +1700,10 @@ All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
 @deftp {Struct Typedef} ccsemver_id_t
-Type of data structures representing a single component in a parsed identifier; every instance of
-this structure is a node in a simply--linked list.  The identifiers @api{} does @strong{not}
-duplicate the input strings.  Instances of this structure are initialised with
-@cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.  Instances of this structure are finalised
-with @cfunc{ccsemver_id_dtor}.
+Type of @code{struct} representing a single component in a parsed identifier; every instance of this
+structure is a node in a simply--linked list.  The identifiers @api{} does @strong{not} duplicate
+the input strings.  Instances of this structure are initialised with @cfunc{ccsemver_id_ctor} or
+@cfunc{ccsemver_id_read}.  Instances of this structure are finalised with @cfunc{ccsemver_id_dtor}.
 
 The structure has the following public fields:
 
@@ -1818,7 +1729,7 @@ Pointer to the next node in the linked list; @cnull{} if this structure is the l
 @end deftp
 
 
-@deftypefun void ccsemver_id_ctor (ccsemver_id_t * @var{idp})
+@deftypefun void ccsemver_id_ctor (ccsemver_id_t * @var{id})
 Initialise to empty an already allocated data structure representing a parsed identifier.  Every
 call to this function must be matched by a call to @cfunc{ccsemver_id_dtor}:
 
@@ -1834,11 +1745,11 @@ ccsemver_id_dtor(&id);
 @end deftypefun
 
 
-@deftypefun void ccsemver_id_dtor(ccsemver_id_t * @var{idp})
+@deftypefun void ccsemver_id_dtor(ccsemver_id_t * @var{id})
 Finalise to empty a data structure representing a parsed identifier; calls to this function must
 match a previous call to @cfunc{ccsemver_id_ctor} or @cfunc{ccsemver_id_read}.
 
-All the resources associated to @var{idp} are released, but the structure itself.  The following
+All the resources associated to @var{id} are released, but the structure itself.  The following
 code is correct:
 
 @example
@@ -1855,18 +1766,18 @@ ccsemver_id_dtor(&id);
 the following code is also correct:
 
 @example
-ccsemver_id_t *   idp;
+ccsemver_id_t *   id;
 
-idp = malloc(sizeof(ccsemver_id_t));
-assert(NULL != idp);
+id = malloc(sizeof(ccsemver_id_t));
+assert(NULL != id);
 @{
-  ccsemver_id_ctor(idp);
+  ccsemver_id_ctor(id);
   @{
-    /* Do something with "idp" here. */
+    /* Do something with "id" here. */
   @}
-  ccsemver_id_dtor(idp);
+  ccsemver_id_dtor(id);
 @}
-free(idp);
+free(id);
 @end example
 @end deftypefun
 
@@ -1878,33 +1789,15 @@ free(idp);
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_id_read (ccsemver_id_t * @var{idp}, const char * @var{input_buf}, size_t @var{input_len}, size_t * @var{input_offp})
-Parse an input string in @ascii{} format which is meant to hold an identifier.  When successful: the
-return value is @code{0}.  If an error occurs: the return value is @code{1}.
+@deftypefun char ccsemver_id_read (ccsemver_id_t * @var{id}, ccsemver_input_t * @var{input})
+Parse input expecting an identifier.  When successful: the return value is @code{0}.  If an error
+occurs: the return value is @code{1}.
 
-The results of parsing are stored in the already allocated structure referenced by @var{idp}; the
+The results of parsing are stored in the already allocated structure referenced by @var{id}; the
 structure is first initialised with @cfunc{ccsemver_id_ctor}.
 
 In both the successful and unsuccessful cases: every call to this function must be matched by the
-application of @cfunc{ccsemver_id_dtor} to @var{idp}.
-
-The input string is referenced by @var{input_buf}; the length of the input string is @var{input_len}
-characters.  The argument @var{input_offp} is both an input and output parameter:
-
-@itemize
-@item
-Upon entering the function: the offset of the first character to parse in @var{input_buf} is
-acquired from the variable referenced by @var{input_offp}.
-
-@item
-When the function returns successfully: the offset of the first non--parsed character is stored in
-the variable referenced by @var{input_offp}; further parsing operations can use such value as input.
-
-@item
-When the function returns unsuccessfully: the value stored in the variable is invalid.
-@end itemize
-
-If the string is empty (@var{input_len} is zero): the function returns unsuccessfully.
+application of @cfunc{ccsemver_id_dtor} to @var{id}.
 
 Internally, this function allocates memory with @cfunc{malloc}; if memory allocation fails: the
 return value is @code{1}.
@@ -2037,21 +1930,18 @@ the build metadata.
 @section Writing to a string
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_id_write (ccsemver_id_t const * @var{idp}, char * @var{output_buf}, size_t @var{output_len})
-Serialise the identifier @var{idp} as @ascii{} string in the memory
-block referenced by @var{output_buf}, which has at least
-@var{output_len} characters available.  If the buffer has not enough
-room to hold the full identifier serialisation: the string is truncated
-to @var{output_len} characters.
+@deftypefun int ccsemver_id_write (ccsemver_id_t const * @var{id}, char * @var{output_buf}, size_t @var{output_len})
+Serialise the identifier @var{id} as @ascii{} string in the memory block referenced by
+@var{output_buf}, which has at least @var{output_len} characters available.  If the buffer has not
+enough room to hold the full identifier serialisation: the string is truncated to @var{output_len}
+characters.
 
-Like @cfunc{snprintf}: return the number of characters needed to hold
-the full serialisation, excluding the trailing null; if the return value
-is greater than or equal to @var{output_len}, the string has been
-truncated.
+Like @cfunc{snprintf}: return the number of characters needed to hold the full serialisation,
+excluding the trailing null; if the return value is greater than or equal to @var{output_len}, the
+string has been truncated.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -2101,17 +1991,16 @@ len=13, actual_count=13, id=1.2.3-alpha.7
 @section Identifiers comparison
 
 
-All the following symbols are defined in the header file
-@file{ccsemver.h}.
+All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_id_comp (ccsemver_id_t const * @var{A}, ccsemver_id_t const * @var{B})
-Compare the numeric components of the given identifiers.  Return
-@code{-1} if @var{A} is less than @var{B}; return @code{0} if @var{A} is
-equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
+@deftypefun char ccsemver_id_comp (ccsemver_id_t const * @vari{id}, ccsemver_id_t const * @varii{id})
+Compare the numeric components of the given identifiers.  Return @code{-1} if @vari{id} is less than
+@varii{id}; return @code{0} if @vari{id} is equal to @varii{id}; return @code{+1} if @vari{id} is
+greater than @varii{id}.
 
-An empty identifier is less than any other identifier but the empty one;
-two empty identifiers are equal.
+An empty identifier is less than any other identifier but the empty one; two empty identifiers are
+equal.
 @end deftypefun
 
 @c ------------------------------------------------------------------------
@@ -2158,41 +2047,37 @@ All the following symbols are defined in the header file
 @file{ccsemver.h}.
 
 
-@deftypefun size_t ccsemver_id_fwrite (const ccsemver_id_t * @var{idp}, FILE * @var{stream})
-Serialise the referenced identifier to the given @var{stream}.  When
-successful: return the number of characters written and clear
-@code{errno} to zero.  If an error occurs: set @code{errno} to an
+@deftypefun size_t ccsemver_id_fwrite (const ccsemver_id_t * @var{id}, FILE * @var{stream})
+Serialise the referenced identifier to the given @var{stream}.  When successful: return the number
+of characters written and clear @code{errno} to zero.  If an error occurs: set @code{errno} to an
 appropriate error code.
 @end deftypefun
 
 
-@deftypefun size_t ccsemver_fwrite (const ccsemver_t * @var{versionp}, FILE * @var{stream})
-Serialise the referenced version to the given @var{stream}.  When
-successful: return the number of characters written and clear
-@code{errno} to zero.  If an error occurs: set @code{errno} to an
+@deftypefun size_t ccsemver_fwrite (const ccsemver_t * @var{sv}, FILE * @var{stream})
+Serialise the referenced version to the given @var{stream}.  When successful: return the number of
+characters written and clear @code{errno} to zero.  If an error occurs: set @code{errno} to an
 appropriate error code.
 @end deftypefun
 
 
-@deftypefun size_t ccsemver_comp_fwrite (const ccsemver_comp_t * @var{compp}, FILE * @var{stream})
-Serialise the referenced comparator to the given @var{stream}.  When
-successful: return the number of characters written and clear
-@code{errno} to zero.  If an error occurs: set @code{errno} to an
+@deftypefun size_t ccsemver_comp_fwrite (const ccsemver_comp_t * @var{cmp}, FILE * @var{stream})
+Serialise the referenced comparator to the given @var{stream}.  When successful: return the number
+of characters written and clear @code{errno} to zero.  If an error occurs: set @code{errno} to an
 appropriate error code.
 @end deftypefun
 
 
-@deftypefun size_t ccsemver_range_fwrite (const ccsemver_range_t * @var{rangep}, FILE * @var{stream})
-Serialise the referenced range to the given @var{stream}.  When
-successful: return the number of characters written and clear
-@code{errno} to zero.  If an error occurs: set @code{errno} to an
+@deftypefun size_t ccsemver_range_fwrite (const ccsemver_range_t * @var{rn}, FILE * @var{stream})
+Serialise the referenced range to the given @var{stream}.  When successful: return the number of
+characters written and clear @code{errno} to zero.  If an error occurs: set @code{errno} to an
 appropriate error code.
 @end deftypefun
 
 
-@deftypefun const char * ccsemver_op_string (enum ccsemver_op @var{op})
-Return a statically allocated @asciiz{} string representing the name of
-@var{op}.  Useful for debugging purposes.
+@deftypefun {char const *} ccsemver_op_string (ccsemver_op_t @var{op})
+Return a statically allocated @asciiz{} string representing the name of @var{op}.  Useful for
+debugging purposes.
 @end deftypefun
 
 @c page

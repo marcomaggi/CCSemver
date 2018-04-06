@@ -49,11 +49,11 @@ test_read (char const * const expected, char const * const input_str, size_t con
 
   printf("test: `%.*s`", (int) input.len, input.str);
   if (ccsemver_range_read(&range, &input)) {
-    puts(" \tcouldn't parse");
+    puts("\tunable to parse the range specification");
     return 1;
   }
-  if (input.off != input.len) {
-    puts(" \tcouldn't parse fully base");
+  if (ccsemver_input_more(&input)) {
+    puts("\tunable to parse the whole range specification");
     return 1;
   }
   slen = (unsigned) ccsemver_range_write(&range, buffer, 1024);

@@ -483,7 +483,7 @@ static void
 doc_example_versions_2_1 (void)
 {
   printf("\n\n--- %s:\n", __func__);
-  char const	input_str[] = "1.2.3";
+  char const		input_str[] = "1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
   ccsemver_t		sv;
@@ -495,8 +495,7 @@ doc_example_versions_2_1 (void)
 	   sv.major, sv.minor, sv.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&sv.prerelease, stdout);
-    printf(", ");
-    printf("build=");
+    printf(", build=");
     ccsemver_id_fwrite(&sv.build, stdout);
     printf("\n");
   }
@@ -519,8 +518,7 @@ doc_example_versions_2_2 (void)
 	   sv.major, sv.minor, sv.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&sv.prerelease, stdout);
-    printf(", ");
-    printf("build=");
+    printf(", build=");
     ccsemver_id_fwrite(&sv.build, stdout);
     printf("\n");
   }
@@ -543,8 +541,7 @@ doc_example_versions_2_3 (void)
 	   sv.major, sv.minor, sv.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&sv.prerelease, stdout);
-    printf(", ");
-    printf("build=");
+    printf(", build=");
     ccsemver_id_fwrite(&sv.build, stdout);
     printf("\n");
   }
@@ -568,8 +565,7 @@ doc_example_versions_2_4 (void)
 	   sv.major, sv.minor, sv.patch);
     printf("prerelease=");
     ccsemver_id_fwrite(&sv.prerelease, stdout);
-    printf(", ");
-    printf("build=");
+    printf(", build=");
     ccsemver_id_fwrite(&sv.build, stdout);
     printf("\n");
   } else {
