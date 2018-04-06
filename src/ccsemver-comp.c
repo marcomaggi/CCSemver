@@ -598,7 +598,7 @@ ccsemver_comp_and (ccsemver_comp_t * cmp, ccsemver_input_t * input)
    read a new comparator from the input and append it to the linked list
    CMP. */
 {
-  if (0 < input->len) {
+  if ((! ccsemver_input_is_empty(input)) && ccsemver_input_more(input)) {
     ccsemver_comp_t *	new;
 
     /* Read a comparator from the input string. */
