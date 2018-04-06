@@ -40,8 +40,9 @@ libccsemver_la_SOURCES	= \
 	src/ccsemver-version.c		\
 	src/ccsemver-conditions.c	\
 	src/ccsemver-memory.c		\
-	src/ccsemver-comp.c		\
+	src/ccsemver-input.c		\
 	src/ccsemver-core.c		\
+	src/ccsemver-comp.c		\
 	src/ccsemver-id.c		\
 	src/ccsemver-num.c		\
 	src/ccsemver-range.c		\

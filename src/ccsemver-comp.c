@@ -196,11 +196,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       }
       /* If input continues with at least 3 characters being: a space, a
 	 dash, a space, then it is a hyphen range. */
-      if ((input->off     < input->len) && (ccsemver_input_next(input)     == ' ') &&
-	  (input->off + 1 < input->len) && (input->str[input->off + 1] == '-') &&
-	  (input->off + 2 < input->len) && (input->str[input->off + 2] == ' ')) {
-	/* Skip space+dash+space. */
-	input->off += 3;
+      if (ccsemver_input_parse_blanked_dash(input)) {
 	if (parse_hyphen_tail(cmp, input)) {
 	  return 1;
 	}
@@ -229,12 +225,7 @@ comp_parse_next_if_any (ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Either we  are done or we  parse the next comparator.   Upon entering
    this function CMP is already filled with a valid comparator. */
 {
-  /* If  input  continues  with  one  space followed  by  at  least  one
-     character that is neither a space nor a vertical bar... */
-  if ((input->off     < input->len) && ccsemver_input_next(input)     == ' ' &&
-      (input->off + 1 < input->len) && input->str[input->off + 1] != ' ' && input->str[input->off + 1] != '|') {
-    /* Skip the white space. */
-    ++(input->off);
+  if (ccsemver_input_parse_comparator_separator(input)) {
     /* Parse the next comparator. */
     cmp->next = (ccsemver_comp_t *) malloc(sizeof(ccsemver_comp_t));
     if (cmp->next) {
@@ -376,7 +367,7 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
     }
 
     /* If no more input or input is not a dot: return successfully. */
-    if (input->off >= input->len || ccsemver_input_next(input) != '.') {
+    if (ccsemver_input_at_end(input) || (ccsemver_input_next(input) != '.')) {
       return 0;
     }
 

@@ -67,19 +67,6 @@ ccsemver_range_dtor (ccsemver_range_t * self)
  ** Parser.
  ** ----------------------------------------------------------------- */
 
-__attribute__((__always_inline__,__nonnull__(1)))
-static inline void
-skip_blank_characters (ccsemver_input_t * input)
-{
-  while (ccsemver_input_more(input) &&
-	 ((' '  == ccsemver_input_next(input)) ||
-	  ('\t' == ccsemver_input_next(input)) ||
-	  ('\r' == ccsemver_input_next(input)) ||
-	  ('\n' == ccsemver_input_next(input)))) {
-    ++(input->off);
-  }
-}
-
 char
 ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
 /* Parse a range from the input string.  A range is defined as follows:
@@ -94,12 +81,12 @@ ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
     return 1;
   }
 
-  skip_blank_characters(input);
+  ccsemver_input_parse_blanks(input);
 
   /* Check if there is a "||" operator after the first comparator. */
   if (looking_at_OR(input)) {
     input->off += 2;
-    skip_blank_characters(input);
+    ccsemver_input_parse_blanks(input);
     self->next = (ccsemver_range_t *) malloc(sizeof(ccsemver_range_t));
     if (self->next) {
       return ccsemver_range_read(self->next, input);

@@ -235,7 +235,7 @@ __attribute__((__always_inline__,__nonnull__(1)))
 static inline bool
 ccsemver_input_at_end (ccsemver_input_t * input)
 {
-  return (input->len == input->off);
+  return (input->len <= input->off);
 }
 
 __attribute__((__always_inline__,__nonnull__(1)))
@@ -244,6 +244,25 @@ ccsemver_input_is_empty (ccsemver_input_t * input)
 {
   return (0 == input->len);
 }
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl bool ccsemver_looking_at_blanked_dash (ccsemver_input_t const * input)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl bool ccsemver_input_parse_blanks (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_dash (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_blanked_dash (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
 
 
 /** --------------------------------------------------------------------
