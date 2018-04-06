@@ -49,22 +49,22 @@
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_num_parse (long * nump, ccsemver_input_t * input)
 {
   *nump = 0;
-  if (*input_offp >= input_len) {
+  if (input->off >= input->len) {
     return 1;
   } else {
-    switch (input_str[*input_offp]) {
+    switch (input->str[input->off]) {
     case 'x':
     case 'X':
     case '*':
       *nump = CCSEMVER_NUM_X;
-      ++(*input_offp);
+      ++(input->off);
       break;
 
     default:
-      if (isdigit(input_str[*input_offp])) {
+      if (isdigit(input->str[input->off])) {
 	char *	endptr;
 
 	/* We  have already  determined that  the first  character is  a
@@ -77,8 +77,8 @@ ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_
 	   documentation:  if the  value  overflows, "strtol()"  returns
 	   LONG_MAX.   Right now  we  are accepting  LONG_MAX as  valid.
 	   (Marco Maggi; Apr 4, 2018) */
-	*nump = strtol(input_str + *input_offp, &endptr, 10);
-	*input_offp += endptr - input_str - *input_offp;
+	*nump = strtol(input->str + input->off, &endptr, 10);
+	input->off += endptr - input->str - input->off;
       } else {
 	return 1;
       }
@@ -89,13 +89,13 @@ ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_
 }
 
 char
-ccsemver_parse_number (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_parse_number (long * nump, ccsemver_input_t * input)
 /* Parse an integer number. */
 {
-  if (*input_offp >= input_len) {
+  if (input->off >= input->len) {
     return 1;
   } else {
-    if (isdigit(input_str[*input_offp])) {
+    if (isdigit(input->str[input->off])) {
       char *	endptr;
 
       /* We have already determined that the first character is a digit,
@@ -108,8 +108,8 @@ ccsemver_parse_number (long * nump, char const * input_str, size_t input_len, si
 	 documentation:  if  the  value  overflows,  "strtol()"  returns
 	 LONG_MAX.   Right  now  we  are accepting  LONG_MAX  as  valid.
 	 (Marco Maggi; Apr 4, 2018) */
-      *nump = strtol(input_str + *input_offp, &endptr, 10);
-      *input_offp += endptr - input_str - *input_offp;
+      *nump = strtol(input->str + input->off, &endptr, 10);
+      input->off += endptr - input->str - input->off;
       return 0;
     } else {
       return 1;

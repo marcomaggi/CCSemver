@@ -72,28 +72,28 @@ ccsemver_dtor (ccsemver_t * self)
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_read (ccsemver_t * self, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_read (ccsemver_t * self, ccsemver_input_t * input)
 {
-  if (*input_offp < input_len) {
+  if (input->off < input->len) {
     ccsemver_ctor(self);
-    self->raw = input_str + *input_offp;
+    self->raw = input->str + input->off;
 
     /* Skip the initial "v" character, if any. */
-    if ('v' == input_str[*input_offp]) {
-      ++(*input_offp);
+    if ('v' == input->str[input->off]) {
+      ++(input->off);
     }
 
-    if (ccsemver_parse_number(&self->major, input_str, input_len, input_offp)
-	|| *input_offp >= input_len || input_str[*input_offp] != '.'
-	|| ccsemver_parse_number(&self->minor, input_str, input_len, (++*input_offp, input_offp))
-	|| *input_offp >= input_len || input_str[*input_offp] != '.'
-	|| ccsemver_parse_number(&self->patch, input_str, input_len, (++*input_offp, input_offp))
-	|| (input_str[*input_offp] == '-' && ccsemver_id_read(&self->prerelease, input_str, input_len, (++*input_offp, input_offp)))
-	|| (input_str[*input_offp] == '+' && ccsemver_id_read(&self->build, input_str, input_len, (++*input_offp, input_offp)))) {
-      self->len = input_str + *input_offp - self->raw;
+    if (ccsemver_parse_number(&self->major, input)
+	|| input->off >= input->len || input->str[input->off] != '.'
+	|| ccsemver_parse_number(&self->minor, (++input->off, input))
+	|| input->off >= input->len || input->str[input->off] != '.'
+	|| ccsemver_parse_number(&self->patch, (++input->off, input))
+	|| (input->str[input->off] == '-' && ccsemver_id_read(&self->prerelease, (++input->off, input)))
+	|| (input->str[input->off] == '+' && ccsemver_id_read(&self->build,      (++input->off, input)))) {
+      self->len = input->str + input->off - self->raw;
       return 1;
     }
-    self->len = input_str + *input_offp - self->raw;
+    self->len = input->str + input->off - self->raw;
     return 0;
   }
   return 1;

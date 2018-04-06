@@ -75,10 +75,10 @@ ccsemver_id_dtor (ccsemver_id_t * self)
  ** ----------------------------------------------------------------- */
 
 char
-ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
 {
 #undef NEXT_CHAR
-#define NEXT_CHAR		input_str[*input_offp]
+#define NEXT_CHAR		input->str[input->off]
 #undef VALID_CHAR
 #define VALID_CHAR		(isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR))
   size_t	component_len = 0;
@@ -90,8 +90,8 @@ ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len
   self->num	= 0;
   self->numeric	= true;
   for (;
-       (*input_offp < input_len) && VALID_CHAR;
-       ++component_len, ++(*input_offp)) {
+       (input->off < input->len) && VALID_CHAR;
+       ++component_len, ++(input->off)) {
     if (!isdigit(NEXT_CHAR)) {
       is_zero       = false;
       self->numeric = false;
@@ -114,7 +114,7 @@ ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len
 
   /* Here we know that the input string holds an identifier component of
      length "component_len". */
-  self->raw = input_str + *input_offp - component_len;
+  self->raw = input->str + input->off - component_len;
   self->len = component_len;
 
   /* Only if  the identifier  component is  numeric we  convert it  to a
@@ -145,9 +145,9 @@ ccsemver_id_read (ccsemver_id_t * self, char const * input_str, size_t input_len
     self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
     if (self->next) {
       /* Skip the dot. */
-      ++(*input_offp);
+      ++(input->off);
       /* Parse the next component. */
-      return ccsemver_id_read(self->next, input_str, input_len, input_offp);
+      return ccsemver_id_read(self->next, input);
     } else {
       return 1;
     }

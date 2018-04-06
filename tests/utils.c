@@ -26,18 +26,26 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-int test_id_fwrite(void) {
-  static const char	input_str[] = "1.2.3-alpha.1+x86-64";
+
+int
+test_id_fwrite (void)
+{
+  char const		input_str[] = "1.2.3-alpha.1+x86-64";
+  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
   ccsemver_id_t		id;
-  size_t		offset = 0;
   int			rv;
 
-  rv = ccsemver_id_read(&id, input_str, strlen(input_str), &offset);
+  rv = ccsemver_id_read(&id, &input);
   if (0 == rv) {
     printf("test_id_fwrite: ");
     ccsemver_id_fwrite(&id, stdout);
@@ -50,64 +58,76 @@ int test_id_fwrite(void) {
   return rv;
 }
 
-int test_version_fwrite(void) {
-  static const char	input_str[] = "1.2.3-alpha.1+x86-64";
-  ccsemver_t		version;
-  size_t		offset = 0;
+
+int
+test_version_fwrite (void)
+{
+  char const		input_str[] = "1.2.3-alpha.1+x86-64";
+  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
+  ccsemver_t		sv;
   int			rv;
 
-  rv = ccsemver_read(&version, input_str, strlen(input_str), &offset);
+  rv = ccsemver_read(&sv, &input);
   if (0 == rv) {
     printf("test_version_fwrite: ");
-    ccsemver_fwrite(&version, stdout);
+    ccsemver_fwrite(&sv, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  ccsemver_dtor(&version);
+  ccsemver_dtor(&sv);
   return 0;
 }
 
-int test_comparator_fwrite(void) {
-  static const char	input_str[] = "<=1.2.3";
-  ccsemver_comp_t		comp;
-  size_t		offset = 0;
+
+int
+test_comparator_fwrite (void)
+{
+  char const		input_str[] = "<=1.2.3";
+  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
+  ccsemver_comp_t	cmp;
   int			rv;
 
-  rv = ccsemver_comp_read(&comp, input_str, strlen(input_str), &offset);
+  rv = ccsemver_comp_read(&cmp, &input);
   if (0 == rv) {
     printf("test_comparator_fwrite: ");
-    ccsemver_comp_fwrite(&comp, stdout);
+    ccsemver_comp_fwrite(&cmp, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  ccsemver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&cmp);
   return rv;
 }
 
-int test_range_fwrite(void) {
-  static const char	input_str[] = ">=1.2.3 <4.0.0";
-  ccsemver_range_t	range;
-  size_t		offset = 0;
+
+int
+test_range_fwrite (void)
+{
+  char const		input_str[] = ">=1.2.3 || <4.0.0";
+  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
+  ccsemver_range_t	rn;
   int			rv;
 
-  rv = ccsemver_range_read(&range, input_str, strlen(input_str), &offset);
+  rv = ccsemver_range_read(&rn, &input);
   if (0 == rv) {
     printf("test_range_fwrite: ");
-    ccsemver_range_fwrite(&range, stdout);
+    ccsemver_range_fwrite(&rn, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  ccsemver_range_dtor(&range);
+  ccsemver_range_dtor(&rn);
   return rv;
 }
 
-int main(void) {
+
+int
+main (void)
+{
   ccsemver_init();
 
   if (test_id_fwrite()) {
@@ -128,3 +148,5 @@ int main(void) {
 
   return EXIT_SUCCESS;
 }
+
+/* end of file */

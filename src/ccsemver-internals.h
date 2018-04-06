@@ -68,12 +68,12 @@
  ** Function prototypes and inline functions.
  ** ----------------------------------------------------------------- */
 
-__attribute__((__always_inline__,__nonnull__(1,3)))
+__attribute__((__always_inline__,__nonnull__(1)))
 static inline bool
-looking_at_OR (char const * input_str, size_t input_len, size_t * input_offp)
+looking_at_OR (ccsemver_input_t * input)
 {
-  return ((*input_offp     < input_len)	&& ('|' == input_str[*input_offp]) &&
-	  (*input_offp + 1 < input_len)	&& ('|' == input_str[*input_offp + 1]));
+  return ((input->off     < input->len)	&& ('|' == input->str[input->off]) &&
+	  (input->off + 1 < input->len)	&& ('|' == input->str[input->off + 1]));
 }
 
 

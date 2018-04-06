@@ -26,6 +26,11 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver-internals.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +39,7 @@
 #undef CCSEMVER_FWRITE_STACK_BUFLEN
 #define CCSEMVER_FWRITE_STACK_BUFLEN	64
 
+
 size_t
 ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
 /* Serialise the identifier to the  STREAM.  When successful: return the
@@ -68,8 +74,9 @@ ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
   }
 }
 
+
 size_t
-ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
+ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
 /* Serialise the  version to  the STREAM.   When successful:  return the
    number of bytes written and  set "errno" to zero.  When unsuccessful:
    set "errno" to an error code. */
@@ -78,7 +85,7 @@ ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_write(versionp, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_write(sv, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -92,7 +99,7 @@ ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_write(versionp, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_write(sv, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
@@ -102,6 +109,7 @@ ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
   }
 }
 
+
 size_t
 ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
 /* Serialise the comparator to the  STREAM.  When successful: return the
@@ -136,6 +144,7 @@ ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
   }
 }
 
+
 size_t
 ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
 /* Serialise  the range  to  the STREAM.   When  successful: return  the
@@ -170,6 +179,7 @@ ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
   }
 }
 
+
 const char *
 ccsemver_op_string (ccsemver_op_t op)
 {

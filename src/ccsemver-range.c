@@ -68,23 +68,23 @@ ccsemver_range_dtor (ccsemver_range_t * self)
  ** ----------------------------------------------------------------- */
 
 #undef NEXT_CHAR
-#define NEXT_CHAR		input_str[*input_offp]
+#define NEXT_CHAR		input->str[input->off]
 
-__attribute__((__always_inline__,__nonnull__(1,3)))
+__attribute__((__always_inline__,__nonnull__(1)))
 static inline void
-skip_blank_characters (char const * input_str, size_t input_len, size_t * input_offp)
+skip_blank_characters (ccsemver_input_t * input)
 {
-  while ((*input_offp < input_len) &&
+  while ((input->off < input->len) &&
 	 ((' '  == NEXT_CHAR) ||
 	  ('\t' == NEXT_CHAR) ||
 	  ('\r' == NEXT_CHAR) ||
 	  ('\n' == NEXT_CHAR))) {
-    ++(*input_offp);
+    ++(input->off);
   }
 }
 
 char
-ccsemver_range_read (ccsemver_range_t * self, char const * input_str, size_t input_len, size_t * input_offp)
+ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
 /* Parse a range from the input string.  A range is defined as follows:
  *
  *    <range> := <comparator> ("||" <range>)
@@ -93,19 +93,19 @@ ccsemver_range_read (ccsemver_range_t * self, char const * input_str, size_t inp
   ccsemver_range_init(self);
 
   /* Read the first comparator. */
-  if (ccsemver_comp_read(&self->comp, input_str, input_len, input_offp)) {
+  if (ccsemver_comp_read(&self->comp, input)) {
     return 1;
   }
 
-  skip_blank_characters(input_str, input_len, input_offp);
+  skip_blank_characters(input);
 
   /* Check if there is a "||" operator after the first comparator. */
-  if (looking_at_OR(input_str, input_len, input_offp)) {
-    *input_offp += 2;
-    skip_blank_characters(input_str, input_len, input_offp);
+  if (looking_at_OR(input)) {
+    input->off += 2;
+    skip_blank_characters(input);
     self->next = (ccsemver_range_t *) malloc(sizeof(ccsemver_range_t));
     if (self->next) {
-      return ccsemver_range_read(self->next, input_str, input_len, input_offp);
+      return ccsemver_range_read(self->next, input);
     } else {
       return 1;
     }

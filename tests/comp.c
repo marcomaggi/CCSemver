@@ -26,6 +26,11 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,67 +38,84 @@
 
 #define STRNSIZE(s) (s), sizeof(s)-1
 
-int test_read(const char *expected, const char *str, size_t len) {
-  size_t offset = 0;
-  unsigned slen;
-  char buffer[1024];
-  ccsemver_comp_t comp = {0};
+
+int
+test_read (char const * const expected, char const * const input_str, size_t const input_len)
+{
+  ccsemver_input_t	input = ccsemver_input_new(input_str, input_len, 0);
+  unsigned		slen;
+  char			buffer[1024];
+  ccsemver_comp_t	cmp = {0};
 
-  printf("test: `%.*s`", (int) len, str);
-  if (ccsemver_comp_read(&comp, str, len, &offset)) {
+  printf("test: len=%lu, str='%s'", input_len, input_str);
+  if (ccsemver_comp_read(&cmp, &input)) {
     puts(" \tcouldn't parse");
     return 1;
   }
-  if (offset != len) {
+  if (input.off != input.len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
+  slen = (unsigned) ccsemver_comp_write(&cmp, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
-  if (memcmp(expected, buffer, (size_t) slen > len ? slen : len) != 0) {
+  if (memcmp(expected, buffer, (size_t) slen > input.len ? slen : input.len) != 0) {
     printf(" != `%s`\n", expected);
-    ccsemver_comp_dtor(&comp);
+    ccsemver_comp_dtor(&cmp);
     return 1;
   }
   printf(" == `%s`\n", expected);
-  ccsemver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&cmp);
   return 0;
 }
 
-int test_comp_and(const char *expected, const char *base_str, size_t base_len, const char *str, size_t len) {
-  size_t offset = 0;
-  unsigned slen;
-  char buffer[1024];
-  ccsemver_comp_t comp = {0};
+
+int
+test_comp_and (char const * const expected,
+	       char const * const base_str, size_t base_len,
+	       char const * const more_str, size_t more_len)
+{
+  ccsemver_input_t	base_input = ccsemver_input_new(base_str, base_len, 0);
+  ccsemver_input_t	more_input = ccsemver_input_new(more_str, more_len, 0);
+  size_t		slen;
+  char			buffer[1024];
+  ccsemver_comp_t	cmp;
 
-  printf("test and variant: `%.*s`", (int) base_len, base_str);
-  if (ccsemver_comp_read(&comp, base_str, base_len, &offset)) {
+  printf("test and variant: base_len=%lu, base_str='%s'", base_len, base_str);
+  if (ccsemver_comp_read(&cmp, &base_input)) {
     puts(" \tcouldn't parse base");
     return 1;
   }
-  if (offset != base_len) {
+  if (base_input.off != base_input.len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  offset = 0;
-  if (ccsemver_comp_and(&comp, str, len, &offset)) {
+  if (ccsemver_comp_and(&cmp, &more_input)) {
     puts(" \tand variant failed");
     return 1;
   }
-  slen = (unsigned) ccsemver_comp_write(&comp, buffer, 1024);
-  printf(" \t=> \t`%.*s`", slen, buffer);
-  if (memcmp(expected, buffer, (size_t) slen > base_len + len + 1 ? slen : base_len + len + 1) != 0) {
-    printf(" != `%s`\n", expected);
-    ccsemver_comp_dtor(&comp);
-    return 1;
+
+  slen = (size_t) ccsemver_comp_write(&cmp, buffer, 1024);
+  printf(" \t=> \tslen=%lu, buffer='%s'", slen, buffer);
+  {
+    size_t	total_len = base_input.len + more_input.len + 1;
+
+    if (0 != memcmp(expected, buffer, ((slen > total_len) ? slen : total_len))) {
+      printf(" != `%s`\n", expected);
+      ccsemver_comp_dtor(&cmp);
+      return 1;
+    }
   }
   printf(" == `%s`\n", expected);
-  ccsemver_comp_dtor(&comp);
+  ccsemver_comp_dtor(&cmp);
   return 0;
 }
 
-int main(void) {
+
+int
+main (void)
+{
   ccsemver_init();
+
   puts("failure:");
   if (test_read("", STRNSIZE("* ")) == 0) {
     return EXIT_FAILURE;
@@ -283,3 +305,5 @@ int main(void) {
 
   return EXIT_SUCCESS;
 }
+
+/* end of file */

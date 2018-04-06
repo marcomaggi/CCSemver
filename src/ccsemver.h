@@ -149,6 +149,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C
  ** Forward type definitions.
  ** ----------------------------------------------------------------- */
 
+typedef struct ccsemver_input_t		ccsemver_input_t;
 typedef struct ccsemver_t		ccsemver_t;
 typedef struct ccsemver_id_t		ccsemver_id_t;
 typedef struct ccsemver_comp_t		ccsemver_comp_t;
@@ -166,7 +167,7 @@ typedef enum ccsemver_op_t		ccsemver_op_t;
 
 
 /** --------------------------------------------------------------------
- ** Memory allocation
+ ** Memory allocation.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_allocator_t	ccsemver_allocator_t;
@@ -190,19 +191,47 @@ ccsemver_decl void   ccsemver_free   (void * ptr)
 
 
 /** --------------------------------------------------------------------
+ ** Parser input.
+ ** ----------------------------------------------------------------- */
+
+struct ccsemver_input_t {
+  /* Pointer to the first character in the input string. */
+  char const *	str;
+
+  /* Number of character in the input string. */
+  size_t	len;
+
+  /* Offset of the next character to parse in the input string. */
+  size_t	off;
+};
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline ccsemver_input_t
+ccsemver_input_new (char const * str, size_t len, size_t off)
+{
+  ccsemver_input_t	input = {
+    .str	= str,
+    .len	= len,
+    .off	= off
+  };
+  return input;
+}
+
+
+/** --------------------------------------------------------------------
  ** Number parsers.
  ** ----------------------------------------------------------------- */
 
 #define CCSEMVER_NUM_X	((long)(-1))
 
-ccsemver_decl char ccsemver_num_parse (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
-  __attribute__((nonnull(1,2,4),leaf));
+ccsemver_decl char ccsemver_num_parse    (long * nump, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2),__leaf__));
 
-ccsemver_decl char ccsemver_parse_number (long * nump, char const * input_str, size_t input_len, size_t * input_offp)
-  __attribute__((nonnull(1,2,4),leaf));
+ccsemver_decl char ccsemver_parse_number (long * nump, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2),__leaf__));
 
 ccsemver_decl char ccsemver_num_comp (long self, long other)
-  __attribute__((leaf,const));
+  __attribute__((__leaf__,__const__));
 
 
 /** --------------------------------------------------------------------
@@ -231,20 +260,20 @@ struct ccsemver_id_t {
   ccsemver_id_t *	next;
 };
 
-ccsemver_decl void ccsemver_id_ctor (ccsemver_id_t *self)
-  __attribute__((nonnull(1),leaf));
+ccsemver_decl void ccsemver_id_ctor (ccsemver_id_t * self)
+  __attribute__((__nonnull__(1),__leaf__));
 
-ccsemver_decl void ccsemver_id_dtor (ccsemver_id_t *self)
-  __attribute__((nonnull(1),leaf));
+ccsemver_decl void ccsemver_id_dtor (ccsemver_id_t * self)
+  __attribute__((__nonnull__(1),__leaf__));
 
-ccsemver_decl char ccsemver_id_read (ccsemver_id_t *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
+ccsemver_decl char ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * self, char * buffer, size_t len)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t const * other)
-  __attribute__((nonnull(1,2),leaf));
+ccsemver_decl char ccsemver_id_comp (ccsemver_id_t const * cmp1, ccsemver_id_t const * cmp2)
+  __attribute__((__nonnull__(1,2),__leaf__));
 
 
 /** --------------------------------------------------------------------
@@ -277,20 +306,20 @@ struct ccsemver_t {
   char const *	raw;
 };
 
-ccsemver_decl void ccsemver_ctor(ccsemver_t *self)
-  __attribute__((nonnull(1)));
+ccsemver_decl void ccsemver_ctor (ccsemver_t * self)
+  __attribute__((__nonnull__(1)));
 
-ccsemver_decl void ccsemver_dtor(ccsemver_t *self)
-  __attribute__((nonnull(1)));
+ccsemver_decl void ccsemver_dtor (ccsemver_t * self)
+  __attribute__((__nonnull__(1)));
 
-ccsemver_decl char ccsemver_read(ccsemver_t *self, char const *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
+ccsemver_decl char ccsemver_read (ccsemver_t *self, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_write (ccsemver_t const * self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl int  ccsemver_write (ccsemver_t const * self, char * buffer, size_t len)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl char ccsemver_comp  (ccsemver_t const * sv1, ccsemver_t const * sv2)
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
@@ -303,23 +332,23 @@ struct ccsemver_comp_t {
   ccsemver_t		version;
 };
 
-ccsemver_decl void ccsemver_comp_ctor(ccsemver_comp_t *self)
-  __attribute__((nonnull(1)));
+ccsemver_decl void ccsemver_comp_ctor (ccsemver_comp_t * self)
+  __attribute__((__nonnull__(1)));
 
-ccsemver_decl void ccsemver_comp_dtor(ccsemver_comp_t *self)
-  __attribute__((nonnull(1)));
+ccsemver_decl void ccsemver_comp_dtor (ccsemver_comp_t * self)
+  __attribute__((__nonnull__(1)));
 
-ccsemver_decl char ccsemver_comp_read(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
+ccsemver_decl char ccsemver_comp_read (ccsemver_comp_t * self, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_comp_and(ccsemver_comp_t *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
+ccsemver_decl char ccsemver_comp_and  (ccsemver_comp_t * self, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * self, char * buffer, size_t len)
+  __attribute__((__nonnull__(1,2)));
 
 ccsemver_decl char ccsemver_match (ccsemver_t const * self, ccsemver_comp_t const * comp)
-  __attribute__((nonnull(1,2)));
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
@@ -331,33 +360,33 @@ struct ccsemver_range_t {
   ccsemver_comp_t	comp;
 };
 
-ccsemver_decl void ccsemver_range_dtor (ccsemver_range_t *self)
-  __attribute__((nonnull(1)));
+ccsemver_decl void ccsemver_range_dtor (ccsemver_range_t * self)
+  __attribute__((__nonnull__(1)));
 
-ccsemver_decl char ccsemver_range_read (ccsemver_range_t *self, const char *str, size_t len, size_t *offset)
-  __attribute__((nonnull(1,2,4)));
+ccsemver_decl char ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char *buffer, size_t len)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
+  __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
-  __attribute__((nonnull(1,2)));
+ccsemver_decl char ccsemver_range_match (ccsemver_t const * sv, ccsemver_range_t const * range)
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
  ** Input/output.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl size_t ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
+ccsemver_decl size_t ccsemver_id_fwrite (ccsemver_id_t const * idp, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_fwrite (const ccsemver_t * versionp, FILE * stream)
+ccsemver_decl size_t ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_comp_fwrite (const ccsemver_comp_t * compp, FILE * stream)
+ccsemver_decl size_t ccsemver_comp_fwrite  (ccsemver_comp_t const * cmp, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
+ccsemver_decl size_t ccsemver_range_fwrite (ccsemver_range_t const * range, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
 ccsemver_decl char const * ccsemver_op_string (ccsemver_op_t op)

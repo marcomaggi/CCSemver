@@ -26,6 +26,11 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,34 +38,41 @@
 
 #define STRNSIZE(s) (s), sizeof(s)-1
 
-int test_read(const char *expected, const char *str, size_t len) {
-  size_t offset = 0;
-  unsigned slen;
-  char buffer[1024];
-  ccsemver_t ccsemver = {0};
+
+int
+test_read (char const * const expected, char const * const input_str, size_t const input_len)
+{
+  ccsemver_input_t	input = ccsemver_input_new(input_str, input_len, 0);
+  unsigned		slen;
+  char			buffer[1024];
+  ccsemver_t		sv;
 
-  printf("test: `%.*s`", (int) len, str);
-  if (ccsemver_read(&ccsemver, str, len, &offset)) {
+  printf("test: `%.*s`", (int) input.len, input.str);
+  if (ccsemver_read(&sv, &input)) {
     puts(" \tcouldn't parse");
     return 1;
   }
-  if (offset != len) {
+  if (input.off != input.len) {
     puts(" \tcouldn't parse fully base");
     return 1;
   }
-  slen = (unsigned) ccsemver_write(&ccsemver, buffer, 1024);
+  slen = (unsigned) ccsemver_write(&sv, buffer, 1024);
   printf(" \t=> \t`%.*s`", slen, buffer);
-  if (memcmp(expected, buffer, (size_t) slen > len ? slen : len) != 0) {
+  if (0 != memcmp(expected, buffer, (((size_t) slen > input.len) ? slen : input.len))) {
     printf(" != `%s`\n", expected);
-    ccsemver_dtor(&ccsemver);
+    ccsemver_dtor(&sv);
     return 1;
+  } else {
+    printf(" == `%s`\n", expected);
+    ccsemver_dtor(&sv);
+    return 0;
   }
-  printf(" == `%s`\n", expected);
-  ccsemver_dtor(&ccsemver);
-  return 0;
 }
 
-int main(void) {
+
+int
+main (void)
+{
   ccsemver_init();
 
   if (test_read("1.2.3", STRNSIZE("1.2.3"))) {
@@ -138,3 +150,5 @@ int main(void) {
 
   return EXIT_SUCCESS;
 }
+
+/* end of file */

@@ -26,51 +26,70 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
+
+/** --------------------------------------------------------------------
+ ** Headers.
+ ** ----------------------------------------------------------------- */
+
 #include <ccsemver.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #define STRNSIZE(s) (s), sizeof(s)-1
 
-int test_match(char expected, const char *ccsemver_str, size_t ccsemver_len, const char *comp_str, size_t comp_len) {
-  size_t offset = 0;
-  char result;
-  ccsemver_t ccsemver = {0};
-  ccsemver_comp_t comp = {0};
+
+int
+test_match (char expected,
+	    char const * const sv_str, size_t const sv_len,
+	    char const * const cmp_str,  size_t const cmp_len)
+{
+  ccsemver_input_t	sv_input  = ccsemver_input_new(sv_str,  sv_len,  0);
+  ccsemver_input_t	cmp_input = ccsemver_input_new(cmp_str, cmp_len, 0);
+  char			result;
+  ccsemver_t		sv;
+  ccsemver_comp_t	cmp;
 
-  printf("test: `%.*s` ^ `%.*s`", (int) ccsemver_len, ccsemver_str, (int) comp_len, comp_str);
-  if (ccsemver_read(&ccsemver, ccsemver_str, ccsemver_len, &offset)) {
-    puts(" \tcouldn't parse ccsemver");
+  printf("test: `%.*s` ^ `%.*s`", (int) sv_len, sv_str, (int) cmp_len, cmp_str);
+  if (ccsemver_read(&sv, &sv_input)) {
+    puts(" \tcouldn't parse semantic version specification");
     return 1;
   }
-  if (offset != ccsemver_len) {
-    puts(" \tcouldn't parse fully base");
+  if (sv_input.off != sv_input.len) {
+    puts(" \tunable to parse the whole semantic version specification");
     return 1;
   }
-  offset = 0;
-  if (ccsemver_comp_read(&comp, comp_str, comp_len, &offset)) {
-    puts(" \tcouldn't parse comp");
+
+  if (ccsemver_comp_read(&cmp, &cmp_input)) {
+    puts(" \tcouldn't parse comparator specification");
     return 1;
   }
-  if (offset != comp_len) {
-    puts(" \tcouldn't parse fully base");
+  if (cmp_input.off != cmp_input.len) {
+    puts(" \tunable to parse the whole comparator specification");
     return 1;
   }
-  result = ccsemver_match(&ccsemver, &comp);
+
+  result = ccsemver_match(&sv, &cmp);
   printf(" \t=> %d\t", result);
-  if (result != expected) {
-    printf(" != `%d`\n", expected);
-    ccsemver_dtor(&ccsemver);
-    ccsemver_comp_dtor(&comp);
-    return 1;
+  {
+    int		rv;
+
+    if (result != expected) {
+      printf(" != `%d`\n", expected);
+      rv = 1;
+    } else {
+      printf(" == `%d`\n", expected);
+      rv = 0;
+    }
+    ccsemver_dtor(&sv);
+    ccsemver_comp_dtor(&cmp);
+    return rv;
   }
-  printf(" == `%d`\n", expected);
-  ccsemver_dtor(&ccsemver);
-  ccsemver_comp_dtor(&comp);
-  return 0;
 }
 
-int main(void) {
+
+int
+main (void)
+{
   ccsemver_init();
 
   if (test_match(1, STRNSIZE("v1.2.3"), STRNSIZE("1.2.3"))) {
@@ -97,3 +116,5 @@ int main(void) {
 
   return EXIT_SUCCESS;
 }
+
+/* end of file */
