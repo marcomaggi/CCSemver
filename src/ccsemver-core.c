@@ -79,17 +79,17 @@ ccsemver_read (ccsemver_t * self, ccsemver_input_t * input)
     self->raw = input->str + input->off;
 
     /* Skip the initial "v" character, if any. */
-    if ('v' == input->str[input->off]) {
+    if ('v' == ccsemver_input_next(input)) {
       ++(input->off);
     }
 
     if (ccsemver_parse_number(&self->major, input)
-	|| input->off >= input->len || input->str[input->off] != '.'
+	|| input->off >= input->len || ccsemver_input_next(input) != '.'
 	|| ccsemver_parse_number(&self->minor, (++input->off, input))
-	|| input->off >= input->len || input->str[input->off] != '.'
+	|| input->off >= input->len || ccsemver_input_next(input) != '.'
 	|| ccsemver_parse_number(&self->patch, (++input->off, input))
-	|| (input->str[input->off] == '-' && ccsemver_id_read(&self->prerelease, (++input->off, input)))
-	|| (input->str[input->off] == '+' && ccsemver_id_read(&self->build,      (++input->off, input)))) {
+	|| (ccsemver_input_next(input) == '-' && ccsemver_id_read(&self->prerelease, (++input->off, input)))
+	|| (ccsemver_input_next(input) == '+' && ccsemver_id_read(&self->build,      (++input->off, input)))) {
       self->len = input->str + input->off - self->raw;
       return 1;
     }

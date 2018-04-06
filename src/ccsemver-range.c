@@ -67,18 +67,15 @@ ccsemver_range_dtor (ccsemver_range_t * self)
  ** Parser.
  ** ----------------------------------------------------------------- */
 
-#undef NEXT_CHAR
-#define NEXT_CHAR		input->str[input->off]
-
 __attribute__((__always_inline__,__nonnull__(1)))
 static inline void
 skip_blank_characters (ccsemver_input_t * input)
 {
   while ((input->off < input->len) &&
-	 ((' '  == NEXT_CHAR) ||
-	  ('\t' == NEXT_CHAR) ||
-	  ('\r' == NEXT_CHAR) ||
-	  ('\n' == NEXT_CHAR))) {
+	 ((' '  == ccsemver_input_next(input)) ||
+	  ('\t' == ccsemver_input_next(input)) ||
+	  ('\r' == ccsemver_input_next(input)) ||
+	  ('\n' == ccsemver_input_next(input)))) {
     ++(input->off);
   }
 }

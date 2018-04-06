@@ -54,7 +54,7 @@ ccsemver_num_parse (long * nump, ccsemver_input_t * input)
   if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
     return 1;
   } else {
-    switch (input->str[input->off]) {
+    switch (ccsemver_input_next(input)) {
     case 'x':
     case 'X':
     case '*':
@@ -63,7 +63,7 @@ ccsemver_num_parse (long * nump, ccsemver_input_t * input)
       break;
 
     default:
-      if (isdigit(input->str[input->off])) {
+      if (isdigit(ccsemver_input_next(input))) {
 	char *	endptr;
 
 	/* We  have already  determined that  the first  character is  a
@@ -94,7 +94,7 @@ ccsemver_parse_number (long * nump, ccsemver_input_t * input)
   if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
     return 1;
   } else {
-    if (isdigit(input->str[input->off])) {
+    if (isdigit(ccsemver_input_next(input))) {
       char *	endptr;
 
       /* We have already determined that the first character is a digit,

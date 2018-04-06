@@ -89,11 +89,11 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
    there. */
 {
   ccsemver_comp_ctor(cmp);
-  if (0 == input->len) {
+  if (ccsemver_input_is_empty(input)) {
     cmp->op = CCSEMVER_OP_GE;
     return 0;
-  } else if (input->off < input->len) {
-    switch (input->str[input->off]) {
+  } else if (ccsemver_input_more(input)) {
+    switch (ccsemver_input_next(input)) {
 
     case '^':
       /* Skip the caret. */
@@ -121,7 +121,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       /* Skip the greater-than. */
       ++(input->off);
       /* Determine if it is a ">" or ">=" comparator. */
-      if ((input->off < input->len) && ('=' == input->str[input->off])) {
+      if ((input->off < input->len) && ('=' == ccsemver_input_next(input))) {
 	/* Skip the equal. */
 	++(input->off);
 	cmp->op = CCSEMVER_OP_GE;
@@ -142,7 +142,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       /* Skip the less-than. */
       ++(input->off);
       /* Determine if it is a "<" or "<=" comparator. */
-      if ((input->off < input->len) && ('=' == input->str[input->off])) {
+      if ((input->off < input->len) && ('=' == ccsemver_input_next(input))) {
 	/* Skip the equal. */
 	++(input->off);
 	cmp->op = CCSEMVER_OP_LE;
@@ -196,7 +196,7 @@ ccsemver_comp_read (ccsemver_comp_t * cmp, ccsemver_input_t * input)
       }
       /* If input continues with at least 3 characters being: a space, a
 	 dash, a space, then it is a hyphen range. */
-      if ((input->off     < input->len) && (input->str[input->off]     == ' ') &&
+      if ((input->off     < input->len) && (ccsemver_input_next(input)     == ' ') &&
 	  (input->off + 1 < input->len) && (input->str[input->off + 1] == '-') &&
 	  (input->off + 2 < input->len) && (input->str[input->off + 2] == ' ')) {
 	/* Skip space+dash+space. */
@@ -231,7 +231,7 @@ comp_parse_next_if_any (ccsemver_comp_t * cmp, ccsemver_input_t * input)
 {
   /* If  input  continues  with  one  space followed  by  at  least  one
      character that is neither a space nor a vertical bar... */
-  if ((input->off     < input->len) && input->str[input->off]     == ' ' &&
+  if ((input->off     < input->len) && ccsemver_input_next(input)     == ' ' &&
       (input->off + 1 < input->len) && input->str[input->off + 1] != ' ' && input->str[input->off + 1] != '|') {
     /* Skip the white space. */
     ++(input->off);
@@ -376,7 +376,7 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
     }
 
     /* If no more input or input is not a dot: return successfully. */
-    if (input->off >= input->len || input->str[input->off] != '.') {
+    if (input->off >= input->len || ccsemver_input_next(input) != '.') {
       return 0;
     }
 
@@ -389,7 +389,7 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
     }
 
     /* If no more input or input is not a dot: return successfully. */
-    if (input->off >= input->len || input->str[input->off] != '.') {
+    if (input->off >= input->len || ccsemver_input_next(input) != '.') {
       return 0;
     }
 
@@ -403,8 +403,8 @@ parse_partial_semver (ccsemver_t * sv, ccsemver_input_t * input)
 
     /* If there  is a  prerelease tag:  parse it.  If  there is  a build
        metadata: parse it. */
-    if ((input->str[input->off] == '-' && ccsemver_id_read(&sv->prerelease, (++input->off, input))) ||
-	(input->str[input->off] == '+' && ccsemver_id_read(&sv->build,      (++input->off, input)))) {
+    if ((ccsemver_input_next(input) == '-' && ccsemver_id_read(&sv->prerelease, (++input->off, input))) ||
+	(ccsemver_input_next(input) == '+' && ccsemver_id_read(&sv->build,      (++input->off, input)))) {
       /* Error parsing the prerelease tag or the build metadata. */
       return 1;
     } else {

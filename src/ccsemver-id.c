@@ -77,10 +77,8 @@ ccsemver_id_dtor (ccsemver_id_t * self)
 char
 ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
 {
-#undef NEXT_CHAR
-#define NEXT_CHAR		input->str[input->off]
 #undef VALID_CHAR
-#define VALID_CHAR		(isalnum(NEXT_CHAR) || ('-' == NEXT_CHAR))
+#define VALID_CHAR		(isalnum(ccsemver_input_next(input)) || ('-' == ccsemver_input_next(input)))
   size_t	component_len = 0;
   /* This is set to true if the input string "0". */
   bool		is_zero       = false;
@@ -92,12 +90,12 @@ ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
   for (;
        (input->off < input->len) && VALID_CHAR;
        ++component_len, ++(input->off)) {
-    if (!isdigit(NEXT_CHAR)) {
+    if (!isdigit(ccsemver_input_next(input))) {
       is_zero       = false;
       self->numeric = false;
     } else {
       if (0 == component_len) {
-	is_zero = ('0' == NEXT_CHAR);
+	is_zero = ('0' == ccsemver_input_next(input));
       } else if (is_zero) {
 	/* We reject  identifier components  that are numeric  and start
 	   with zero, for example "0123". */
@@ -141,7 +139,7 @@ ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
 
   /* Is there another  component after this one?  If  the next character
      is a dot: there is. */
-  if ('.' == NEXT_CHAR) {
+  if ('.' == ccsemver_input_next(input)) {
     self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
     if (self->next) {
       /* Skip the dot. */
