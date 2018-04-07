@@ -46,6 +46,7 @@
 @c ------------------------------------------------------------
 
 @set CCEXCEPTIONS_VERSION       0.7.1
+@set CCTESTS_VERSION            0.1.0
 
 @set GITHUB_URL                 @url{https://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
 @set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
@@ -64,7 +65,8 @@ This document describes version @value{VERSION} of @value{PACKAGE}, a C11 langua
 implementing semantic versioning for the C language.
 
 This package supports @posix{} platforms.  This package depends on the package CCExceptions, at
-least version @value{CCEXCEPTIONS_VERSION}.
+least version @value{CCEXCEPTIONS_VERSION}.  To run the test suite: this package depends upon the
+package CCTests, at least version @value{CCTESTS_VERSION}.
 
 The package is distributed under the terms of the Unlicense, see @url{http://unlicense.org}.
 
@@ -2133,6 +2135,11 @@ and as backup at:
 the package CCExceptions is available at:
 
 @center @url{https://github.com/marcomaggi/ccexceptions/}
+
+@noindent
+the package CCTests is available at:
+
+@center @url{https://github.com/marcomaggi/cctests/}
 
 This package is a fork of the project Libsv by @value{ORIGIN_AUTHOR}; the original project is
 available at:

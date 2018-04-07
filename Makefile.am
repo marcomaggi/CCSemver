@@ -60,10 +60,12 @@ check_PROGRAMS	= \
 	tests/semver		\
 	tests/utils
 
+if CCSEMVER_TESTING_ENABLED
 TESTS				= $(check_PROGRAMS)
+endif
 
-ccsemver_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS)
-ccsemver_tests_ldadd		= libccsemver.la $(CCEXCEPTIONS_LIBS)
+ccsemver_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS) $(CCTESTS_CFLAGS)
+ccsemver_tests_ldadd		= libccsemver.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_version_LDADD		= $(ccsemver_tests_ldadd)
