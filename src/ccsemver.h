@@ -146,6 +146,106 @@ ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C
 
 
 /** --------------------------------------------------------------------
+ ** Condition objects: parser error, unexpected end-of-input.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_eoi_t	ccsemver_descriptor_parser_eoi_t;
+typedef struct ccsemver_condition_parser_eoi_t	ccsemver_condition_parser_eoi_t;
+
+struct ccsemver_descriptor_parser_eoi_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_eoi_t {
+  ccsemver_condition_parser_error_t	parser_error;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_eoi (ccsemver_condition_parser_eoi_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_eoi (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_eoi (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, invalid input offset.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_invalid_input_offset_t	ccsemver_descriptor_parser_invalid_input_offset_t;
+typedef struct ccsemver_condition_parser_invalid_input_offset_t		ccsemver_condition_parser_invalid_input_offset_t;
+
+struct ccsemver_descriptor_parser_invalid_input_offset_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_invalid_input_offset_t {
+  ccsemver_condition_parser_error_t	parser_error;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_invalid_input_offset_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input_offset (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, number out of range.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_number_out_of_range_t		ccsemver_descriptor_parser_number_out_of_range_t;
+typedef struct ccsemver_condition_parser_number_out_of_range_t		ccsemver_condition_parser_number_out_of_range_t;
+
+struct ccsemver_descriptor_parser_number_out_of_range_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_number_out_of_range_t {
+  ccsemver_condition_parser_error_t	parser_error;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_number_out_of_range (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected numeric component.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_expected_numeric_component_t	ccsemver_descriptor_parser_expected_numeric_component_t;
+typedef struct ccsemver_condition_parser_expected_numeric_component_t	ccsemver_condition_parser_expected_numeric_component_t;
+
+struct ccsemver_descriptor_parser_expected_numeric_component_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_expected_numeric_component_t {
+  ccsemver_condition_parser_error_t	parser_error;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_parser_expected_numeric_component_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_numeric_component (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** Forward type definitions.
  ** ----------------------------------------------------------------- */
 
