@@ -21,7 +21,7 @@ sysconfdir=@sysconfdir@
 Name: @PACKAGE_NAME@
 Description: semantic versioning for the C language
 Version: @CCSEMVER_PKG_CONFIG_VERSION@
-Libs: -L${libdir} -lccsemver
+Libs: -L${libdir} -lccsemver -lccexceptions
 Cflags: -I${includedir}
 
 ### end of file
