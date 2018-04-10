@@ -98,56 +98,170 @@ ccsemver_condition_is_parser_error (cce_condition_t const * C)
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, unexpected end-of-input.
+ ** Condition objects: parser error, no input.
  ** ----------------------------------------------------------------- */
 
-static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_eoi;
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_no_input;
 
-static ccsemver_descriptor_parser_eoi_t ccsemver_descriptor_parser_eoi_stru = {
+static ccsemver_descriptor_parser_no_input_t ccsemver_descriptor_parser_no_input_stru = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
   .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
-  .descriptor.static_message	= ccsemver_condition_static_message_parser_eoi
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_no_input
 };
 
-ccsemver_descriptor_parser_eoi_t const * const ccsemver_descriptor_parser_eoi_ptr = &ccsemver_descriptor_parser_eoi_stru;
+ccsemver_descriptor_parser_no_input_t const * const ccsemver_descriptor_parser_no_input_ptr =
+  &ccsemver_descriptor_parser_no_input_stru;
 
 /* This is  the single  instance of  the "invalid  pathname" exceptional
    condition.  It is used by "cce_raise()" and "cce_retry()". */
-static ccsemver_condition_parser_eoi_t const ccsemver_condition_parser_eoi_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_eoi_stru.descriptor)
+static ccsemver_condition_parser_no_input_t const ccsemver_condition_parser_no_input_stru = {
+  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_no_input_stru.descriptor)
 };
 
-ccsemver_condition_parser_eoi_t const * const ccsemver_condition_parser_eoi_ptr = &ccsemver_condition_parser_eoi_stru;
+ccsemver_condition_parser_no_input_t const * const ccsemver_condition_parser_no_input_ptr =
+  &ccsemver_condition_parser_no_input_stru;
 
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_eoi (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_no_input (cce_condition_t const * C CCSEMVER_UNUSED)
 {
-  return "unexpected end-of-input while parsing";
+  return "while parsing: no input available";
 }
 
 /* ------------------------------------------------------------------ */
 
 void
-ccsemver_condition_init_parser_eoi (ccsemver_condition_parser_eoi_t * C)
+ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * C)
 {
   ccsemver_condition_init_parser_error(&(C->parser_error));
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_eoi (void)
+ccsemver_condition_new_parser_no_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_eoi_ptr;
+  return (cce_condition_t const *) ccsemver_condition_parser_no_input_ptr;
 }
 
 bool
-ccsemver_condition_is_parser_eoi (cce_condition_t const * C)
+ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_eoi_ptr->descriptor));
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_no_input_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, input is empty.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_empty_input;
+
+static ccsemver_descriptor_parser_empty_input_t ccsemver_descriptor_parser_empty_input_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_empty_input
+};
+
+ccsemver_descriptor_parser_empty_input_t const * const ccsemver_descriptor_parser_empty_input_ptr =
+  &ccsemver_descriptor_parser_empty_input_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_empty_input_t const ccsemver_condition_parser_empty_input_stru = {
+  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_empty_input_stru.descriptor)
+};
+
+ccsemver_condition_parser_empty_input_t const * const ccsemver_condition_parser_empty_input_ptr =
+  &ccsemver_condition_parser_empty_input_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_empty_input (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: input is empty";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_input_t * C)
+{
+  ccsemver_condition_init_parser_no_input(&(C->parser_no_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_empty_input (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_empty_input_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_empty_input_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, end of input.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_end_of_input;
+
+static ccsemver_descriptor_parser_end_of_input_t ccsemver_descriptor_parser_end_of_input_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_end_of_input
+};
+
+ccsemver_descriptor_parser_end_of_input_t const * const ccsemver_descriptor_parser_end_of_input_ptr =
+  &ccsemver_descriptor_parser_end_of_input_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_end_of_input_t const ccsemver_condition_parser_end_of_input_stru = {
+  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_end_of_input_stru.descriptor)
+};
+
+ccsemver_condition_parser_end_of_input_t const * const ccsemver_condition_parser_end_of_input_ptr =
+  &ccsemver_condition_parser_end_of_input_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_end_of_input (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: unexpected end of input";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_input_t * C)
+{
+  ccsemver_condition_init_parser_no_input(&(C->parser_no_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_end_of_input (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_end_of_input_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_end_of_input_ptr->descriptor));
 }
 
 
@@ -160,21 +274,24 @@ static cce_condition_static_message_fun_t	ccsemver_condition_static_message_pars
 static ccsemver_descriptor_parser_invalid_input_offset_t ccsemver_descriptor_parser_invalid_input_offset_stru = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
+  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_invalid_input_offset
 };
 
-ccsemver_descriptor_parser_invalid_input_offset_t const * const ccsemver_descriptor_parser_invalid_input_offset_ptr = &ccsemver_descriptor_parser_invalid_input_offset_stru;
+ccsemver_descriptor_parser_invalid_input_offset_t const * const ccsemver_descriptor_parser_invalid_input_offset_ptr =
+  &ccsemver_descriptor_parser_invalid_input_offset_stru;
 
 /* This is  the single  instance of  the "invalid  pathname" exceptional
    condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_invalid_input_offset_t const ccsemver_condition_parser_invalid_input_offset_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_invalid_input_offset_stru.descriptor)
+  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor =
+    &(ccsemver_descriptor_parser_invalid_input_offset_stru.descriptor)
 };
 
-ccsemver_condition_parser_invalid_input_offset_t const * const ccsemver_condition_parser_invalid_input_offset_ptr = &ccsemver_condition_parser_invalid_input_offset_stru;
+ccsemver_condition_parser_invalid_input_offset_t const * const ccsemver_condition_parser_invalid_input_offset_ptr =
+  &ccsemver_condition_parser_invalid_input_offset_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -189,7 +306,7 @@ ccsemver_condition_static_message_parser_invalid_input_offset (cce_condition_t c
 void
 ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_invalid_input_offset_t * C)
 {
-  ccsemver_condition_init_parser_error(&(C->parser_error));
+  ccsemver_condition_init_parser_no_input(&(C->parser_no_input));
 }
 
 cce_condition_t const *
@@ -206,61 +323,120 @@ ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, invalid input offset.
+ ** Condition objects: parser error, invalid input.
  ** ----------------------------------------------------------------- */
 
-static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_number_out_of_range;
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_invalid_input;
 
-static ccsemver_descriptor_parser_number_out_of_range_t ccsemver_descriptor_parser_number_out_of_range_stru = {
+static ccsemver_descriptor_parser_invalid_input_t ccsemver_descriptor_parser_invalid_input_stru = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
   .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
-  .descriptor.static_message	= ccsemver_condition_static_message_parser_number_out_of_range
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_invalid_input
 };
 
-ccsemver_descriptor_parser_number_out_of_range_t const * const ccsemver_descriptor_parser_number_out_of_range_ptr = &ccsemver_descriptor_parser_number_out_of_range_stru;
+ccsemver_descriptor_parser_invalid_input_t const * const ccsemver_descriptor_parser_invalid_input_ptr =
+  &ccsemver_descriptor_parser_invalid_input_stru;
 
 /* This is  the single  instance of  the "invalid  pathname" exceptional
    condition.  It is used by "cce_raise()" and "cce_retry()". */
-static ccsemver_condition_parser_number_out_of_range_t const ccsemver_condition_parser_number_out_of_range_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_number_out_of_range_stru.descriptor)
+static ccsemver_condition_parser_invalid_input_t const ccsemver_condition_parser_invalid_input_stru = {
+  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_invalid_input_stru.descriptor)
 };
 
-ccsemver_condition_parser_number_out_of_range_t const * const ccsemver_condition_parser_number_out_of_range_ptr = &ccsemver_condition_parser_number_out_of_range_stru;
+ccsemver_condition_parser_invalid_input_t const * const ccsemver_condition_parser_invalid_input_ptr =
+  &ccsemver_condition_parser_invalid_input_stru;
 
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_number_out_of_range (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_invalid_input (cce_condition_t const * C CCSEMVER_UNUSED)
 {
-  return "while parsing: number out of range";
+  return "while parsing: invalid input";
 }
 
 /* ------------------------------------------------------------------ */
 
 void
-ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+ccsemver_condition_init_parser_invalid_input (ccsemver_condition_parser_invalid_input_t * C)
 {
   ccsemver_condition_init_parser_error(&(C->parser_error));
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_number_out_of_range (void)
+ccsemver_condition_new_parser_invalid_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_number_out_of_range_ptr;
+  return (cce_condition_t const *) ccsemver_condition_parser_invalid_input_ptr;
 }
 
 bool
-ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
+ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_number_out_of_range_ptr->descriptor));
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_invalid_input_ptr->descriptor));
 }
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, invalid input offset.
+ ** Condition objects: parser error, expected number.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_number;
+
+static ccsemver_descriptor_parser_expected_number_t ccsemver_descriptor_parser_expected_number_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_number
+};
+
+ccsemver_descriptor_parser_expected_number_t const * const ccsemver_descriptor_parser_expected_number_ptr =
+  &ccsemver_descriptor_parser_expected_number_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_expected_number_t const ccsemver_condition_parser_expected_number_stru = {
+  .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
+  &(ccsemver_descriptor_parser_expected_number_stru.descriptor)
+};
+
+ccsemver_condition_parser_expected_number_t const * const ccsemver_condition_parser_expected_number_ptr =
+  &ccsemver_condition_parser_expected_number_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_expected_number (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: expected number";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expected_number_t * C)
+{
+  ccsemver_condition_init_parser_invalid_input(&(C->parser_invalid_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_expected_number (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_expected_number_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_number_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected numeric component.
  ** ----------------------------------------------------------------- */
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_numeric_component;
@@ -268,21 +444,24 @@ static cce_condition_static_message_fun_t	ccsemver_condition_static_message_pars
 static ccsemver_descriptor_parser_expected_numeric_component_t ccsemver_descriptor_parser_expected_numeric_component_stru = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
+  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_numeric_component
 };
 
-ccsemver_descriptor_parser_expected_numeric_component_t const * const ccsemver_descriptor_parser_expected_numeric_component_ptr = &ccsemver_descriptor_parser_expected_numeric_component_stru;
+ccsemver_descriptor_parser_expected_numeric_component_t const * const ccsemver_descriptor_parser_expected_numeric_component_ptr =
+  &ccsemver_descriptor_parser_expected_numeric_component_stru;
 
 /* This is  the single  instance of  the "invalid  pathname" exceptional
    condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_expected_numeric_component_t const ccsemver_condition_parser_expected_numeric_component_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_expected_numeric_component_stru.descriptor)
+  .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
+  &(ccsemver_descriptor_parser_expected_numeric_component_stru.descriptor)
 };
 
-ccsemver_condition_parser_expected_numeric_component_t const * const ccsemver_condition_parser_expected_numeric_component_ptr = &ccsemver_condition_parser_expected_numeric_component_stru;
+ccsemver_condition_parser_expected_numeric_component_t const * const ccsemver_condition_parser_expected_numeric_component_ptr =
+  &ccsemver_condition_parser_expected_numeric_component_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -297,7 +476,7 @@ ccsemver_condition_static_message_parser_expected_numeric_component (cce_conditi
 void
 ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_parser_expected_numeric_component_t * C)
 {
-  ccsemver_condition_init_parser_error(&(C->parser_error));
+  ccsemver_condition_init_parser_invalid_input(&(C->parser_invalid_input));
 }
 
 cce_condition_t const *
@@ -310,6 +489,120 @@ bool
 ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * C)
 {
   return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_numeric_component_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected identifier.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_identifier;
+
+static ccsemver_descriptor_parser_expected_identifier_t ccsemver_descriptor_parser_expected_identifier_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_identifier
+};
+
+ccsemver_descriptor_parser_expected_identifier_t const * const ccsemver_descriptor_parser_expected_identifier_ptr =
+  &ccsemver_descriptor_parser_expected_identifier_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_expected_identifier_t const ccsemver_condition_parser_expected_identifier_stru = {
+  .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
+  &(ccsemver_descriptor_parser_expected_identifier_stru.descriptor)
+};
+
+ccsemver_condition_parser_expected_identifier_t const * const ccsemver_condition_parser_expected_identifier_ptr =
+  &ccsemver_condition_parser_expected_identifier_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_expected_identifier (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: expected identifier";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_expected_identifier_t * C)
+{
+  ccsemver_condition_init_parser_invalid_input(&(C->parser_invalid_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_expected_identifier (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_expected_identifier_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_identifier_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, number out of range.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_number_out_of_range;
+
+static ccsemver_descriptor_parser_number_out_of_range_t ccsemver_descriptor_parser_number_out_of_range_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_number_out_of_range
+};
+
+ccsemver_descriptor_parser_number_out_of_range_t const * const ccsemver_descriptor_parser_number_out_of_range_ptr =
+  &ccsemver_descriptor_parser_number_out_of_range_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_number_out_of_range_t const ccsemver_condition_parser_number_out_of_range_stru = {
+  .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
+  &(ccsemver_descriptor_parser_number_out_of_range_stru.descriptor)
+};
+
+ccsemver_condition_parser_number_out_of_range_t const * const ccsemver_condition_parser_number_out_of_range_ptr =
+  &ccsemver_condition_parser_number_out_of_range_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_number_out_of_range (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: number out of range";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+{
+  ccsemver_condition_init_parser_invalid_input(&(C->parser_invalid_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_number_out_of_range (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_number_out_of_range_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_number_out_of_range_ptr->descriptor));
 }
 
 

@@ -71,11 +71,37 @@ ccsemver_input_looking_at_blanked_dash (ccsemver_input_t const * const that_inpu
  ** ----------------------------------------------------------------- */
 
 bool
+ccsemver_input_parse_dot (ccsemver_input_t * input)
+/* If the next character is a  dot: advance the parsing position over it
+   and return true; otherwise return false. */
+{
+  if (ccsemver_input_more(input) && ('.' == ccsemver_input_next(input))) {
+    ++(input->off);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool
 ccsemver_input_parse_dash (ccsemver_input_t * input)
 /* If the next character is a dash: advance the parsing position over it
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('-' == ccsemver_input_next(input))) {
+    ++(input->off);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool
+ccsemver_input_parse_plus (ccsemver_input_t * input)
+/* If the next character is a plus: advance the parsing position over it
+   and return true; otherwise return false. */
+{
+  if (ccsemver_input_more(input) && ('+' == ccsemver_input_next(input))) {
     ++(input->off);
     return true;
   } else {
@@ -95,6 +121,20 @@ ccsemver_input_parse_bar (ccsemver_input_t * input)
     return false;
   }
 }
+
+bool
+ccsemver_input_parse_equal (ccsemver_input_t * input)
+/* If the next character is an  equal: advance the parsing position over
+   it and return true; otherwise return false. */
+{
+  if (ccsemver_input_more(input) && ('=' == ccsemver_input_next(input))) {
+    ++(input->off);
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 bool
 ccsemver_input_parse_blanks (ccsemver_input_t * input)
@@ -185,6 +225,23 @@ ccsemver_input_parse_comparator_separator (ccsemver_input_t * that_input)
     }
   } else {
     return false;
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Assertions.
+ ** ----------------------------------------------------------------- */
+
+void
+ccsemver_input_assert_more_input (cce_destination_t L, ccsemver_input_t * input)
+{
+  if (ccsemver_input_is_empty(input)) {
+    cce_raise(L, ccsemver_condition_new_parser_empty_input());
+  } else if (ccsemver_input_at_end(input)) {
+    cce_raise(L, ccsemver_condition_new_parser_end_of_input());
+  } else if (ccsemver_input_invalid_offset(input)) {
+    cce_raise(L, ccsemver_condition_new_parser_invalid_input_offset());
   }
 }
 

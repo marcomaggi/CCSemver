@@ -146,27 +146,77 @@ ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, unexpected end-of-input.
+ ** Condition objects: parser error, no input.
  ** ----------------------------------------------------------------- */
 
-typedef struct ccsemver_descriptor_parser_eoi_t	ccsemver_descriptor_parser_eoi_t;
-typedef struct ccsemver_condition_parser_eoi_t	ccsemver_condition_parser_eoi_t;
+typedef struct ccsemver_descriptor_parser_no_input_t	ccsemver_descriptor_parser_no_input_t;
+typedef struct ccsemver_condition_parser_no_input_t	ccsemver_condition_parser_no_input_t;
 
-struct ccsemver_descriptor_parser_eoi_t {
+struct ccsemver_descriptor_parser_no_input_t {
   cce_descriptor_t			descriptor;
 };
 
-struct ccsemver_condition_parser_eoi_t {
+struct ccsemver_condition_parser_no_input_t {
   ccsemver_condition_parser_error_t	parser_error;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_eoi (ccsemver_condition_parser_eoi_t * C)
+ccsemver_decl void ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * C)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_eoi (void)
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_no_input (void)
   __attribute__((__returns_nonnull__));
 
-ccsemver_decl bool ccsemver_condition_is_parser_eoi (cce_condition_t const * C)
+ccsemver_decl bool ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, input is empty.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_empty_input_t	ccsemver_descriptor_parser_empty_input_t;
+typedef struct ccsemver_condition_parser_empty_input_t	ccsemver_condition_parser_empty_input_t;
+
+struct ccsemver_descriptor_parser_empty_input_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_empty_input_t {
+  ccsemver_condition_parser_no_input_t	parser_no_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_empty_input (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, unexpected end-of-input.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_end_of_input_t	ccsemver_descriptor_parser_end_of_input_t;
+typedef struct ccsemver_condition_parser_end_of_input_t		ccsemver_condition_parser_end_of_input_t;
+
+struct ccsemver_descriptor_parser_end_of_input_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_end_of_input_t {
+  ccsemver_condition_parser_no_input_t	parser_no_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_end_of_input (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
   __attribute__((__nonnull__(1)));
 
 
@@ -182,7 +232,7 @@ struct ccsemver_descriptor_parser_invalid_input_offset_t {
 };
 
 struct ccsemver_condition_parser_invalid_input_offset_t {
-  ccsemver_condition_parser_error_t	parser_error;
+  ccsemver_condition_parser_no_input_t	parser_no_input;
 };
 
 ccsemver_decl void ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_invalid_input_offset_t * C)
@@ -196,27 +246,52 @@ ccsemver_decl bool ccsemver_condition_is_parser_invalid_input_offset (cce_condit
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, number out of range.
+ ** Condition objects: parser error, expected number.
  ** ----------------------------------------------------------------- */
 
-typedef struct ccsemver_descriptor_parser_number_out_of_range_t		ccsemver_descriptor_parser_number_out_of_range_t;
-typedef struct ccsemver_condition_parser_number_out_of_range_t		ccsemver_condition_parser_number_out_of_range_t;
+typedef struct ccsemver_descriptor_parser_invalid_input_t	ccsemver_descriptor_parser_invalid_input_t;
+typedef struct ccsemver_condition_parser_invalid_input_t	ccsemver_condition_parser_invalid_input_t;
 
-struct ccsemver_descriptor_parser_number_out_of_range_t {
+struct ccsemver_descriptor_parser_invalid_input_t {
   cce_descriptor_t			descriptor;
 };
 
-struct ccsemver_condition_parser_number_out_of_range_t {
+struct ccsemver_condition_parser_invalid_input_t {
   ccsemver_condition_parser_error_t	parser_error;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+ccsemver_decl void ccsemver_condition_init_parser_invalid_input (ccsemver_condition_parser_invalid_input_t * C)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_number_out_of_range (void)
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input (void)
   __attribute__((__returns_nonnull__));
 
-ccsemver_decl bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
+ccsemver_decl bool ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected number.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_expected_number_t	ccsemver_descriptor_parser_expected_number_t;
+typedef struct ccsemver_condition_parser_expected_number_t	ccsemver_condition_parser_expected_number_t;
+
+struct ccsemver_descriptor_parser_expected_number_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_expected_number_t {
+  ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expected_number_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_number (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
   __attribute__((__nonnull__(1)));
 
 
@@ -232,7 +307,7 @@ struct ccsemver_descriptor_parser_expected_numeric_component_t {
 };
 
 struct ccsemver_condition_parser_expected_numeric_component_t {
-  ccsemver_condition_parser_error_t	parser_error;
+  ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
 ccsemver_decl void ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_parser_expected_numeric_component_t * C)
@@ -246,11 +321,61 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_numeric_component (cce_
 
 
 /** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected identifier.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_expected_identifier_t	ccsemver_descriptor_parser_expected_identifier_t;
+typedef struct ccsemver_condition_parser_expected_identifier_t	ccsemver_condition_parser_expected_identifier_t;
+
+struct ccsemver_descriptor_parser_expected_identifier_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_expected_identifier_t {
+  ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_expected_identifier_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_identifier (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
+ ** Condition objects: parser error, number out of range.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_number_out_of_range_t		ccsemver_descriptor_parser_number_out_of_range_t;
+typedef struct ccsemver_condition_parser_number_out_of_range_t		ccsemver_condition_parser_number_out_of_range_t;
+
+struct ccsemver_descriptor_parser_number_out_of_range_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_number_out_of_range_t {
+  ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_number_out_of_range (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** Forward type definitions.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_input_t		ccsemver_input_t;
-typedef struct ccsemver_t		ccsemver_t;
+typedef struct ccsemver_sv_t		ccsemver_sv_t;
 typedef struct ccsemver_id_t		ccsemver_id_t;
 typedef struct ccsemver_comp_t		ccsemver_comp_t;
 typedef struct ccsemver_range_t		ccsemver_range_t;
@@ -335,7 +460,14 @@ __attribute__((__always_inline__,__nonnull__(1)))
 static inline bool
 ccsemver_input_at_end (ccsemver_input_t * input)
 {
-  return (input->len <= input->off);
+  return (input->len == input->off);
+}
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline bool
+ccsemver_input_invalid_offset (ccsemver_input_t * input)
+{
+  return (input->len < input->off);
 }
 
 __attribute__((__always_inline__,__nonnull__(1)))
@@ -352,23 +484,37 @@ ccsemver_decl bool ccsemver_looking_at_blanked_dash (ccsemver_input_t const * in
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl bool ccsemver_input_parse_blanks (ccsemver_input_t * input)
+ccsemver_decl bool ccsemver_input_parse_blanks	(ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl bool ccsemver_input_parse_dash (ccsemver_input_t * input)
+ccsemver_decl bool ccsemver_input_parse_dot	(ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl bool ccsemver_input_parse_bar (ccsemver_input_t * input)
+ccsemver_decl bool ccsemver_input_parse_dash	(ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl bool ccsemver_input_parse_blanked_dash (ccsemver_input_t * input)
+ccsemver_decl bool ccsemver_input_parse_plus	(ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl bool ccsemver_input_parse_blanked_OR (ccsemver_input_t * that_input)
+ccsemver_decl bool ccsemver_input_parse_bar	(ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_equal	(ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_blanked_dash	(ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl bool ccsemver_input_parse_blanked_OR	(ccsemver_input_t * that_input)
   __attribute__((__nonnull__(1)));
 
 ccsemver_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_input_assert_more_input (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------
@@ -377,13 +523,13 @@ ccsemver_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t *
 
 #define CCSEMVER_NUM_X	((long)(-1))
 
-ccsemver_decl char ccsemver_num_parse    (long * nump, ccsemver_input_t * input)
+ccsemver_decl long ccsemver_parse_numeric_component (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2),__leaf__));
 
-ccsemver_decl char ccsemver_parse_number (long * nump, ccsemver_input_t * input)
+ccsemver_decl long ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2),__leaf__));
 
-ccsemver_decl char ccsemver_num_comp (long self, long other)
+ccsemver_decl int ccsemver_num_comp (long self, long other)
   __attribute__((__leaf__,__const__));
 
 
@@ -391,7 +537,11 @@ ccsemver_decl char ccsemver_num_comp (long self, long other)
  ** Identifiers.
  ** ----------------------------------------------------------------- */
 
+typedef void ccsemver_id_delete_fun_t (ccsemver_id_t * id);
+
 struct ccsemver_id_t {
+  ccsemver_id_delete_fun_t *	delete;
+
   /* A boolean  value: true if the  this component is numeric;  false if
      this component is alphabetic. */
   bool			numeric;
@@ -413,27 +563,44 @@ struct ccsemver_id_t {
   ccsemver_id_t *	next;
 };
 
-ccsemver_decl void ccsemver_id_ctor (ccsemver_id_t * self)
-  __attribute__((__nonnull__(1),__leaf__));
+ccsemver_decl ccsemver_id_t * ccsemver_id_new  (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-ccsemver_decl void ccsemver_id_dtor (ccsemver_id_t * self)
-  __attribute__((__nonnull__(1),__leaf__));
+ccsemver_decl ccsemver_id_t * ccsemver_id_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
-ccsemver_decl char ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
+ccsemver_decl void ccsemver_id_delete (ccsemver_id_t * id)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * self, char * buffer, size_t len)
-  __attribute__((__nonnull__(1,2)));
-
-ccsemver_decl char ccsemver_id_comp (ccsemver_id_t const * cmp1, ccsemver_id_t const * cmp2)
+ccsemver_decl int  ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t const * id2)
   __attribute__((__nonnull__(1,2),__leaf__));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_cleanup_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsemver_decl void ccsemver_error_handler_id_init   (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+  __attribute__((__nonnull__(1,2,3)));
+
+#define ccsemver_handler_id_init(L,id_H,id) \
+  _Generic((id_H),							\
+	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_id_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_id_init)(L,&(id_H->handler),id)
 
 
 /** --------------------------------------------------------------------
  ** Semantic versions.
  ** ----------------------------------------------------------------- */
 
-struct ccsemver_t {
+typedef void ccsemver_sv_delete_fun_t (ccsemver_sv_t * sv);
+
+struct ccsemver_sv_t {
+  ccsemver_sv_delete_fun_t *	delete;
+
   /* The major version number. */
   long		major;
 
@@ -459,71 +626,152 @@ struct ccsemver_t {
   char const *	raw;
 };
 
-ccsemver_decl void ccsemver_ctor (ccsemver_t * self)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_new  (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_partial  (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_sv_delete (ccsemver_sv_t * sv)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl void ccsemver_dtor (ccsemver_t * self)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl char ccsemver_read (ccsemver_t *self, ccsemver_input_t * input)
+ccsemver_decl int  ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_write (ccsemver_t const * self, char * buffer, size_t len)
+ccsemver_decl int  ccsemver_sv_comp  (ccsemver_sv_t const * sv1, ccsemver_sv_t const * sv2)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_comp  (ccsemver_t const * sv1, ccsemver_t const * sv2)
-  __attribute__((__nonnull__(1,2)));
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsemver_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3)));
+
+#define ccsemver_handler_sv_init(L,sv_H,sv) \
+  _Generic((sv_H),							\
+	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_sv_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_sv_init)(L,&(sv_H->handler),sv)
 
 
 /** --------------------------------------------------------------------
  ** Comparators.
  ** ----------------------------------------------------------------- */
 
+typedef void ccsemver_comp_delete_fun_t (ccsemver_comp_t * comp);
+
 struct ccsemver_comp_t {
-  ccsemver_comp_t *	next;
-  ccsemver_op_t		op;
-  ccsemver_t		version;
+  ccsemver_comp_delete_fun_t *	delete;
+
+  /* Pointer to the next node in the simply-linked list; NULL if this is
+     the last node. */
+  ccsemver_comp_t *		next;
+
+  /* The operator with  which the semantic version in this  node must be
+     compared with other versions. */
+  ccsemver_op_t			op;
+
+  /* The semantic version of this node. */
+  ccsemver_sv_t			sv;
 };
 
-ccsemver_decl void ccsemver_comp_ctor (ccsemver_comp_t * self)
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_new  (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
+
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+  __attribute__((__nonnull__(1,2,3)));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_comp_delete (ccsemver_comp_t * cmp)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl void ccsemver_comp_dtor (ccsemver_comp_t * self)
-  __attribute__((__nonnull__(1)));
+/* ------------------------------------------------------------------ */
 
-ccsemver_decl char ccsemver_comp_read (ccsemver_comp_t * self, ccsemver_input_t * input)
+ccsemver_decl void ccsemver_comp_and   (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_comp_and  (ccsemver_comp_t * self, ccsemver_input_t * input)
+ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * cmp, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * self, char * buffer, size_t len)
+ccsemver_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_comp_t const * cmp)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_match (ccsemver_t const * self, ccsemver_comp_t const * comp)
-  __attribute__((__nonnull__(1,2)));
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsemver_decl void ccsemver_error_handler_comp_init   (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+  __attribute__((__nonnull__(1,2,3)));
+
+#define ccsemver_handler_comp_init(L,comp_H,comp) \
+  _Generic((comp_H),							\
+	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_comp_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_comp_init)(L,&(comp_H->handler),comp)
 
 
 /** --------------------------------------------------------------------
  ** Ranges.
  ** ----------------------------------------------------------------- */
 
+typedef void ccsemver_range_delete_fun_t (ccsemver_range_t * range);
+
 struct ccsemver_range_t {
+  ccsemver_range_delete_fun_t *	delete;
+
+  /* Pointer to the next node in the simply-linked list; NULL if this is
+     the last node. */
   ccsemver_range_t *	next;
+
+  /* The comparator of this node. */
   ccsemver_comp_t	comp;
 };
 
-ccsemver_decl void ccsemver_range_dtor (ccsemver_range_t * self)
+ccsemver_decl ccsemver_range_t * ccsemver_range_new  (cce_destination_t L, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2)));
+
+ccsemver_decl ccsemver_range_t * ccsemver_range_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+  __attribute__((__nonnull__(1,2,3)));
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_range_delete (ccsemver_range_t * range)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl char ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl int ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
+ccsemver_decl int ccsemver_range_match (ccsemver_sv_t const * sv, ccsemver_range_t const * range)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl char ccsemver_range_match (ccsemver_t const * sv, ccsemver_range_t const * range)
-  __attribute__((__nonnull__(1,2)));
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_cleanup_handler_range_init (cce_location_t * L, cce_handler_t * H, ccsemver_range_t * range)
+  __attribute__((__nonnull__(1,2,3)));
+
+ccsemver_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_handler_t * H, ccsemver_range_t * range)
+  __attribute__((__nonnull__(1,2,3)));
+
+#define ccsemver_handler_range_init(L,range_H,range) \
+  _Generic((range_H),							\
+	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_range_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_range_init)(L,&(range_H->handler),range)
 
 
 /** --------------------------------------------------------------------
@@ -533,7 +781,7 @@ ccsemver_decl char ccsemver_range_match (ccsemver_t const * sv, ccsemver_range_t
 ccsemver_decl size_t ccsemver_id_fwrite (ccsemver_id_t const * idp, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
+ccsemver_decl size_t ccsemver_sv_fwrite (ccsemver_sv_t const * sv, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
 ccsemver_decl size_t ccsemver_comp_fwrite  (ccsemver_comp_t const * cmp, FILE * stream)

@@ -42,61 +42,225 @@
 #include <string.h>
 #include <stdio.h>
 
+static void ccsemver_sv_parse_full    (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3)));
+
+static void ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1,2,3)));
+
 
 /** --------------------------------------------------------------------
  ** Constructors and destructors.
  ** ----------------------------------------------------------------- */
 
-void
-ccsemver_ctor (ccsemver_t * self)
+static void
+ccsemver_sv_delete_after_new (ccsemver_sv_t * sv)
 {
-  self->len = 0;
-  self->raw = NULL;
-  self->major = 0;
-  self->minor = 0;
-  self->patch = 0;
-  ccsemver_id_ctor(&self->prerelease);
-  ccsemver_id_ctor(&self->build);
+  ccsemver_id_delete(&(sv->prerelease));
+  ccsemver_id_delete(&(sv->build));
+  free(sv);
+  memset(sv, 0, sizeof(ccsemver_sv_t));
 }
 
-void
-ccsemver_dtor (ccsemver_t * self)
+ccsemver_sv_t *
+ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
 {
-  ccsemver_id_dtor(&self->prerelease);
-  ccsemver_id_dtor(&self->build);
+  ccsemver_input_assert_more_input(upper_L, input);
+  {
+    cce_location_t		L[1];
+    ccsemver_sv_t *		sv;
+    cce_error_handler_t		sv_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
+      sv->delete = ccsemver_sv_delete_after_new;
+      ccsemver_sv_parse_full(L, input, sv);
+      cce_run_cleanup_handlers(L);
+    }
+    return sv;
+  }
+}
+
+ccsemver_sv_t *
+ccsemver_sv_new_partial (cce_destination_t upper_L, ccsemver_input_t * input)
+{
+  ccsemver_input_assert_more_input(upper_L, input);
+  {
+    cce_location_t		L[1];
+    ccsemver_sv_t *		sv;
+    cce_error_handler_t		sv_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
+      sv->delete = ccsemver_sv_delete_after_new;
+      ccsemver_sv_parse_partial(L, input, sv);
+      cce_run_cleanup_handlers(L);
+    }
+    return sv;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+static void
+ccsemver_sv_delete_after_init (ccsemver_sv_t * sv)
+{
+  ccsemver_id_delete(&(sv->prerelease));
+  ccsemver_id_delete(&(sv->build));
+  memset(sv, 0, sizeof(ccsemver_sv_t));
+}
+
+ccsemver_sv_t *
+ccsemver_sv_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+{
+  ccsemver_input_assert_more_input(L, input);
+  sv->delete = ccsemver_sv_delete_after_init;
+  ccsemver_sv_parse_full(L, input, sv);
+  return sv;
+}
+
+ccsemver_sv_t *
+ccsemver_sv_init_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+{
+  ccsemver_input_assert_more_input(L, input);
+  sv->delete = ccsemver_sv_delete_after_init;
+  ccsemver_sv_parse_partial(L, input, sv);
+  return sv;
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_sv_delete (ccsemver_sv_t * sv)
+{
+  if (sv->delete) {
+    sv->delete(sv);
+  }
 }
 
 
 /** --------------------------------------------------------------------
- ** Parser.
+ ** Exception handlers.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_read (ccsemver_t * self, ccsemver_input_t * input)
+__attribute__((__nonnull__(1,2)))
+static void
+ccsemver_handler_sv_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
 {
-  if (ccsemver_input_more(input)) {
-    ccsemver_ctor(self);
-    self->raw = input->str + input->off;
+  ccsemver_sv_delete(H->pointer);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
 
-    /* Skip the initial "v" character, if any. */
-    if ('v' == ccsemver_input_next(input)) {
-      ++(input->off);
-    }
+void
+ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+{
+  H->function	= ccsemver_handler_sv_function;
+  H->pointer	= sv;
+  cce_register_cleanup_handler(L, H);
+}
 
-    if (ccsemver_parse_number(&self->major, input)
-	|| input->off >= input->len || ccsemver_input_next(input) != '.'
-	|| ccsemver_parse_number(&self->minor, (++input->off, input))
-	|| input->off >= input->len || ccsemver_input_next(input) != '.'
-	|| ccsemver_parse_number(&self->patch, (++input->off, input))
-	|| (ccsemver_input_next(input) == '-' && ccsemver_id_read(&self->prerelease, (++input->off, input)))
-	|| (ccsemver_input_next(input) == '+' && ccsemver_id_read(&self->build,      (++input->off, input)))) {
-      self->len = input->str + input->off - self->raw;
-      return 1;
-    }
-    self->len = input->str + input->off - self->raw;
-    return 0;
+void
+ccsemver_error_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+{
+  H->function	= ccsemver_handler_sv_function;
+  H->pointer	= sv;
+  cce_register_error_handler(L, H);
+}
+
+
+/** --------------------------------------------------------------------
+ ** Parser functions.
+ ** ----------------------------------------------------------------- */
+
+void
+ccsemver_sv_parse_full (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+{
+  sv->major	= 0;
+  sv->minor	= 0;
+  sv->patch	= 0;
+  sv->len	= 0;
+  sv->raw	= input->str + input->off;
+  memset(&(sv->prerelease), 0, sizeof(ccsemver_id_t));
+  memset(&(sv->build),      0, sizeof(ccsemver_id_t));
+
+  /* Skip the initial "v" character, if any. */
+  if ('v' == ccsemver_input_next(input)) {
+    ++(input->off);
   }
-  return 1;
+
+  sv->major = ccsemver_parse_number(L, input);
+
+  if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '.')) {
+    /* Skip dot. */
+    ++input->off;
+    sv->minor = ccsemver_parse_number(L, input);
+
+    if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '.')) {
+      /* Skip dot. */
+      ++input->off;
+      sv->patch = ccsemver_parse_number(L, input);
+
+      if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '-')) {
+	/* Skip dash. */
+	++input->off;
+	ccsemver_id_init(L, input, &(sv->prerelease));
+
+	if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '+')) {
+	  /* Skip plus. */
+	  ++input->off;
+	  ccsemver_id_init(L, input, &(sv->build));
+	} /* It is fine if there is no "build metadata". */
+      } /* It is fine if there is no "prerelease tag". */
+
+      sv->len = input->str + input->off - sv->raw;
+    } else {
+      /* Missing patch level is an error. */
+      cce_raise(L, ccsemver_condition_new_parser_invalid_input());
+    }
+  } else {
+    /* Missing minor version is an error. */
+    cce_raise(L, ccsemver_condition_new_parser_invalid_input());
+  }
+}
+
+void
+ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+/* Parse  a partial  semantic version.   It  must start  with the  major
+   version number  as numeric  component.  The  minor version  number is
+   optional.   The  patch level  is  optional.   The prerelease  tag  is
+   optional.  The build metadata is optional. */
+{
+  sv->major	= CCSEMVER_NUM_X;
+  sv->minor	= CCSEMVER_NUM_X;
+  sv->patch	= CCSEMVER_NUM_X;
+  sv->len	= 0;
+  sv->raw	= input->str + input->off;
+  memset(&(sv->prerelease), 0, sizeof(ccsemver_id_t));
+  memset(&(sv->build),      0, sizeof(ccsemver_id_t));
+
+  sv->major = ccsemver_parse_numeric_component(L, input);
+
+  if (ccsemver_input_parse_dot(input)) {
+    sv->minor = ccsemver_parse_numeric_component(L, input);
+
+    if (ccsemver_input_parse_dot(input)) {
+      sv->patch = ccsemver_parse_numeric_component(L, input);
+
+      if (ccsemver_input_parse_dash(input)) {
+	ccsemver_id_init(L, input, &(sv->prerelease));
+
+	if (ccsemver_input_parse_plus(input)) {
+	  ccsemver_id_init(L, input, &(sv->build));
+	}
+      }
+
+      sv->len = input->str + input->off - sv->raw;
+    }
+  }
 }
 
 
@@ -104,24 +268,22 @@ ccsemver_read (ccsemver_t * self, ccsemver_input_t * input)
  ** Comparision.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
+int
+ccsemver_sv_comp (ccsemver_sv_t const * sv1, ccsemver_sv_t const * sv2)
 {
-  char result;
+  int	result;
 
-  if (0 != (result = ccsemver_num_comp(self->major, other->major))) {
+  if (0 != (result = ccsemver_num_comp(sv1->major, sv2->major))) {
     return result;
-  }
-  if (0 != (result = ccsemver_num_comp(self->minor, other->minor))) {
+  } else if (0 != (result = ccsemver_num_comp(sv1->minor, sv2->minor))) {
     return result;
-  }
-  if (0 != (result = ccsemver_num_comp(self->patch, other->patch))) {
+  } else if (0 != (result = ccsemver_num_comp(sv1->patch, sv2->patch))) {
     return result;
-  }
-  if (0 != (result = ccsemver_id_comp(&(self->prerelease), &(other->prerelease)))) {
+  } else if (0 != (result = ccsemver_id_comp(&(sv1->prerelease), &(sv2->prerelease)))) {
     return result;
+  } else {
+    return ccsemver_id_comp(&(sv1->build), &(sv2->build));
   }
-  return ccsemver_id_comp(&(self->build), &(other->build));
 }
 
 
@@ -130,26 +292,26 @@ ccsemver_comp (ccsemver_t const * self, ccsemver_t const * other)
  ** ----------------------------------------------------------------- */
 
 int
-ccsemver_write (ccsemver_t const * self, char *buffer, size_t len)
+ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
 {
   char	prerelease[256], build[256];
   int	rv;
 
-  if (self->prerelease.len && self->build.len) {
+  if (sv->prerelease.len && sv->build.len) {
     rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s+%.*s",
-		  self->major, self->minor, self->patch,
-		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease,
-		  ccsemver_id_write(&(self->build), build, 256), build);
-  } else if (self->prerelease.len) {
+		  sv->major, sv->minor, sv->patch,
+		  ccsemver_id_write(&(sv->prerelease), prerelease, 256), prerelease,
+		  ccsemver_id_write(&(sv->build), build, 256), build);
+  } else if (sv->prerelease.len) {
     rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s",
-		  self->major, self->minor, self->patch,
-		  ccsemver_id_write(&(self->prerelease), prerelease, 256), prerelease);
-  } else if (self->build.len) {
+		  sv->major, sv->minor, sv->patch,
+		  ccsemver_id_write(&(sv->prerelease), prerelease, 256), prerelease);
+  } else if (sv->build.len) {
     rv = snprintf(buffer, len, "%ld.%ld.%ld+%.*s",
-		  self->major, self->minor, self->patch,
-		  ccsemver_id_write(&(self->build), build, 256), build);
+		  sv->major, sv->minor, sv->patch,
+		  ccsemver_id_write(&(sv->build), build, 256), build);
   } else {
-    rv = snprintf(buffer, len, "%ld.%ld.%ld", self->major, self->minor, self->patch);
+    rv = snprintf(buffer, len, "%ld.%ld.%ld", sv->major, sv->minor, sv->patch);
   }
   return rv;
 }

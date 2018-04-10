@@ -42,77 +42,60 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
 
 
 /** --------------------------------------------------------------------
  ** Parser.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_num_parse (long * nump, ccsemver_input_t * input)
+long
+ccsemver_parse_numeric_component (cce_destination_t L, ccsemver_input_t * input)
 {
-  if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
-    return 1;
-  } else {
-    switch (ccsemver_input_next(input)) {
-    case 'x':
-    case 'X':
-    case '*':
-      *nump = CCSEMVER_NUM_X;
-      ++(input->off);
-      break;
+  ccsemver_input_assert_more_input(L, input);
 
-    default:
-      if (isdigit(ccsemver_input_next(input))) {
-	char *	endptr;
+  switch (ccsemver_input_next(input)) {
+  case 'x':
+  case 'X':
+  case '*':
+    ++(input->off);
+    return CCSEMVER_NUM_X;
 
-	/* We  have already  determined that  the first  character is  a
-	   digit, so  we know that the  return value of "strtol()"  is a
-	   positive number.
-
-	   FIXME?  Here  we are  ignoring the  possibility of  the input
-	   string overflowing  the range of  a "long" result;  we should
-	   check for "errno" after calling "strtol()".  According to the
-	   documentation:  if the  value  overflows, "strtol()"  returns
-	   LONG_MAX.   Right now  we  are accepting  LONG_MAX as  valid.
-	   (Marco Maggi; Apr 4, 2018) */
-	*nump = strtol(input->str + input->off, &endptr, 10);
-	input->off += endptr - input->str - input->off;
-      } else {
-	return 1;
-      }
-      break;
-    }
-    return 0;
-  }
-}
-
-char
-ccsemver_parse_number (long * nump, ccsemver_input_t * input)
-/* Parse an integer number. */
-{
-  if (ccsemver_input_at_end(input) || ccsemver_input_is_empty(input)) {
-    return 1;
-  } else {
+  default:
     if (isdigit(ccsemver_input_next(input))) {
       char *	endptr;
+      long	num;
 
       /* We have already determined that the first character is a digit,
 	 so we  know that the return  value of "strtol()" is  a positive
-	 number.
-
-	 FIXME?   Here we  are  ignoring the  possibility  of the  input
-	 string  overflowing the  range of  a "long"  result; we  should
-	 check for  "errno" after calling "strtol()".   According to the
-	 documentation:  if  the  value  overflows,  "strtol()"  returns
-	 LONG_MAX.   Right  now  we  are accepting  LONG_MAX  as  valid.
-	 (Marco Maggi; Apr 4, 2018) */
-      *nump = strtol(input->str + input->off, &endptr, 10);
+	 number. */
+      num = ccsemver_strtol(L, input->str + input->off, &endptr);
       input->off += endptr - input->str - input->off;
-      return 0;
+      return num;
     } else {
-      return 1;
+      cce_raise(L, ccsemver_condition_new_parser_expected_numeric_component());
     }
+  }
+}
+
+long
+ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
+/* Parse an integer number. */
+{
+  ccsemver_input_assert_more_input(L, input);
+
+  if (isdigit(ccsemver_input_next(input))) {
+    char *	endptr;
+    long	num;
+
+    /* We have already  determined that the first character  is a digit,
+       so we  know that  the return  value of  "strtol()" is  a positive
+       number. */
+    num = ccsemver_strtol(L, input->str + input->off, &endptr);
+    input->off += endptr - input->str - input->off;
+    return num;
+  } else {
+    cce_raise(L, ccsemver_condition_new_parser_expected_number());
   }
 }
 
@@ -121,7 +104,7 @@ ccsemver_parse_number (long * nump, ccsemver_input_t * input)
  ** Comparison.
  ** ----------------------------------------------------------------- */
 
-char
+int
 ccsemver_num_comp(long const self, long const other)
 {
   if ((CCSEMVER_NUM_X == self) || (CCSEMVER_NUM_X == other)) {

@@ -44,29 +44,102 @@
 #include <ctype.h>
 #include <stdio.h>
 
+static void ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
+  __attribute__((__nonnull__(1,2,3)));
+
 
 /** --------------------------------------------------------------------
  ** Constructors and destructors.
  ** ----------------------------------------------------------------- */
 
-void
-ccsemver_id_ctor (ccsemver_id_t *self)
+static void
+ccsemver_id_delete_after_new (ccsemver_id_t * id)
 {
-  self->next	= NULL;
-  self->len	= 0;
-  self->raw	= NULL;
-  self->num	= 0;
-  self->numeric	= true;
+  if (id->next) {
+    ccsemver_id_delete(id->next);
+  }
+  free(id);
+  memset(id, 0, sizeof(ccsemver_id_t));
+}
+
+ccsemver_id_t *
+ccsemver_id_new (cce_destination_t upper_L, ccsemver_input_t * input)
+{
+  ccsemver_input_assert_more_input(upper_L, input);
+  {
+    cce_location_t		L[1];
+    ccsemver_id_t *		id;
+    cce_error_handler_t		id_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      id         = cce_sys_malloc_guarded(L, id_H, sizeof(ccsemver_id_t));
+      id->delete = ccsemver_id_delete_after_new;
+      ccsemver_id_parse(L, input, id);
+      cce_run_cleanup_handlers(L);
+    }
+    return id;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+static void
+ccsemver_id_delete_after_init (ccsemver_id_t * id)
+{
+  if (id->next) {
+    ccsemver_id_delete(id->next);
+  }
+  memset(id, 0, sizeof(ccsemver_id_t));
+}
+
+ccsemver_id_t *
+ccsemver_id_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
+{
+  ccsemver_input_assert_more_input(L, input);
+  id->delete = ccsemver_id_delete_after_init;
+  ccsemver_id_parse(L, input, id);
+  return id;
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_id_delete (ccsemver_id_t * id)
+{
+  if (id->delete) {
+    id->delete(id);
+  }
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exception handlers.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((__nonnull__(1,2)))
+static void
+ccsemver_handler_id_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+{
+  ccsemver_id_delete(H->pointer);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
 }
 
 void
-ccsemver_id_dtor (ccsemver_id_t * self)
+ccsemver_cleanup_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
 {
-  if (self->next) {
-    ccsemver_id_dtor(self->next);
-    free(self->next);
-    self->next = NULL;
-  }
+  H->function	= ccsemver_handler_id_function;
+  H->pointer	= id;
+  cce_register_cleanup_handler(L, H);
+}
+
+void
+ccsemver_error_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+{
+  H->function	= ccsemver_handler_id_function;
+  H->pointer	= id;
+  cce_register_error_handler(L, H);
 }
 
 
@@ -74,32 +147,34 @@ ccsemver_id_dtor (ccsemver_id_t * self)
  ** Parser.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
+void
+ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
 {
-#undef VALID_CHAR
-#define VALID_CHAR		(isalnum(ccsemver_input_next(input)) || ('-' == ccsemver_input_next(input)))
   size_t	component_len = 0;
   /* This is set to true if the input string "0". */
   bool		is_zero       = false;
 
-  ccsemver_id_ctor(self);
+  id->num	= 0;
+  id->numeric	= true;
+  id->len	= 0;
+  id->raw	= NULL;
+  id->next	= NULL;
 
-  self->num	= 0;
-  self->numeric	= true;
   for (;
-       ccsemver_input_more(input) && VALID_CHAR;
+       ccsemver_input_more(input) && (isalnum(ccsemver_input_next(input)) || ('-' == ccsemver_input_next(input)));
        ++component_len, ++(input->off)) {
     if (!isdigit(ccsemver_input_next(input))) {
-      is_zero       = false;
-      self->numeric = false;
+      is_zero     = false;
+      id->numeric = false;
     } else {
       if (0 == component_len) {
 	is_zero = ('0' == ccsemver_input_next(input));
       } else if (is_zero) {
 	/* We reject  identifier components  that are numeric  and start
-	   with zero, for example "0123". */
-	return 1;
+	   with zero, for example "0123".
+
+	   FIXME Is this a good idea?  (Marco Maggi; Apr 7, 2018) */
+	cce_raise(L, ccsemver_condition_new_parser_expected_identifier());
       }
     }
   }
@@ -107,50 +182,34 @@ ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
   if (0 == component_len) {
     /* If we are here: there is no identifier component at the beginning
        of the input string. */
-    return 1;
+    cce_raise(L, ccsemver_condition_new_parser_expected_identifier());
   }
 
   /* Here we know that the input string holds an identifier component of
      length "component_len". */
-  self->raw = input->str + input->off - component_len;
-  self->len = component_len;
+  id->raw = input->str + input->off - component_len;
+  id->len = component_len;
 
   /* Only if  the identifier  component is  numeric we  convert it  to a
-     number and store it into  "self->num".  If the component represents
-     zero: we do nothing because "self->num" is already zero. */
-  if ((! is_zero) && self->numeric) {
+     number and  store it into  "id->num".  If the  component represents
+     zero: we do nothing because "id->num" is already zero. */
+  if ((! is_zero) && id->numeric) {
     /* Here we  want to parse  a raw  number, not a  "numeric component"
        with "x",  "X" or  "*" elements.  So  we use  "strtol()" directly
        rather than "ccsemver_num_read()".
 
        Also, we have already determined that the numeric string starting
-       at  "self->raw" is  a positive  number,  so the  return value  of
-       "strtol()" is a positive number.
-
-       FIXME?  Here we are ignoring  the possibility of the input string
-       overflowing the  range of  a "long" result;  we should  check for
-       "errno"   after    calling   "strtol()".    According    to   the
-       documentation:  if   the  value  overflows,   "strtol()"  returns
-       LONG_MAX.  Right now we are  accepting LONG_MAX as valid.  (Marco
-       Maggi; Apr 4, 2018)
-    */
-    self->num = strtol(self->raw, NULL, 10);
+       at  "id->raw"  is a  positive  number,  so  the return  value  of
+       "strtol()" is a positive number. */
+    id->num = ccsemver_strtol(L, id->raw, NULL);
   }
 
   /* Is there another  component after this one?  If  the next character
      is a dot: there is. */
   if ('.' == ccsemver_input_next(input)) {
-    self->next = (ccsemver_id_t *) malloc(sizeof(ccsemver_id_t));
-    if (self->next) {
-      /* Skip the dot. */
-      ++(input->off);
-      /* Parse the next component. */
-      return ccsemver_id_read(self->next, input);
-    } else {
-      return 1;
-    }
-  } else {
-    return 0;
+    /* Skip the dot. */
+    ++(input->off);
+    id->next = ccsemver_id_new(L, input);
   }
 }
 
@@ -159,47 +218,47 @@ ccsemver_id_read (ccsemver_id_t * self, ccsemver_input_t * input)
  ** Comparison.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t const * other)
+int
+ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t const * id2)
 {
-  char s;
+  int	s;
 
-  if (!self->len && other->len) {
+  if (!id1->len && id2->len) {
     return 1;
   }
-  if (self->len && !other->len) {
+  if (id1->len && !id2->len) {
     return -1;
   }
-  if (!self->len) {
+  if (!id1->len) {
     return 0;
   }
 
-  if (self->num && other->num) {
-    if (self->num > other->num) {
+  if (id1->num && id2->num) {
+    if (id1->num > id2->num) {
       return 1;
     }
-    if (self->num < other->num) {
+    if (id1->num < id2->num) {
       return -1;
     }
   }
 
-  s = (char) memcmp(self->raw, other->raw, self->len > other->len ? self->len : other->len);
+  s = memcmp(id1->raw, id2->raw, id1->len > id2->len ? id1->len : id2->len);
 
   if (s != 0) {
     return s;
   }
 
-  if (!self->next && other->next) {
+  if (!id1->next && id2->next) {
     return 1;
   }
-  if (self->next && !other->next) {
+  if (id1->next && !id2->next) {
     return -1;
   }
-  if (!self->next) {
+  if (!id1->next) {
     return 0;
   }
 
-  return ccsemver_id_comp(self->next, other->next);
+  return ccsemver_id_comp(id1->next, id2->next);
 }
 
 
@@ -208,14 +267,14 @@ ccsemver_id_comp (ccsemver_id_t const * self, ccsemver_id_t const * other)
  ** ----------------------------------------------------------------- */
 
 int
-ccsemver_id_write (ccsemver_id_t const * self, char *buffer, size_t len)
+ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
 {
   char next[1024];
 
-  if (self->next) {
-    return snprintf(buffer, len, "%.*s.%.*s", (int) self->len, self->raw, ccsemver_id_write(self->next, next, 1024), next);
+  if (id->next) {
+    return snprintf(buffer, len, "%.*s.%.*s", (int) id->len, id->raw, ccsemver_id_write(id->next, next, 1024), next);
   }
-  return snprintf(buffer, len, "%.*s", (int) self->len, self->raw);
+  return snprintf(buffer, len, "%.*s", (int) id->len, id->raw);
 }
 
 /* end of file */

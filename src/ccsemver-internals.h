@@ -68,6 +68,8 @@
  ** Function prototypes and inline functions.
  ** ----------------------------------------------------------------- */
 
+ccsemver_private_decl long ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
+  __attribute__((__nonnull__(1,2)));
 
 
 /** --------------------------------------------------------------------

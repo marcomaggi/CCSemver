@@ -40,58 +40,102 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static void ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+  __attribute__((__nonnull__(1,2,3)));
+
 
 /** --------------------------------------------------------------------
  ** Constructor and destructor.
  ** ----------------------------------------------------------------- */
 
 static void
-ccsemver_range_init (ccsemver_range_t * self)
+ccsemver_range_delete_after_new (ccsemver_range_t * range)
 {
-  self->next = NULL;
-  ccsemver_comp_ctor(&self->comp);
+  if (range->comp.delete) {
+    ccsemver_comp_delete(&(range->comp));
+  }
+  if (range->next) {
+    ccsemver_range_delete(range->next);
+  }
+  free(range);
+  memset(range, 0, sizeof(ccsemver_range_t));
 }
 
-void
-ccsemver_range_dtor (ccsemver_range_t * self)
+ccsemver_range_t *
+ccsemver_range_new (cce_destination_t upper_L, ccsemver_input_t * input)
 {
-  if (self->next) {
-    ccsemver_range_dtor(self->next);
-    free(self->next);
-    self->next = NULL;
+  ccsemver_input_assert_more_input(upper_L, input);
+  {
+    cce_location_t		L[1];
+    ccsemver_range_t *		range;
+    cce_error_handler_t		range_H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
+    } else {
+      range         = cce_sys_malloc_guarded(L, range_H, sizeof(ccsemver_range_t));
+      range->delete = ccsemver_range_delete_after_new;
+      ccsemver_range_parse(L, input, range);
+      cce_run_cleanup_handlers(L);
+    }
+    return range;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+
+static void
+ccsemver_range_delete_after_init (ccsemver_range_t * range)
+{
+  if (range->comp.delete) {
+    ccsemver_comp_delete(&(range->comp));
+  }
+  if (range->next) {
+    ccsemver_range_delete(range->next);
+  }
+  memset(range, 0, sizeof(ccsemver_range_t));
+}
+
+ccsemver_range_t *
+ccsemver_range_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+{
+  ccsemver_input_assert_more_input(L, input);
+  range->delete = ccsemver_range_delete_after_init;
+  ccsemver_range_parse(L, input, range);
+  return range;
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_range_delete (ccsemver_range_t * range)
+{
+  if (range->delete) {
+    range->delete(range);
   }
 }
 
 
 /** --------------------------------------------------------------------
- ** Parser.
+ ** Parser functions.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
+void
+ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
 /* Parse a range from the input string.  A range is defined as follows:
  *
  *    <range> := <comparator> (<blanks> "||" <blanks> <range>)
  */
 {
-  ccsemver_range_init(self);
+  range->next = NULL;
 
   /* Read the first comparator. */
-  if (ccsemver_comp_read(&self->comp, input)) {
-    return 1;
-  }
+  ccsemver_comp_init(L, input, &(range->comp));
 
   /* Check if  there is a "||"  operator after the first  comparator; if
-     there is: parse te next comparator. */
+     there is: parse the next range. */
   if (ccsemver_input_parse_blanked_OR(input)) {
-    self->next = (ccsemver_range_t *) malloc(sizeof(ccsemver_range_t));
-    if (self->next) {
-      return ccsemver_range_read(self->next, input);
-    } else {
-      return 1;
-    }
-  } else {
-    return 0;
+    range->next = ccsemver_range_new(L, input);
   }
 }
 
@@ -100,8 +144,8 @@ ccsemver_range_read (ccsemver_range_t * self, ccsemver_input_t * input)
  ** Matching.
  ** ----------------------------------------------------------------- */
 
-char
-ccsemver_range_match (ccsemver_t const * self, ccsemver_range_t const * range)
+int
+ccsemver_range_match (ccsemver_sv_t const * self, ccsemver_range_t const * range)
 {
   return (char)  (ccsemver_match(self, &range->comp) ? 1 : (range->next ? ccsemver_range_match(self, range->next) : 0));
 }

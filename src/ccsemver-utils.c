@@ -40,6 +40,24 @@
 #define CCSEMVER_FWRITE_STACK_BUFLEN	64
 
 
+long
+ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
+{
+  long	num;
+
+  errno =  0;
+  num   = strtol(input_str, endptr, 10);
+  if (0 == errno) {
+    return num;
+  } else if (ERANGE == errno) {
+    errno = 0;
+    cce_raise(L, ccsemver_condition_new_parser_number_out_of_range());
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+
 size_t
 ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
 /* Serialise the identifier to the  STREAM.  When successful: return the
@@ -76,7 +94,7 @@ ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
 
 
 size_t
-ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
+ccsemver_sv_fwrite (ccsemver_sv_t const * sv, FILE * stream)
 /* Serialise the  version to  the STREAM.   When successful:  return the
    number of bytes written and  set "errno" to zero.  When unsuccessful:
    set "errno" to an error code. */
@@ -85,7 +103,7 @@ ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_write(sv, stk_buffer_ptr, stk_buffer_len);
+  needed_count = (size_t )ccsemver_sv_write(sv, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
@@ -99,7 +117,7 @@ ccsemver_fwrite (ccsemver_t const * sv, FILE * stream)
     if (NULL == dyn_buffer_ptr) {
       return 0;
     } else {
-      size_t	actual_count  = ccsemver_write(sv, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	actual_count  = ccsemver_sv_write(sv, dyn_buffer_ptr, dyn_buffer_len);
       size_t	written_count;
       errno = 0;
       written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
