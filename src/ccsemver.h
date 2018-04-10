@@ -529,7 +529,7 @@ ccsemver_decl long ccsemver_parse_numeric_component (cce_destination_t L, ccsemv
 ccsemver_decl long ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2),__leaf__));
 
-ccsemver_decl int ccsemver_num_comp (long self, long other)
+ccsemver_decl int ccsemver_num_comp (long num1, long num2)
   __attribute__((__leaf__,__const__));
 
 

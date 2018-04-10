@@ -524,6 +524,47 @@ test_2_3_4 (cce_destination_t upper_L)
 }
 
 
+/** --------------------------------------------------------------------
+ ** Numeric component comparison.
+ ** ----------------------------------------------------------------- */
+
+void
+test_3_1 (cce_destination_t L)
+{
+  cctests_assert(L, 0 == ccsemver_num_comp(CCSEMVER_NUM_X, 123));
+}
+
+void
+test_3_2 (cce_destination_t L)
+{
+  cctests_assert(L, 0 == ccsemver_num_comp(123, CCSEMVER_NUM_X));
+}
+
+void
+test_3_3 (cce_destination_t L)
+{
+  cctests_assert(L, 0 == ccsemver_num_comp(CCSEMVER_NUM_X, CCSEMVER_NUM_X));
+}
+
+void
+test_3_4 (cce_destination_t L)
+{
+  cctests_assert(L, -1 == ccsemver_num_comp(1, 2));
+}
+
+void
+test_3_5 (cce_destination_t L)
+{
+  cctests_assert(L, +1 == ccsemver_num_comp(2, 1));
+}
+
+void
+test_3_6 (cce_destination_t L)
+{
+  cctests_assert(L, 0  == ccsemver_num_comp(1, 1));
+}
+
+
 int
 main (void)
 {
@@ -565,6 +606,17 @@ main (void)
       cctests_run(test_2_3_2);
       cctests_run(test_2_3_3);
       cctests_run(test_2_3_4);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("numeric component comparison");
+    {
+      cctests_run(test_3_1);
+      cctests_run(test_3_2);
+      cctests_run(test_3_3);
+      cctests_run(test_3_4);
+      cctests_run(test_3_5);
+      cctests_run(test_3_6);
     }
     cctests_end_group();
   }

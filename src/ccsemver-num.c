@@ -105,13 +105,13 @@ ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
  ** ----------------------------------------------------------------- */
 
 int
-ccsemver_num_comp(long const self, long const other)
+ccsemver_num_comp(long const num1, long const num2)
 {
-  if ((CCSEMVER_NUM_X == self) || (CCSEMVER_NUM_X == other)) {
+  if ((CCSEMVER_NUM_X == num1) || (CCSEMVER_NUM_X == num2)) {
     return 0;
-  } else if (self > other) {
+  } else if (num1 > num2) {
     return 1;
-  } else if (self < other) {
+  } else if (num1 < num2) {
     return -1;
   } else {
     return 0;
