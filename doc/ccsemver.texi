@@ -271,10 +271,8 @@ Return an integer representing the library interface current age.
 
 @menu
 * conditions parser error::     Parser error.
-* conditions parser eoi::       Unexpected end-of-input while parsing.
-* conditions parser offset::    Invalid input offset while parsing.
-* conditions parser range::     Number out of range.
-* conditions parser numcomp::   Expected numeric component.
+* conditions parser input::     Parser input errors.
+* conditions parser invalid::   Invalid input to parser.
 @end menu
 
 @c page
@@ -319,11 +317,103 @@ Return @ctrue{} if @var{C} is an @emph{parser error} condition object; otherwise
 @end deftypefun
 
 @c page
-@node conditions parser eoi
-@section Unexpected end--of--input while parsing
+@node conditions parser input
+@section Parser input errors
 
 
-The @dfn{unexpected enf--of--input exceptional--condition object} has the purpose of describing an
+@menu
+* conditions parser input no input::  No input available while parsing.
+* conditions parser input empty::     Input is empty while parsing.
+* conditions parser input eoi::       Unexpected end-of-input while parsing.
+* conditions parser input offset::    Invalid input offset while parsing.
+@end menu
+
+@c page
+@node conditions parser input no input
+@subsection No input available while parsing
+
+
+The @dfn{no input exceptional--condition object} has the purpose of describing an exceptional
+condition caused by finding no available input while parsing semantic version strings.
+
+There should be only one @emph{no input} condition object: the one predefined by @value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_no_input_t
+Structure type representing the descriptor for @emph{no input} condition objects.  This descriptor
+has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_no_input_t
+Structure type representing an @emph{no input} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_no_input_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_no_input (void)
+Return a pointer to the statically allocated structure representing the single @emph{no input}
+condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_no_input (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{no input} condition object; otherwise return @cfalse{}.
+@end deftypefun
+
+@c page
+@node conditions parser input empty
+@subsection empty input while parsing
+
+
+The @dfn{empty input exceptional--condition object} has the purpose of describing an exceptional
+condition caused by empty input while parsing semantic version strings.
+
+There should be only one @emph{empty input} condition object: the one predefined by @value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_empty_input_t
+Structure type representing the descriptor for @emph{empty input} condition objects.  This
+descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_empty_input_t
+Structure type representing an @emph{empty input} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_input_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_empty_input_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_empty_input (void)
+Return a pointer to the statically allocated structure representing the single @emph{empty input}
+condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_empty_input (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{empty input} condition object; otherwise return @cfalse{}.
+@end deftypefun
+
+@c page
+@node conditions parser input eoi
+@subsection Unexpected end--of--input while parsing
+
+
+The @dfn{unexpected end--of--input exceptional--condition object} has the purpose of describing an
 exceptional condition caused by an unexpected end--of--input while parsing semantic version strings.
 
 There should be only one @emph{unexpected end--of--input} condition object: the one predefined by
@@ -332,37 +422,37 @@ There should be only one @emph{unexpected end--of--input} condition object: the 
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_eoi_t
+@deftp {Struct Typedef} ccsemver_descriptor_parser_end_of_input_t
 Structure type representing the descriptor for @emph{unexpected end--of--input} condition objects.
-This descriptor has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+This descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_eoi_t
+@deftp {Struct Typedef} ccsemver_condition_parser_end_of_input_t
 Structure type representing an @emph{unexpected end--of--input} condition object.
 @end deftp
 
 
-@deftypefun void ccsemver_condition_init_parser_eoi (ccsemver_condition_parser_eoi_t * @var{C})
+@deftypefun void ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_input_t * @var{C})
 Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_eoi_t}.
+@objtype{ccsemver_condition_parser_end_of_input_t}.
 @end deftypefun
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_eoi (void)
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_end_of_input (void)
 Return a pointer to the statically allocated structure representing the single @emph{unexpected
 end--of--input} condition object.
 @end deftypefun
 
 
-@deftypefun bool ccsemver_condition_is_parser_eoi (cce_condition_t const * @var{C})
+@deftypefun bool ccsemver_condition_is_parser_end_of_input (cce_condition_t const * @var{C})
 Return @ctrue{} if @var{C} is an @emph{unexpected end--of--input} condition object; otherwise return
 @cfalse{}.
 @end deftypefun
 
 @c page
-@node conditions parser offset
-@section Invalid input offset while parsing
+@node conditions parser input offset
+@subsection Invalid input offset while parsing
 
 
 The @dfn{invalid input offset exceptional--condition object} has the purpose of describing an
@@ -377,7 +467,7 @@ All the following definitions are accessible from the header file @file{ccsemver
 
 @deftp {Struct Typedef} ccsemver_descriptor_parser_invalid_input_offset_t
 Structure type representing the descriptor for @emph{invalid input offset} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
 @end deftp
 
 
@@ -404,51 +494,64 @@ Return @ctrue{} if @var{C} is an @emph{invalid input offset} condition object; o
 @end deftypefun
 
 @c page
-@node conditions parser range
-@section Number out of range
+@node conditions parser invalid
+@section Invalid input to parser
 
 
-The @dfn{number out of range exceptional--condition object} has the purpose of describing an
-exceptional condition caused by a attempting to parse a number and finding it out of its allowed
-range, while parsing semantic version strings.
+@menu
+* conditions parser invalid number::   Expected number.
+* conditions parser invalid numcomp::  Expected numeric component.
+* conditions parser invalid id::       Expected identifier.
+* conditions parser invalid numrange:: Number out of range.
+@end menu
 
-There should be only one @emph{number out of range} condition object: the one predefined by
+@c page
+@node conditions parser invalid number
+@subsection Expected number
+
+
+The @dfn{expected number exceptional--condition object} has the purpose of describing an exceptional
+condition caused by invalid input when a number was expected, while parsing semantic version
+strings.
+
+There should be only one @emph{expected number} condition object: the one predefined by
 @value{PACKAGE}.
 
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_number_out_of_range_t
-Structure type representing the descriptor for @emph{number out of range} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_number_t
+Structure type representing the descriptor for @emph{expected number} condition objects.  This
+descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_number_out_of_range_t
-Structure type representing an @emph{number out of range} condition object.
+@deftp {Struct Typedef} ccsemver_condition_parser_expected_number_t
+Structure type representing an @emph{expected number} condition object.
 @end deftp
 
 
-@deftypefun void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * @var{C})
+@deftypefun void ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expected_number_t * @var{C})
 Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_number_out_of_range_t}.
+@objtype{ccsemver_condition_parser_expected_number_t}.
 @end deftypefun
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_number_out_of_range (void)
-Return a pointer to the statically allocated structure representing the single @emph{number out of
-range} condition object.
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_number (void)
+Return a pointer to the statically allocated structure representing the single @emph{expected
+number} condition object.
 @end deftypefun
 
 
-@deftypefun bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{number out of range} condition object; otherwise return
+@deftypefun bool ccsemver_condition_is_parser_expected_number (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{expected number} condition object; otherwise return
 @cfalse{}.
 @end deftypefun
 
+
 @c page
-@node conditions parser numcomp
-@section Expected numeric component
+@node conditions parser invalid numcomp
+@subsection Expected numeric component
 
 
 The @dfn{expected numeric component exceptional--condition object} has the purpose of describing an
@@ -463,7 +566,7 @@ All the following definitions are accessible from the header file @file{ccsemver
 
 @deftp {Struct Typedef} ccsemver_descriptor_parser_expected_numeric_component_t
 Structure type representing the descriptor for @emph{expected numeric component} condition objects.
-This descriptor has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+This descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
 @end deftp
 
 
@@ -487,6 +590,92 @@ numeric component} condition object.
 @deftypefun bool ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * @var{C})
 Return @ctrue{} if @var{C} is an @emph{expected numeric component} condition object; otherwise
 return @cfalse{}.
+@end deftypefun
+
+@c page
+@node conditions parser invalid id
+@subsection Expected identifier
+
+
+The @dfn{expected identifier exceptional--condition object} has the purpose of describing an
+exceptional condition caused by invalid input when a identifier was expected, while parsing semantic
+version strings.
+
+There should be only one @emph{expected identifier} condition object: the one predefined by
+@value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_identifier_t
+Structure type representing the descriptor for @emph{expected identifier} condition objects.  This
+descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_expected_identifier_t
+Structure type representing an @emph{expected identifier} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_expected_identifier_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_expected_identifier_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_identifier (void)
+Return a pointer to the statically allocated structure representing the single @emph{expected
+identifier} condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{expected identifier} condition object; otherwise return
+@cfalse{}.
+@end deftypefun
+
+@c page
+@node conditions parser invalid numrange
+@subsection Number out of range
+
+
+The @dfn{number out of range exceptional--condition object} has the purpose of describing an
+exceptional condition caused by a attempting to parse a number and finding it out of its allowed
+range, while parsing semantic version strings.
+
+There should be only one @emph{number out of range} condition object: the one predefined by
+@value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_number_out_of_range_t
+Structure type representing the descriptor for @emph{number out of range} condition objects.  This
+descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_number_out_of_range_t
+Structure type representing an @emph{number out of range} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_number_out_of_range_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_number_out_of_range (void)
+Return a pointer to the statically allocated structure representing the single @emph{number out of
+range} condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{number out of range} condition object; otherwise return
+@cfalse{}.
 @end deftypefun
 
 @c page
@@ -845,7 +1034,7 @@ The versions @api{} does @strong{not} duplicate the input strings.
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_t
+@deftp {Struct Typedef} ccsemver_sv_t
 Type of data structures representing parsed versions.  Instances of this structure are initialised
 with @cfunc{ccsemver_ctor}.  Instances of this structure are finalised with @cfunc{ccsemver_dtor}.
 
@@ -877,12 +1066,12 @@ This pointer is valid as long as the input string handed to the constructor func
 @end deftp
 
 
-@deftypefun void ccsemver_ctor (ccsemver_t * @var{sv})
+@deftypefun void ccsemver_ctor (ccsemver_sv_t * @var{sv})
 Initialise to empty an already allocated data structure representing a parsed version.  Every call
 to this function must be matched by a call to @cfunc{ccsemver_dtor}:
 
 @example
-ccsemver_t        sv;
+ccsemver_sv_t        sv;
 
 ccsemver_ctor(&sv);
 @{
@@ -893,7 +1082,7 @@ ccsemver_dtor(&sv);
 @end deftypefun
 
 
-@deftypefun void ccsemver_dtor (ccsemver_t * @var{sv})
+@deftypefun void ccsemver_dtor (ccsemver_sv_t * @var{sv})
 Finalise to empty a data structure representing a parsed version; calls to this function must match
 a previous call to @cfunc{ccsemver_ctor} or @cfunc{ccsemver_read}.
 
@@ -901,7 +1090,7 @@ All the resources associated to @var{sv} are released, but the structure itself.
 is correct:
 
 @example
-ccsemver_t        sv;
+ccsemver_sv_t        sv;
 
 ccsemver_ctor(&sv);
 @{
@@ -914,9 +1103,9 @@ ccsemver_dtor(&sv);
 the following code is also correct:
 
 @example
-ccsemver_t *      svp;
+ccsemver_sv_t *      svp;
 
-svp = malloc(sizeof(ccsemver_t));
+svp = malloc(sizeof(ccsemver_sv_t));
 assert(NULL != svp);
 @{
   ccsemver_ctor(svp);
@@ -937,7 +1126,7 @@ free(svp);
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_read (ccsemver_t * @var{sv}, ccsemver_input_t * @var{input})
+@deftypefun char ccsemver_read (ccsemver_sv_t * @var{sv}, ccsemver_input_t * @var{input})
 Parse input expecting a semantic version specification.  When successful: the return value is
 @code{0}.  If an error occurs: the return value is @code{1}.
 
@@ -961,7 +1150,7 @@ The following example parses the numeric version @samp{1.2.3}:
 char const            input_str[] = "1.2.3";
 ccsemver_input_t      input =
   ccsemver_input_new(input_str, strlen(input_str), 0);
-ccsemver_t            sv;
+ccsemver_sv_t            sv;
 char                  rv;
 
 rv = ccsemver_read(&sv, &input);
@@ -995,7 +1184,7 @@ a prerelease tag:
 char const    input_str[] = "1.2.3-alpha.7";
 ccsemver_input_t      input =
   ccsemver_input_new(input_str, strlen(input_str), 0);
-ccsemver_t            sv;
+ccsemver_sv_t            sv;
 char                  rv;
 
 rv = ccsemver_read(&sv, &input);
@@ -1027,7 +1216,7 @@ which has both a prerelease tag and build metadata:
 
 @example
 char const    input_str[] = "1.2.3-alpha.7+x86-64";
-ccsemver_t      version;
+ccsemver_sv_t      version;
 size_t        input_off = 0;
 char          rv;
 
@@ -1060,7 +1249,7 @@ major=1, minor=2, patch=3, prerelease=alpha.7, build=x86-64
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun int ccsemver_write (ccsemver_t const * @var{sv}, char * @var{output_buf}, size_t @var{output_len})
+@deftypefun int ccsemver_write (ccsemver_sv_t const * @var{sv}, char * @var{output_buf}, size_t @var{output_len})
 Serialise the version @var{sv} as @ascii{} string in the memory block referenced by
 @var{output_buf}, which has at least @var{output_len} characters available.  If the buffer has not
 enough room to hold the full version serialisation: the string is truncated to @var{output_len}
@@ -1081,7 +1270,7 @@ The following example serialises a version specification:
 static const char     input_str[] = "1.2.3-alpha.7";
 size_t        buffer_len = 32;
 char          buffer_ptr[buffer_len];
-ccsemver_t      version;
+ccsemver_sv_t      version;
 size_t        offset = 0;
 char          rv;
 
@@ -1120,7 +1309,7 @@ len=13, actual_count=13, id=1.2.3-alpha.7
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_comp (ccsemver_t const * @var{A}, ccsemver_t const * @var{B})
+@deftypefun char ccsemver_comp (ccsemver_sv_t const * @var{A}, ccsemver_sv_t const * @var{B})
 Compare the given versions.  Return @code{-1} if @var{A} is less than @var{B}; return @code{0} if
 @var{A} is equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 @end deftypefun
@@ -1135,7 +1324,7 @@ The following example compares two versions:
 @example
 static const char     input_str_A[] = "1.2.3";
 static const char     input_str_B[] = "1.2.4";
-ccsemver_t      version_A, version_B;
+ccsemver_sv_t      version_A, version_B;
 size_t        offset_A = 0, offset_B = 0;
 char          rv;
 
@@ -1236,7 +1425,7 @@ list.
 @item ccsemver_op_t op
 The operator specification for this comparator.
 
-@item ccsemver_t version
+@item ccsemver_sv_t version
 The version specification for this comparator.
 @end table
 @end deftp
@@ -1476,7 +1665,7 @@ len=7, actual_count=7, comp=<=1.2.3
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_match (ccsemver_t const * @var{sv}, ccsemver_comp_t const * @var{cmp})
+@deftypefun char ccsemver_match (ccsemver_sv_t const * @var{sv}, ccsemver_comp_t const * @var{cmp})
 Match a version referenced by @var{sv} against all the comparators in the linked list referenced by
 @var{cmp}.  The return value is @code{1} if the version matches; it is @code{0} otherwise.
 @end deftypefun
@@ -1491,7 +1680,7 @@ The following example matches a version against a standalone comparator:
 @example
 const char      version_str[] = "1.2.3";
 const char      compar_str[]  = ">=2.0.0";
-ccsemver_t      version;
+ccsemver_sv_t      version;
 ccsemver_comp_t comp;
 size_t          version_off = 0, comp_off = 0;
 char            rv;
@@ -1713,7 +1902,7 @@ len=23, actual_count=23, range=1.2.7 || >=1.2.9 <2.0.0
 All the following symbols are defined in the header file @file{ccsemver.h}.
 
 
-@deftypefun char ccsemver_range_match (ccsemver_t const * @var{sv}, ccsemver_range_t const * @var{rangep})
+@deftypefun char ccsemver_range_match (ccsemver_sv_t const * @var{sv}, ccsemver_range_t const * @var{rangep})
 Match a version referenced by @var{sv} against the comparators in the range referenced by
 @var{rangep}.  The return value is @code{1} if the version matches at least one comparator; it is
 @code{0} otherwise.
@@ -1729,7 +1918,7 @@ The following example matches a version against a range:
 @example
 static const char     version_str[] = "1.4.6";
 static const char     range_str[]  = "1.2.7 || >=1.2.9 <2.0.0";
-ccsemver_t              version;
+ccsemver_sv_t              version;
 ccsemver_range_t        range;
 size_t                version_off = 0, range_off = 0;
 char                  rv;
@@ -1823,7 +2012,7 @@ Special value used to represent a numeric component specified as @samp{x}, @samp
 @end deftypevr
 
 
-@deftypefun char ccsemver_num_comp (long @var{A}, long @var{B})
+@deftypefun int ccsemver_num_comp (long @var{A}, long @var{B})
 Compare the given integers.  Return @code{-1} if @var{A} is less than @var{B}; return @code{0} if
 @var{A} is equal to @var{B}; return @code{+1} if @var{A} is greater than @var{B}.
 
@@ -2231,7 +2420,7 @@ appropriate error code.
 @end deftypefun
 
 
-@deftypefun size_t ccsemver_fwrite (const ccsemver_t * @var{sv}, FILE * @var{stream})
+@deftypefun size_t ccsemver_sv_fwrite (const ccsemver_sv_t * @var{sv}, FILE * @var{stream})
 Serialise the referenced version to the given @var{stream}.  When successful: return the number of
 characters written and clear @code{errno} to zero.  If an error occurs: set @code{errno} to an
 appropriate error code.
