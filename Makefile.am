@@ -53,6 +53,7 @@ libccsemver_la_SOURCES	= \
 
 check_PROGRAMS	= \
 	tests/version		\
+	tests/numbers		\
 	tests/comp		\
 	tests/documentation	\
 	tests/match		\
@@ -69,6 +70,9 @@ ccsemver_tests_ldadd		= libccsemver.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
 
 tests_version_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_version_LDADD		= $(ccsemver_tests_ldadd)
+
+tests_numbers_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_numbers_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_comp_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_comp_LDADD		= $(ccsemver_tests_ldadd)
