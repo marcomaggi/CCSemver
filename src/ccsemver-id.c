@@ -195,8 +195,9 @@ ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t 
      zero: we do nothing because "id->num" is already zero. */
   if ((! is_zero) && id->numeric) {
     /* Here we  want to parse  a raw  number, not a  "numeric component"
-       with "x",  "X" or  "*" elements.  So  we use  "strtol()" directly
-       rather than "ccsemver_num_read()".
+       with  "x", "X"  or  "*" elements.   We  use "strtol()"  directly,
+       rather  than "ccsemver_parse_number()",  because we  have already
+       determined that: there is more input; the next input is a number.
 
        Also, we have already determined that the numeric string starting
        at  "id->raw"  is a  positive  number,  so  the return  value  of
