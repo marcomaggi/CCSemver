@@ -206,9 +206,7 @@ ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t 
 
   /* Is there another  component after this one?  If  the next character
      is a dot: there is. */
-  if ('.' == ccsemver_input_next(input)) {
-    /* Skip the dot. */
-    ++(input->off);
+  if (ccsemver_input_parse_dot(input)) {
     id->next = ccsemver_id_new(L, input);
   }
 }
