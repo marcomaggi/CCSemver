@@ -71,6 +71,19 @@ ccsemver_input_looking_at_blanked_dash (ccsemver_input_t const * const that_inpu
  ** ----------------------------------------------------------------- */
 
 bool
+ccsemver_input_parse_v (ccsemver_input_t * input)
+/* If the next character is a  "v": advance the parsing position over it
+   and return true; otherwise return false. */
+{
+  if (ccsemver_input_more(input) && ('v' == ccsemver_input_next(input))) {
+    ++(input->off);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool
 ccsemver_input_parse_dot (ccsemver_input_t * input)
 /* If the next character is a  dot: advance the parsing position over it
    and return true; otherwise return false. */

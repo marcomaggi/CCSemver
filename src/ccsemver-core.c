@@ -42,10 +42,10 @@
 #include <string.h>
 #include <stdio.h>
 
-static void ccsemver_sv_parse_full    (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+static void ccsemver_sv_parse_full    (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
-static void ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+static void ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -58,8 +58,8 @@ ccsemver_sv_delete_after_new (ccsemver_sv_t * sv)
 {
   ccsemver_id_delete(&(sv->prerelease));
   ccsemver_id_delete(&(sv->build));
-  free(sv);
   memset(sv, 0, sizeof(ccsemver_sv_t));
+  free(sv);
 }
 
 ccsemver_sv_t *
@@ -68,18 +68,17 @@ ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
   ccsemver_input_assert_more_input(upper_L, input);
   {
     cce_location_t		L[1];
-    ccsemver_sv_t *		sv;
     cce_error_handler_t		sv_H[1];
 
     if (cce_location(L)) {
       cce_run_error_handlers_raise(L, upper_L);
     } else {
-      sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
+      ccsemver_sv_t *	sv = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
-      ccsemver_sv_parse_full(L, input, sv);
+      ccsemver_sv_parse_full(L, sv, input);
       cce_run_cleanup_handlers(L);
+      return sv;
     }
-    return sv;
   }
 }
 
@@ -89,18 +88,18 @@ ccsemver_sv_new_partial (cce_destination_t upper_L, ccsemver_input_t * input)
   ccsemver_input_assert_more_input(upper_L, input);
   {
     cce_location_t		L[1];
-    ccsemver_sv_t *		sv;
     cce_error_handler_t		sv_H[1];
 
     if (cce_location(L)) {
       cce_run_error_handlers_raise(L, upper_L);
     } else {
+      ccsemver_sv_t *	sv;
       sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
-      ccsemver_sv_parse_partial(L, input, sv);
+      ccsemver_sv_parse_partial(L, sv, input);
       cce_run_cleanup_handlers(L);
+      return sv;
     }
-    return sv;
   }
 }
 
@@ -115,20 +114,20 @@ ccsemver_sv_delete_after_init (ccsemver_sv_t * sv)
 }
 
 ccsemver_sv_t *
-ccsemver_sv_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+ccsemver_sv_init (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   sv->delete = ccsemver_sv_delete_after_init;
-  ccsemver_sv_parse_full(L, input, sv);
+  ccsemver_sv_parse_full(L, sv, input);
   return sv;
 }
 
 ccsemver_sv_t *
-ccsemver_sv_init_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+ccsemver_sv_init_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   sv->delete = ccsemver_sv_delete_after_init;
-  ccsemver_sv_parse_partial(L, input, sv);
+  ccsemver_sv_parse_partial(L, sv, input);
   return sv;
 }
 
@@ -156,19 +155,55 @@ ccsemver_handler_sv_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_sv_t * sv)
 {
-  H->function	= ccsemver_handler_sv_function;
-  H->pointer	= sv;
-  cce_register_cleanup_handler(L, H);
+  H->handler.function	= ccsemver_handler_sv_function;
+  H->handler.pointer	= sv;
+  cce_register_cleanup_handler(L, &(H->handler));
 }
 
 void
-ccsemver_error_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_sv_t * sv)
+ccsemver_error_handler_sv_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_sv_t * sv)
 {
-  H->function	= ccsemver_handler_sv_function;
-  H->pointer	= sv;
-  cce_register_error_handler(L, H);
+  H->handler.function	= ccsemver_handler_sv_function;
+  H->handler.pointer	= sv;
+  cce_register_error_handler(L, &(H->handler));
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_sv_t *
+ccsemver_sv_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_sv_t *	sv = ccsemver_sv_new(L, input);
+  ccsemver_cleanup_handler_sv_init(L, H, sv);
+  return sv;
+}
+
+ccsemver_sv_t *
+ccsemver_sv_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_sv_t *	sv = ccsemver_sv_new(L, input);
+  ccsemver_error_handler_sv_init(L, H, sv);
+  return sv;
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_sv_t *
+ccsemver_sv_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_sv_t * sv, ccsemver_input_t * input)
+{
+  ccsemver_sv_init(L, sv, input);
+  ccsemver_cleanup_handler_sv_init(L, H, sv);
+  return sv;
+}
+
+ccsemver_sv_t *
+ccsemver_sv_init_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_sv_t * sv, ccsemver_input_t * input)
+{
+  ccsemver_sv_init(L, sv, input);
+  ccsemver_error_handler_sv_init(L, H, sv);
+  return sv;
 }
 
 
@@ -177,7 +212,7 @@ ccsemver_error_handler_sv_init (cce_location_t * L, cce_handler_t * H, ccsemver_
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_sv_parse_full (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+ccsemver_sv_parse_full (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   sv->major	= 0;
   sv->minor	= 0;
@@ -188,33 +223,27 @@ ccsemver_sv_parse_full (cce_destination_t L, ccsemver_input_t * input, ccsemver_
   memset(&(sv->build),      0, sizeof(ccsemver_id_t));
 
   /* Skip the initial "v" character, if any. */
-  if ('v' == ccsemver_input_next(input)) {
-    ++(input->off);
-  }
+  ccsemver_input_parse_v(input);
 
   sv->major = ccsemver_parse_number(L, input);
 
-  if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '.')) {
-    /* Skip dot. */
-    ++input->off;
+  if (ccsemver_input_parse_dot(input)) {
     sv->minor = ccsemver_parse_number(L, input);
 
-    if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '.')) {
-      /* Skip dot. */
-      ++input->off;
+    if (ccsemver_input_parse_dot(input)) {
       sv->patch = ccsemver_parse_number(L, input);
 
-      if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '-')) {
-	/* Skip dash. */
-	++input->off;
+      /* Parse the  "prerelease tag", if  any.  It  is fine if  there is
+	 none. */
+      if (ccsemver_input_parse_dash(input)) {
 	ccsemver_id_init(L, input, &(sv->prerelease));
+      }
 
-	if (ccsemver_input_more(input) && (ccsemver_input_next(input) != '+')) {
-	  /* Skip plus. */
-	  ++input->off;
-	  ccsemver_id_init(L, input, &(sv->build));
-	} /* It is fine if there is no "build metadata". */
-      } /* It is fine if there is no "prerelease tag". */
+      /* Parse the  "build metadata", if  any.  It  is fine if  there is
+	 none. */
+      if (ccsemver_input_parse_plus(input)) {
+	ccsemver_id_init(L, input, &(sv->build));
+      }
 
       sv->len = input->str + input->off - sv->raw;
     } else {
@@ -228,7 +257,7 @@ ccsemver_sv_parse_full (cce_destination_t L, ccsemver_input_t * input, ccsemver_
 }
 
 void
-ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_input_t * input, ccsemver_sv_t * sv)
+ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 /* Parse  a partial  semantic version.   It  must start  with the  major
    version number  as numeric  component.  The  minor version  number is
    optional.   The  patch level  is  optional.   The prerelease  tag  is
@@ -244,18 +273,24 @@ ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_input_t * input, ccsemv
 
   sv->major = ccsemver_parse_numeric_component(L, input);
 
+  /* Parse the minor number, if any. It is fine if there is none. */
   if (ccsemver_input_parse_dot(input)) {
     sv->minor = ccsemver_parse_numeric_component(L, input);
 
+    /* Parse the patch level, if any. It is fine if there is none. */
     if (ccsemver_input_parse_dot(input)) {
       sv->patch = ccsemver_parse_numeric_component(L, input);
 
+      /* Parse the  "prerelease tag", if  any.  It  is fine if  there is
+	 none. */
       if (ccsemver_input_parse_dash(input)) {
 	ccsemver_id_init(L, input, &(sv->prerelease));
+      }
 
-	if (ccsemver_input_parse_plus(input)) {
-	  ccsemver_id_init(L, input, &(sv->build));
-	}
+      /* Parse the  "build metadata", if  any.  It  is fine if  there is
+	 none. */
+      if (ccsemver_input_parse_plus(input)) {
+	ccsemver_id_init(L, input, &(sv->build));
       }
 
       sv->len = input->str + input->off - sv->raw;

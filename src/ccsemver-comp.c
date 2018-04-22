@@ -227,7 +227,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, input, &(cmp->sv));
+	ccsemver_sv_init_partial(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -244,7 +244,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, input, &(cmp->sv));
+	ccsemver_sv_init_partial(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -256,7 +256,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, input, &(cmp->sv));
+	ccsemver_sv_init_partial(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -279,7 +279,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
        *
        * so we start by parsing a partial semantic version specification.
        */
-      ccsemver_sv_init_partial(L, input, &(cmp->sv));
+      ccsemver_sv_init_partial(L, &(cmp->sv), input);
 
       /* If input continues with at least 3 characters being: a space, a
 	 dash, a space, then it is a hyphen range. */
@@ -404,7 +404,7 @@ parse_caret (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 {
   /* Right  after the  caret character  we expect  a, possibly  partial,
      semantic version specification. */
-  ccsemver_sv_init_partial(L, input, &(cmp->sv));
+  ccsemver_sv_init_partial(L, &(cmp->sv), input);
 
   /* Initialise  the GT  comparator.   If some  version  numbers are  X:
      convert  them  to  0  so  they are  a  right-side  limit  for  ">="
@@ -453,7 +453,7 @@ parse_tilde (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 {
   /* Right  after the  tilde character  we expect  a, possibly  partial,
      semantic version specification. */
-  ccsemver_sv_init_partial(L, input, &(cmp->sv));
+  ccsemver_sv_init_partial(L, &(cmp->sv), input);
 
   /* Initialise  the GT  comparator.   If some  version  numbers are  X:
      convert  them  to  0  so  they are  a  right-side  limit  for  ">="
@@ -520,7 +520,7 @@ parse_hyphen_tail (cce_destination_t upper_L, ccsemver_input_t * input, ccsemver
     if (cce_location(L)) {
       cce_run_error_handlers_raise(L, upper_L);
     } else {
-      ccsemver_sv_init_partial(L, input, &partial_sv);
+      ccsemver_sv_init_partial(L, &partial_sv, input);
       ccsemver_handler_sv_init(L, partial_sv_H, &partial_sv);
 
       /* Build the new LT comparator. */
