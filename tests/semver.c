@@ -51,7 +51,7 @@ test_new (cce_destination_t upper_L, char const * const expected, char const * c
   cce_cleanup_handler_t	sv_H[1];
 
   if (cce_location(L)) {
-    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
@@ -85,7 +85,7 @@ test_init (cce_destination_t upper_L, char const * const expected, char const * 
   cce_cleanup_handler_t	sv_H[1];
 
   if (cce_location(L)) {
-    if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     cce_run_error_handlers_raise(L, upper_L);
   } else {
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
@@ -152,6 +152,119 @@ GOOD_INPUT_INIT(test_2_8, "1.2.3-al-pha.2+77",	"v1.2.3-al-pha.2+77")
 GOOD_INPUT_INIT(test_2_9, "1.2.3-al-pha.2+77.2","1.2.3-al-pha.2+77.2")
 
 
+/** --------------------------------------------------------------------
+ ** Bad input strings.
+ ** ----------------------------------------------------------------- */
+
+#define BAD_INPUT_NEW(FUNCNAME, INPUT_STR, CONDITION_IS)	\
+  void								\
+  FUNCNAME (cce_destination_t upper_L)				\
+  {								\
+    cce_location_t	L[1];					\
+								\
+    if (cce_location(L)) {					\
+      if (CONDITION_IS(cce_condition(L))) {			\
+        cce_run_error_handlers_final(L);			\
+      } else {							\
+        cce_run_error_handlers_raise(L, upper_L);		\
+      }								\
+    } else {							\
+      test_new(L, "", INPUT_STR);				\
+      cctests_assert(L, false);					\
+      cce_run_cleanup_handlers(L);				\
+    }								\
+  }
+
+#define BAD_INPUT_INIT(FUNCNAME, INPUT_STR, CONDITION_IS)	\
+  void								\
+  FUNCNAME (cce_destination_t upper_L)				\
+  {								\
+    cce_location_t	L[1];					\
+								\
+    if (cce_location(L)) {					\
+      if (CONDITION_IS(cce_condition(L))) {			\
+        cce_run_error_handlers_final(L);			\
+      } else {							\
+        cce_run_error_handlers_raise(L, upper_L);		\
+      }								\
+    } else {							\
+      test_init(L, "", INPUT_STR);				\
+      cctests_assert(L, false);					\
+      cce_run_cleanup_handlers(L);				\
+    }								\
+  }
+
+/* ------------------------------------------------------------------ */
+
+/* Bad because empty string. */
+BAD_INPUT_NEW(test_3_1, "",			ccsemver_condition_is_parser_empty_input)
+
+/* Bad because double starting "v". */
+BAD_INPUT_NEW(test_3_2, "vv1.2.3",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because missing minor number and patch level number. */
+BAD_INPUT_NEW(test_3_3, "v1",			ccsemver_condition_is_parser_invalid_input)
+
+/* Bad because missing patch level number. */
+BAD_INPUT_NEW(test_3_4, "v1.2",			ccsemver_condition_is_parser_invalid_input)
+
+/* Bad because the patch level is not a number. */
+BAD_INPUT_NEW(test_3_5, "v1.2.x",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because the minor number is not a number. */
+BAD_INPUT_NEW(test_3_6, "v1.x.2",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because the major number is not a number. */
+BAD_INPUT_NEW(test_3_7, "vx.1.2",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because missing identifier after the dash separator. */
+BAD_INPUT_NEW(test_3_8, "v1.2.3-",		ccsemver_condition_is_parser_end_of_input)
+
+/* Bad because an identifier component is numeric and starts with zero. */
+BAD_INPUT_NEW(test_3_9, "v1.2.3-alpha.0123",	ccsemver_condition_is_parser_expected_identifier)
+
+/* Bad because missing build metadata after the plus separator. */
+BAD_INPUT_NEW(test_3_10, "v1.2.3+",		ccsemver_condition_is_parser_end_of_input)
+
+/* Bad because missing build metadata after the plus separator. */
+BAD_INPUT_NEW(test_3_11, "v1.2.3-alpha.7+",	ccsemver_condition_is_parser_end_of_input)
+
+/* ------------------------------------------------------------------ */
+
+/* Bad because empty string. */
+BAD_INPUT_INIT(test_4_1, "",			ccsemver_condition_is_parser_empty_input)
+
+/* Bad because double starting "v". */
+BAD_INPUT_INIT(test_4_2, "vv1.2.3",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because missing minor number and patch level number. */
+BAD_INPUT_INIT(test_4_3, "v1",			ccsemver_condition_is_parser_invalid_input)
+
+/* Bad because missing patch level number. */
+BAD_INPUT_INIT(test_4_4, "v1.2",		ccsemver_condition_is_parser_invalid_input)
+
+/* Bad because the patch level is not a number. */
+BAD_INPUT_INIT(test_4_5, "v1.2.x",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because the minor number is not a number. */
+BAD_INPUT_INIT(test_4_6, "v1.x.2",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because the major number is not a number. */
+BAD_INPUT_INIT(test_4_7, "vx.1.2",		ccsemver_condition_is_parser_expected_number)
+
+/* Bad because missing identifier after the dash separator. */
+BAD_INPUT_INIT(test_4_8, "v1.2.3-",		ccsemver_condition_is_parser_end_of_input)
+
+/* Bad because an identifier component is numeric and starts with zero. */
+BAD_INPUT_INIT(test_4_9, "v1.2.3-alpha.0123",	ccsemver_condition_is_parser_expected_identifier)
+
+/* Bad because missing build metadata after the plus separator. */
+BAD_INPUT_INIT(test_4_10, "v1.2.3+",		ccsemver_condition_is_parser_end_of_input)
+
+/* Bad because missing build metadata after the plus separator. */
+BAD_INPUT_INIT(test_4_11, "v1.2.3-alpha.7+",	ccsemver_condition_is_parser_end_of_input)
+
+
 int
 main (void)
 {
@@ -186,54 +299,35 @@ main (void)
     }
     cctests_end_group();
 
-    cctests_begin_group("parsing errors");
+    cctests_begin_group("parsing errors, new");
     {
-#if (0)
-      /* Bad because empty string. */
-      if (test_read("", STRNSIZE("")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because double starting "v". */
-      if (test_read("", STRNSIZE("vv1.2.3")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because missing minor number and patch level number. */
-      if (test_read("", STRNSIZE("v1")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because missing patch level number. */
-      if (test_read("", STRNSIZE("v1.2")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because the patch level is not a number. */
-      if (test_read("", STRNSIZE("v1.2.x")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because the minor number is not a number. */
-      if (test_read("", STRNSIZE("v1.x.2")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because the major number is not a number. */
-      if (test_read("", STRNSIZE("vx.1.2")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because missing identifier after the dash separator. */
-      if (test_read("", STRNSIZE("v1.2.3-")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because an identifier component is numeric and starts with zero. */
-      if (test_read("", STRNSIZE("v1.2.3-alpha.0123")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because missing build metadata after the plus separator. */
-      if (test_read("", STRNSIZE("v1.2.3+")) == 0) {
-	return EXIT_FAILURE;
-      }
-      /* Bad because missing build metadata after the plus separator. */
-      if (test_read("", STRNSIZE("v1.2.3-alpha.7+")) == 0) {
-	return EXIT_FAILURE;
-      }
-#endif
+      cctests_run(test_3_1);
+      cctests_run(test_3_2);
+      cctests_run(test_3_3);
+      cctests_run(test_3_4);
+      cctests_run(test_3_5);
+      cctests_run(test_3_6);
+      cctests_run(test_3_7);
+      cctests_run(test_3_8);
+      cctests_run(test_3_9);
+      cctests_run(test_3_10);
+      cctests_run(test_3_11);
+    }
+    cctests_end_group();
+
+    cctests_begin_group("parsing errors, init");
+    {
+      cctests_run(test_4_1);
+      cctests_run(test_4_2);
+      cctests_run(test_4_3);
+      cctests_run(test_4_4);
+      cctests_run(test_4_5);
+      cctests_run(test_4_6);
+      cctests_run(test_4_7);
+      cctests_run(test_4_8);
+      cctests_run(test_4_9);
+      cctests_run(test_4_10);
+      cctests_run(test_4_11);
     }
     cctests_end_group();
   }
