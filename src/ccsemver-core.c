@@ -42,7 +42,7 @@
 #include <string.h>
 #include <stdio.h>
 
-static void ccsemver_sv_parse_full    (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+static void ccsemver_sv_parse       (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 static void ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
@@ -75,7 +75,7 @@ ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
     } else {
       ccsemver_sv_t *	sv = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
-      ccsemver_sv_parse_full(L, sv, input);
+      ccsemver_sv_parse(L, sv, input);
       cce_run_cleanup_handlers(L);
       return sv;
     }
@@ -118,7 +118,7 @@ ccsemver_sv_init (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * in
 {
   ccsemver_input_assert_more_input(L, input);
   sv->delete = ccsemver_sv_delete_after_init;
-  ccsemver_sv_parse_full(L, sv, input);
+  ccsemver_sv_parse(L, sv, input);
   return sv;
 }
 
@@ -212,7 +212,7 @@ ccsemver_sv_init_guarded_error (cce_destination_t L, cce_error_handler_t * H, cc
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_sv_parse_full (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+ccsemver_sv_parse (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   sv->major	= 0;
   sv->minor	= 0;
