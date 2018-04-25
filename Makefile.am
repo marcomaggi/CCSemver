@@ -35,17 +35,17 @@ libccsemver_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
 libccsemver_la_LDFLAGS	= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE) \
 			  $(CCEXCEPTIONS_LIBS)
 libccsemver_la_SOURCES	= \
-	src/ccsemver.h			\
-	src/ccsemver-internals.h	\
-	src/ccsemver-version.c		\
-	src/ccsemver-conditions.c	\
-	src/ccsemver-memory.c		\
-	src/ccsemver-input.c		\
-	src/ccsemver-core.c		\
-	src/ccsemver-comp.c		\
-	src/ccsemver-id.c		\
-	src/ccsemver-num.c		\
-	src/ccsemver-range.c		\
+	src/ccsemver.h				\
+	src/ccsemver-internals.h		\
+	src/ccsemver-version.c			\
+	src/ccsemver-conditions.c		\
+	src/ccsemver-memory.c			\
+	src/ccsemver-input.c			\
+	src/ccsemver-semver.c			\
+	src/ccsemver-comparators.c		\
+	src/ccsemver-identifiers.c		\
+	src/ccsemver-numeric-components.c	\
+	src/ccsemver-ranges.c			\
 	src/ccsemver-utils.c
 
 #page
@@ -55,10 +55,10 @@ check_PROGRAMS	= \
 	tests/version		\
 	tests/numbers		\
 	tests/identifiers	\
-	tests/comp		\
+	tests/comparators	\
 	tests/documentation	\
 	tests/match		\
-	tests/range		\
+	tests/ranges		\
 	tests/semver		\
 	tests/utils
 
@@ -78,8 +78,8 @@ tests_numbers_LDADD		= $(ccsemver_tests_ldadd)
 tests_identifiers_CPPFLAGS	= $(ccsemver_tests_cppflags)
 tests_identifiers_LDADD		= $(ccsemver_tests_ldadd)
 
-tests_comp_CPPFLAGS		= $(ccsemver_tests_cppflags)
-tests_comp_LDADD		= $(ccsemver_tests_ldadd)
+tests_comparators_CPPFLAGS	= $(ccsemver_tests_cppflags)
+tests_comparators_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_documentation_CPPFLAGS	= $(ccsemver_tests_cppflags)
 tests_documentation_LDADD	= $(ccsemver_tests_ldadd)
@@ -87,8 +87,8 @@ tests_documentation_LDADD	= $(ccsemver_tests_ldadd)
 tests_match_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_match_LDADD		= $(ccsemver_tests_ldadd)
 
-tests_range_CPPFLAGS		= $(ccsemver_tests_cppflags)
-tests_range_LDADD		= $(ccsemver_tests_ldadd)
+tests_ranges_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_ranges_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_semver_CPPFLAGS		= $(ccsemver_tests_cppflags)
 tests_semver_LDADD		= $(ccsemver_tests_ldadd)
