@@ -501,6 +501,7 @@ Return @ctrue{} if @var{C} is an @emph{invalid input offset} condition object; o
 @menu
 * conditions parser invalid number::   Expected number.
 * conditions parser invalid numcomp::  Expected numeric component.
+* conditions parser invalid xnumcomp:: Expected X-Range numeric component.
 * conditions parser invalid id::       Expected identifier.
 * conditions parser invalid numrange:: Number out of range.
 @end menu
@@ -590,6 +591,53 @@ numeric component} condition object.
 @deftypefun bool ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * @var{C})
 Return @ctrue{} if @var{C} is an @emph{expected numeric component} condition object; otherwise
 return @cfalse{}.
+@end deftypefun
+
+@c page
+@node conditions parser invalid xnumcomp
+@subsection Expected X-Range numeric component
+
+
+The @dfn{expected X-Range numeric component exceptional--condition object} has the purpose of
+describing an exceptional condition caused by invalid input when a X-Range numeric component was
+expected, while parsing semantic version strings.  This exception is raised, for example, when
+parsing a range and a numeric component is present after a X-Range one; for example @samp{X.X.X} is
+a valid range, while @samp{X.2} and @samp{X.X.3} are invalid because @samp{2} and @samp{3} would be
+ignored.
+
+There should be only one @emph{expected X-Range numeric component} condition object: the one
+predefined by @value{PACKAGE}.
+
+All the following definitions are accessible from the header file @file{ccsemver.h}.
+
+
+@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_xrange_numeric_component_t
+Structure type representing the descriptor for @emph{expected X-Range numeric component} condition
+objects.  This descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent
+descriptor.
+@end deftp
+
+
+@deftp {Struct Typedef} ccsemver_condition_parser_expected_xrange_numeric_component_t
+Structure type representing an @emph{expected X-Range numeric component} condition object.
+@end deftp
+
+
+@deftypefun void ccsemver_condition_init_parser_expected_xrange_numeric_component (ccsemver_condition_parser_expected_xrange_numeric_component_t * @var{C})
+Initialise an already allocated condition object.  This function exists to allow sub--typing from
+@objtype{ccsemver_condition_parser_expected_xrange_numeric_component_t}.
+@end deftypefun
+
+
+@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
+Return a pointer to the statically allocated structure representing the single @emph{expected
+X-Range numeric component} condition object.
+@end deftypefun
+
+
+@deftypefun bool ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * @var{C})
+Return @ctrue{} if @var{C} is an @emph{expected X-Range numeric component} condition object;
+otherwise return @cfalse{}.
 @end deftypefun
 
 @c page

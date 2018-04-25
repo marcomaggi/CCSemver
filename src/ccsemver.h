@@ -321,6 +321,34 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_numeric_component (cce_
 
 
 /** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected X-Range numeric component.
+ ** ----------------------------------------------------------------- */
+
+typedef struct ccsemver_descriptor_parser_expected_xrange_numeric_component_t
+  ccsemver_descriptor_parser_expected_xrange_numeric_component_t;
+typedef struct ccsemver_condition_parser_expected_xrange_numeric_component_t
+  ccsemver_condition_parser_expected_xrange_numeric_component_t;
+
+struct ccsemver_descriptor_parser_expected_xrange_numeric_component_t {
+  cce_descriptor_t			descriptor;
+};
+
+struct ccsemver_condition_parser_expected_xrange_numeric_component_t {
+  ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
+};
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_xrange_numeric_component
+  (ccsemver_condition_parser_expected_xrange_numeric_component_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
+  __attribute__((__returns_nonnull__));
+
+ccsemver_decl bool ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * C)
+  __attribute__((__nonnull__(1)));
+
+
+/** --------------------------------------------------------------------
  ** Condition objects: parser error, expected identifier.
  ** ----------------------------------------------------------------- */
 
@@ -639,10 +667,10 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_init (cce_destination_t L, ccsemver_sv
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_partial  (cce_destination_t L, ccsemver_input_t * input)
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_range  (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
 /* ------------------------------------------------------------------ */
@@ -722,7 +750,7 @@ struct ccsemver_comp_t {
 ccsemver_decl ccsemver_comp_t * ccsemver_comp_new  (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_init (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
@@ -732,7 +760,7 @@ ccsemver_decl void ccsemver_comp_delete (ccsemver_comp_t * cmp)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_comp_and   (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+ccsemver_decl void ccsemver_comp_and   (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2)));
 
 ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * cmp, char * buffer, size_t len)
@@ -743,16 +771,44 @@ ccsemver_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_comp_t con
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_decl void ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_comp_t * comp)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl void ccsemver_error_handler_comp_init   (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_decl void ccsemver_error_handler_comp_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_comp_t * comp)
   __attribute__((__nonnull__(1,2,3)));
 
 #define ccsemver_handler_comp_init(L,comp_H,comp) \
   _Generic((comp_H),							\
 	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_comp_init, \
 	   cce_error_handler_t		*: ccsemver_error_handler_comp_init)(L,&(comp_H->handler),comp)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+#define ccsemver_comp_new_guarded(L,H,input)				\
+  _Generic((H),								\
+	   cce_cleanup_handler_t	*: ccsemver_comp_new_guarded_cleanup, \
+	   cce_error_handler_t		*: ccsemver_comp_new_guarded_error)(L,H,input)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H,
+								    ccsemver_comp_t * cmp, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+ccsemver_decl ccsemver_comp_t * ccsemver_comp_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+								    ccsemver_comp_t * cmp, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+#define ccsemver_comp_init_guarded(L,H,cmp,input)			\
+  _Generic((H),								\
+	   cce_cleanup_handler_t	*: ccsemver_comp_init_guarded_cleanup, \
+	   cce_error_handler_t		*: ccsemver_comp_init_guarded_error)(L,H,cmp,input)
 
 
 /** --------------------------------------------------------------------

@@ -41,8 +41,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define STRNSIZE(s) (s), sizeof(s)-1
-
 
 void
 test_new (cce_destination_t upper_L, char const * const expected, char const * const input_str)

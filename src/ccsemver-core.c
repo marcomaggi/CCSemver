@@ -45,7 +45,7 @@
 static void ccsemver_sv_parse_full    (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
-static void ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+static void ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -83,7 +83,7 @@ ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
 }
 
 ccsemver_sv_t *
-ccsemver_sv_new_partial (cce_destination_t upper_L, ccsemver_input_t * input)
+ccsemver_sv_new_range (cce_destination_t upper_L, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(upper_L, input);
   {
@@ -96,7 +96,7 @@ ccsemver_sv_new_partial (cce_destination_t upper_L, ccsemver_input_t * input)
       ccsemver_sv_t *	sv;
       sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
-      ccsemver_sv_parse_partial(L, sv, input);
+      ccsemver_sv_parse_range(L, sv, input);
       cce_run_cleanup_handlers(L);
       return sv;
     }
@@ -123,11 +123,11 @@ ccsemver_sv_init (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * in
 }
 
 ccsemver_sv_t *
-ccsemver_sv_init_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+ccsemver_sv_init_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   sv->delete = ccsemver_sv_delete_after_init;
-  ccsemver_sv_parse_partial(L, sv, input);
+  ccsemver_sv_parse_range(L, sv, input);
   return sv;
 }
 
@@ -257,7 +257,7 @@ ccsemver_sv_parse_full (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_
 }
 
 void
-ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
 /* Parse  a partial  semantic version.   It  must start  with the  major
    version number  as numeric  component.  The  minor version  number is
    optional.   The  patch level  is  optional.   The prerelease  tag  is
@@ -277,9 +277,24 @@ ccsemver_sv_parse_partial (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_inp
   if (ccsemver_input_parse_dot(input)) {
     sv->minor = ccsemver_parse_numeric_component(L, input);
 
+    /* If the major number is a wild card: the minor nummber must either
+       be absent or  be a wildcard too.  The semver  "x.x" is fine.  The
+       semver "x.2" is an error, because the 2 would be ignored. */
+    if ((CCSEMVER_NUM_X == sv->major) && (CCSEMVER_NUM_X != sv->minor)) {
+      cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component());
+    }
+
     /* Parse the patch level, if any. It is fine if there is none. */
     if (ccsemver_input_parse_dot(input)) {
       sv->patch = ccsemver_parse_numeric_component(L, input);
+
+      /* If the minor number is a wild card: the patch level must either
+	 be absent  or be a wildcard  too.  The semver "1.x.x"  is fine.
+	 The  semver  "1.x.3"  is  an  error, because  the  3  would  be
+	 ignored. */
+      if ((CCSEMVER_NUM_X == sv->minor) && (CCSEMVER_NUM_X != sv->patch)) {
+	cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component());
+      }
 
       /* Parse the  "prerelease tag", if  any.  It  is fine if  there is
 	 none. */

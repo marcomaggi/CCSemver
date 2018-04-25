@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+static void ccsemver_comp_parse (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 static void ccsemver_xrevert (ccsemver_sv_t * sv);
@@ -48,13 +48,13 @@ static void ccsemver_xrevert (ccsemver_sv_t * sv);
 static ccsemver_comp_t * expand_straight_or_xrange_comp (cce_destination_t L, ccsemver_comp_t * cmp)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-static void parse_hyphen_tail      (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+static void parse_hyphen_tail      (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
-static void parse_caret            (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+static void parse_caret            (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
-static void parse_tilde            (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+static void parse_tilde            (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -71,8 +71,8 @@ ccsemver_comp_delete_after_new (ccsemver_comp_t * cmp)
   if (cmp->next) {
     ccsemver_comp_delete(cmp->next);
   }
-  free(cmp);
   memset(cmp, 0, sizeof(ccsemver_comp_t));
+  free(cmp);
 }
 
 ccsemver_comp_t *
@@ -89,7 +89,7 @@ ccsemver_comp_new (cce_destination_t upper_L, ccsemver_input_t * input)
     } else {
       cmp         = cce_sys_malloc_guarded(L, cmp_H, sizeof(ccsemver_comp_t));
       cmp->delete = ccsemver_comp_delete_after_new;
-      ccsemver_comp_parse(L, input, cmp);
+      ccsemver_comp_parse(L, cmp, input);
       cce_run_cleanup_handlers(L);
     }
     return cmp;
@@ -123,11 +123,11 @@ ccsemver_comp_delete_after_init (ccsemver_comp_t * cmp)
 
 
 ccsemver_comp_t *
-ccsemver_comp_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+ccsemver_comp_init (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   cmp->delete = ccsemver_comp_delete_after_init;
-  ccsemver_comp_parse(L, input, cmp);
+  ccsemver_comp_parse(L, cmp, input);
   return cmp;
 }
 
@@ -155,19 +155,55 @@ ccsemver_handler_comp_function (cce_condition_t const * C CCE_UNUSED, cce_handle
 }
 
 void
-ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_comp_t * cmp)
 {
-  H->function	= ccsemver_handler_comp_function;
-  H->pointer	= comp;
-  cce_register_cleanup_handler(L, H);
+  H->handler.function	= ccsemver_handler_comp_function;
+  H->handler.pointer	= cmp;
+  cce_register_cleanup_handler(L, &(H->handler));
 }
 
 void
-ccsemver_error_handler_comp_init (cce_location_t * L, cce_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_error_handler_comp_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_comp_t * cmp)
 {
-  H->function	= ccsemver_handler_comp_function;
-  H->pointer	= comp;
-  cce_register_error_handler(L, H);
+  H->handler.function	= ccsemver_handler_comp_function;
+  H->handler.pointer	= cmp;
+  cce_register_error_handler(L, &(H->handler));
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_comp_t *
+ccsemver_comp_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_comp_t *	cmp = ccsemver_comp_new(L, input);
+  ccsemver_cleanup_handler_comp_init(L, H, cmp);
+  return cmp;
+}
+
+ccsemver_comp_t *
+ccsemver_comp_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_comp_t *	cmp = ccsemver_comp_new(L, input);
+  ccsemver_error_handler_comp_init(L, H, cmp);
+  return cmp;
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_comp_t *
+ccsemver_comp_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_comp_t * cmp, ccsemver_input_t * input)
+{
+  ccsemver_comp_init(L, cmp, input);
+  ccsemver_cleanup_handler_comp_init(L, H, cmp);
+  return cmp;
+}
+
+ccsemver_comp_t *
+ccsemver_comp_init_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_comp_t * cmp, ccsemver_input_t * input)
+{
+  ccsemver_comp_init(L, cmp, input);
+  ccsemver_error_handler_comp_init(L, H, cmp);
+  return cmp;
 }
 
 
@@ -176,7 +212,7 @@ ccsemver_error_handler_comp_init (cce_location_t * L, cce_handler_t * H, ccsemve
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+ccsemver_comp_parse (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Parse a comparator, which is either standalone or part of a range.
 
    Compound  comparators  are  simple  comparators  separated  by  white
@@ -189,7 +225,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
 {
   if (ccsemver_input_is_empty(input)) {
     cmp->next	= NULL;
-    cmp->op	 = CCSEMVER_OP_GE;
+    cmp->op	= CCSEMVER_OP_GE;
   } else {
     ccsemver_input_assert_more_input(L, input);
     cmp->next	= NULL;
@@ -202,7 +238,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       ++(input->off);
       /* Parse the caret comparator specification and expand it into two
 	 appropriate comparators in the linked list CMP. */
-      parse_caret(L, input, cmp);
+      parse_caret(L, cmp, input);
       cmp = cmp->next;
       break;
 
@@ -211,7 +247,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       ++(input->off);
       /* Parse the tilde comparator specification and expand it into two
 	 appropriate comparators in the linked list CMP. */
-      parse_tilde(L, input, cmp);
+      parse_tilde(L, cmp, input);
       cmp = cmp->next;
       break;
 
@@ -227,7 +263,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, &(cmp->sv), input);
+	ccsemver_sv_init_range(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -244,7 +280,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, &(cmp->sv), input);
+	ccsemver_sv_init_range(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -256,7 +292,7 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       /* Parse the comparator specification and  expand it into a single
 	 appropriate comparator in CMP. */
       {
-	ccsemver_sv_init_partial(L, &(cmp->sv), input);
+	ccsemver_sv_init_range(L, &(cmp->sv), input);
 	ccsemver_xrevert(&cmp->sv);
       }
       break;
@@ -279,12 +315,12 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
        *
        * so we start by parsing a partial semantic version specification.
        */
-      ccsemver_sv_init_partial(L, &(cmp->sv), input);
+      ccsemver_sv_init_range(L, &(cmp->sv), input);
 
       /* If input continues with at least 3 characters being: a space, a
 	 dash, a space, then it is a hyphen range. */
       if (ccsemver_input_parse_blanked_dash(input)) {
-	parse_hyphen_tail(L, input, cmp);
+	parse_hyphen_tail(L, cmp, input);
 	cmp = cmp->next;
       } else {
 	/* It is a straight partial version number or an X-range. */
@@ -292,6 +328,8 @@ ccsemver_comp_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_com
       }
       break;
     }
+
+    ccsemver_input_parse_blanks(input);
 
     /* Either  we  are done  or  we  parse  the next  comparator.   Upon
        entering  this  function  CMP  is already  filled  with  a  valid
@@ -386,7 +424,7 @@ expand_straight_or_xrange_comp (cce_destination_t L, ccsemver_comp_t * cmp)
 
 
 static void
-parse_caret (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+parse_caret (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Caret ranges are such that:
  *
  *	'^1.2.3' := '>=1.2.3 <2.0.0'
@@ -404,7 +442,7 @@ parse_caret (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 {
   /* Right  after the  caret character  we expect  a, possibly  partial,
      semantic version specification. */
-  ccsemver_sv_init_partial(L, &(cmp->sv), input);
+  ccsemver_sv_init_range(L, &(cmp->sv), input);
 
   /* Initialise  the GT  comparator.   If some  version  numbers are  X:
      convert  them  to  0  so  they are  a  right-side  limit  for  ">="
@@ -435,7 +473,7 @@ parse_caret (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 
 
 static void
-parse_tilde (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+parse_tilde (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Tilde ranges are such that:
  *
  *	'~1.2.3' := '>=1.2.3 <1.3.0'
@@ -453,7 +491,7 @@ parse_tilde (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 {
   /* Right  after the  tilde character  we expect  a, possibly  partial,
      semantic version specification. */
-  ccsemver_sv_init_partial(L, &(cmp->sv), input);
+  ccsemver_sv_init_range(L, &(cmp->sv), input);
 
   /* Initialise  the GT  comparator.   If some  version  numbers are  X:
      convert  them  to  0  so  they are  a  right-side  limit  for  ">="
@@ -482,7 +520,7 @@ parse_tilde (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cm
 
 
 static void
-parse_hyphen_tail (cce_destination_t upper_L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+parse_hyphen_tail (cce_destination_t upper_L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Hyphen ranges are such that:
  *
  *	'1.2.3 - 2.3.4' := '>=1.2.3 <=2.3.4'
@@ -520,7 +558,7 @@ parse_hyphen_tail (cce_destination_t upper_L, ccsemver_input_t * input, ccsemver
     if (cce_location(L)) {
       cce_run_error_handlers_raise(L, upper_L);
     } else {
-      ccsemver_sv_init_partial(L, &partial_sv, input);
+      ccsemver_sv_init_range(L, &partial_sv, input);
       ccsemver_handler_sv_init(L, partial_sv_H, &partial_sv);
 
       /* Build the new LT comparator. */
@@ -552,7 +590,7 @@ parse_hyphen_tail (cce_destination_t upper_L, ccsemver_input_t * input, ccsemver
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_comp_and (cce_destination_t L, ccsemver_input_t * input, ccsemver_comp_t * cmp)
+ccsemver_comp_and (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
 /* Given an already built and  initalised comparator, referenced by CMP:
    read a new comparator from the input and append it to the linked list
    CMP. */

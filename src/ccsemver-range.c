@@ -57,8 +57,8 @@ ccsemver_range_delete_after_new (ccsemver_range_t * range)
   if (range->next) {
     ccsemver_range_delete(range->next);
   }
-  free(range);
   memset(range, 0, sizeof(ccsemver_range_t));
+  free(range);
 }
 
 ccsemver_range_t *
@@ -130,7 +130,7 @@ ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_ra
   range->next = NULL;
 
   /* Read the first comparator. */
-  ccsemver_comp_init(L, input, &(range->comp));
+  ccsemver_comp_init(L, &(range->comp), input);
 
   /* Check if  there is a "||"  operator after the first  comparator; if
      there is: parse the next range. */

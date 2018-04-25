@@ -493,6 +493,63 @@ ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const *
 
 
 /** --------------------------------------------------------------------
+ ** Condition objects: parser error, expected X-Range numeric component.
+ ** ----------------------------------------------------------------- */
+
+static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_xrange_numeric_component;
+
+static ccsemver_descriptor_parser_expected_xrange_numeric_component_t ccsemver_descriptor_parser_expected_xrange_numeric_component_stru = {
+  /* This  "parent" field  is  set below  by  the module  initialisation
+     function. */
+  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.delete		= NULL,
+  .descriptor.final		= NULL,
+  .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_xrange_numeric_component
+};
+
+ccsemver_descriptor_parser_expected_xrange_numeric_component_t const * const ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr =
+  &ccsemver_descriptor_parser_expected_xrange_numeric_component_stru;
+
+/* This is  the single  instance of  the "invalid  pathname" exceptional
+   condition.  It is used by "cce_raise()" and "cce_retry()". */
+static ccsemver_condition_parser_expected_xrange_numeric_component_t const ccsemver_condition_parser_expected_xrange_numeric_component_stru = {
+  .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
+  &(ccsemver_descriptor_parser_expected_xrange_numeric_component_stru.descriptor)
+};
+
+ccsemver_condition_parser_expected_xrange_numeric_component_t const * const ccsemver_condition_parser_expected_xrange_numeric_component_ptr =
+  &ccsemver_condition_parser_expected_xrange_numeric_component_stru;
+
+/* ------------------------------------------------------------------ */
+
+char const *
+ccsemver_condition_static_message_parser_expected_xrange_numeric_component (cce_condition_t const * C CCSEMVER_UNUSED)
+{
+  return "while parsing: expected X-Range numeric component";
+}
+
+/* ------------------------------------------------------------------ */
+
+void
+ccsemver_condition_init_parser_expected_xrange_numeric_component (ccsemver_condition_parser_expected_xrange_numeric_component_t * C)
+{
+  ccsemver_condition_init_parser_invalid_input(&(C->parser_invalid_input));
+}
+
+cce_condition_t const *
+ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
+{
+  return (cce_condition_t const *) ccsemver_condition_parser_expected_xrange_numeric_component_ptr;
+}
+
+bool
+ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * C)
+{
+  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr->descriptor));
+}
+
+
+/** --------------------------------------------------------------------
  ** Condition objects: parser error, expected identifier.
  ** ----------------------------------------------------------------- */
 
