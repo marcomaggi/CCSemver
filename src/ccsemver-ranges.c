@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+static void ccsemver_range_parse (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 
@@ -51,8 +51,8 @@ static void ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input,
 static void
 ccsemver_range_delete_after_new (ccsemver_range_t * range)
 {
-  if (range->comp.delete) {
-    ccsemver_comp_delete(&(range->comp));
+  if (range->cmp.delete) {
+    ccsemver_cmp_delete(&(range->cmp));
   }
   if (range->next) {
     ccsemver_range_delete(range->next);
@@ -73,10 +73,12 @@ ccsemver_range_new (cce_destination_t upper_L, ccsemver_input_t * input)
     if (cce_location(L)) {
       cce_run_error_handlers_raise(L, upper_L);
     } else {
-      range         = cce_sys_malloc_guarded(L, range_H, sizeof(ccsemver_range_t));
-      range->delete = ccsemver_range_delete_after_new;
-      ccsemver_range_parse(L, input, range);
-      cce_run_cleanup_handlers(L);
+      range		= cce_sys_malloc_guarded(L, range_H, sizeof(ccsemver_range_t));
+      range->delete	= ccsemver_range_delete_after_new;
+      range->next	= NULL;
+      ccsemver_cmp_reset(&(range->cmp));
+      ccsemver_range_parse(L, range, input);
+      cce_run_clean_handlers(L);
     }
     return range;
   }
@@ -87,8 +89,8 @@ ccsemver_range_new (cce_destination_t upper_L, ccsemver_input_t * input)
 static void
 ccsemver_range_delete_after_init (ccsemver_range_t * range)
 {
-  if (range->comp.delete) {
-    ccsemver_comp_delete(&(range->comp));
+  if (range->cmp.delete) {
+    ccsemver_cmp_delete(&(range->cmp));
   }
   if (range->next) {
     ccsemver_range_delete(range->next);
@@ -97,11 +99,13 @@ ccsemver_range_delete_after_init (ccsemver_range_t * range)
 }
 
 ccsemver_range_t *
-ccsemver_range_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+ccsemver_range_init (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   range->delete = ccsemver_range_delete_after_init;
-  ccsemver_range_parse(L, input, range);
+  range->next	= NULL;
+  ccsemver_cmp_reset(&(range->cmp));
+  ccsemver_range_parse(L, range, input);
   return range;
 }
 
@@ -115,25 +119,103 @@ ccsemver_range_delete (ccsemver_range_t * range)
   }
 }
 
+void
+ccsemver_range_reset (ccsemver_range_t * range)
+/* Reset the struct  to an initial, empty state.  This  function must be
+   used when we embed  a struct of this type into  another struct and we
+   might or  might not apply a  constructor to it: this  function resets
+   the struct to a safe, empty state. */
+{
+  range->delete	= NULL;
+  range->next	= NULL;
+  ccsemver_cmp_reset(&(range->cmp));
+}
+
+
+/** --------------------------------------------------------------------
+ ** Exception handlers.
+ ** ----------------------------------------------------------------- */
+
+__attribute__((__nonnull__(1,2)))
+static void
+ccsemver_handler_range_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
+{
+  ccsemver_range_delete(H->pointer);
+  if (0) { fprintf(stderr, "%s: done\n", __func__); }
+}
+
+void
+ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_range_t * range)
+{
+  H->handler.function	= ccsemver_handler_range_function;
+  H->handler.pointer	= range;
+  cce_register_clean_handler(L, &(H->handler));
+}
+
+void
+ccsemver_error_handler_range_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_range_t * range)
+{
+  H->handler.function	= ccsemver_handler_range_function;
+  H->handler.pointer	= range;
+  cce_register_error_handler(L, &(H->handler));
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_range_t *
+ccsemver_range_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_range_t *	range = ccsemver_range_new(L, input);
+  ccsemver_clean_handler_range_init(L, H, range);
+  return range;
+}
+
+ccsemver_range_t *
+ccsemver_range_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_range_t *	range = ccsemver_range_new(L, input);
+  ccsemver_error_handler_range_init(L, H, range);
+  return range;
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_range_t *
+ccsemver_range_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_range_t * range, ccsemver_input_t * input)
+{
+  ccsemver_range_init(L, range, input);
+  ccsemver_clean_handler_range_init(L, H, range);
+  return range;
+}
+
+ccsemver_range_t *
+ccsemver_range_init_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_range_t * range, ccsemver_input_t * input)
+{
+  ccsemver_range_init(L, range, input);
+  ccsemver_error_handler_range_init(L, H, range);
+  return range;
+}
+
 
 /** --------------------------------------------------------------------
  ** Parser functions.
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+ccsemver_range_parse (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
 /* Parse a range from the input string.  A range is defined as follows:
  *
  *    <range> := <comparator> (<blanks> "||" <blanks> <range>)
  */
 {
-  range->next = NULL;
+  ccsemver_input_parse_blanks(input);
 
   /* Read the first comparator. */
-  ccsemver_comp_init(L, &(range->comp), input);
+  ccsemver_cmp_init(L, &(range->cmp), input);
 
   /* Check if  there is a "||"  operator after the first  comparator; if
-     there is: parse the next range. */
+     there  is:  parse  the  next  range.   Otherwise  leave  the  input
+     unchanged. */
   if (ccsemver_input_parse_blanked_OR(input)) {
     range->next = ccsemver_range_new(L, input);
   }
@@ -147,7 +229,7 @@ ccsemver_range_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_ra
 int
 ccsemver_range_match (ccsemver_sv_t const * self, ccsemver_range_t const * range)
 {
-  return (char)  (ccsemver_match(self, &range->comp) ? 1 : (range->next ? ccsemver_range_match(self, range->next) : 0));
+  return (char)  (ccsemver_match(self, &range->cmp) ? 1 : (range->next ? ccsemver_range_match(self, range->next) : 0));
 }
 
 
@@ -162,10 +244,10 @@ ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
 
   if (self->next) {
     return snprintf(buffer, len, "%.*s || %.*s",
-		    ccsemver_comp_write(&(self->comp), comp, 1024), comp,
+		    ccsemver_cmp_write(&(self->cmp), comp, 1024), comp,
 		    ccsemver_range_write(self->next, next, 1024), next);
   }
-  return snprintf(buffer, len, "%.*s", ccsemver_comp_write(&(self->comp), comp, 1024), comp);
+  return snprintf(buffer, len, "%.*s", ccsemver_cmp_write(&(self->cmp), comp, 1024), comp);
 }
 
 /* end of file */

@@ -77,7 +77,7 @@ ccsemver_id_new (cce_destination_t upper_L, ccsemver_input_t * input)
       id         = cce_sys_malloc_guarded(L, id_H, sizeof(ccsemver_id_t));
       id->delete = ccsemver_id_delete_after_new;
       ccsemver_id_parse(L, input, id);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
     }
     return id;
   }
@@ -95,7 +95,7 @@ ccsemver_id_delete_after_init (ccsemver_id_t * id)
 }
 
 ccsemver_id_t *
-ccsemver_id_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
+ccsemver_id_init (cce_destination_t L, ccsemver_id_t * id, ccsemver_input_t * input)
 {
   ccsemver_input_assert_more_input(L, input);
   id->delete = ccsemver_id_delete_after_init;
@@ -113,6 +113,21 @@ ccsemver_id_delete (ccsemver_id_t * id)
   }
 }
 
+void
+ccsemver_id_reset (ccsemver_id_t * id)
+/* Reset the struct  to an initial, empty state.  This  function must be
+   used when we embed  a struct of this type into  another struct and we
+   might or  might not apply a  constructor to it: this  function resets
+   the struct to a safe, empty state. */
+{
+  id->delete	= NULL;
+  id->numeric	= false;
+  id->num	= 0;
+  id->len	= 0;
+  id->raw	= NULL;
+  id->next	= NULL;
+}
+
 
 /** --------------------------------------------------------------------
  ** Exception handlers.
@@ -127,19 +142,55 @@ ccsemver_handler_id_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsemver_cleanup_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_id_t * id)
 {
-  H->function	= ccsemver_handler_id_function;
-  H->pointer	= id;
-  cce_register_cleanup_handler(L, H);
+  H->handler.function	= ccsemver_handler_id_function;
+  H->handler.pointer	= id;
+  cce_register_clean_handler(L, &(H->handler));
 }
 
 void
-ccsemver_error_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+ccsemver_error_handler_id_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
 {
-  H->function	= ccsemver_handler_id_function;
-  H->pointer	= id;
-  cce_register_error_handler(L, H);
+  H->handler.function	= ccsemver_handler_id_function;
+  H->handler.pointer	= id;
+  cce_register_error_handler(L, &(H->handler));
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_id_t *
+ccsemver_id_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_id_t *	id = ccsemver_id_new(L, input);
+  ccsemver_clean_handler_id_init(L, H, id);
+  return id;
+}
+
+ccsemver_id_t *
+ccsemver_id_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+{
+  ccsemver_id_t *	id = ccsemver_id_new(L, input);
+  ccsemver_error_handler_id_init(L, H, id);
+  return id;
+}
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_id_t *
+ccsemver_id_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_id_t * id, ccsemver_input_t * input)
+{
+  ccsemver_id_init(L, id, input);
+  ccsemver_clean_handler_id_init(L, H, id);
+  return id;
+}
+
+ccsemver_id_t *
+ccsemver_id_init_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_id_t * id, ccsemver_input_t * input)
+{
+  ccsemver_id_init(L, id, input);
+  ccsemver_error_handler_id_init(L, H, id);
+  return id;
 }
 
 

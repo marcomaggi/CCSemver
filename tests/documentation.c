@@ -649,28 +649,28 @@ doc_example_versions_4_1 (void)
 static void
 doc_example_comparators_1_1 (void)
 {
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
 
-  ccsemver_comp_ctor(&cmp);
+  ccsemver_cmp_ctor(&cmp);
   {
     /* Do something with "comp" here. */
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 static void
 doc_example_comparators_1_2 (void)
 {
-  ccsemver_comp_t *	cmp;
+  ccsemver_cmp_t *	cmp;
 
-  cmp = malloc(sizeof(ccsemver_comp_t));
+  cmp = malloc(sizeof(ccsemver_cmp_t));
   assert(NULL != cmp);
   {
-    ccsemver_comp_ctor(cmp);
+    ccsemver_cmp_ctor(cmp);
     {
       /* Do something with "cmp" here. */
     }
-    ccsemver_comp_dtor(cmp);
+    ccsemver_cmp_dtor(cmp);
   }
   free(cmp);
 }
@@ -685,16 +685,16 @@ doc_example_comparators_2_1_1 (void)
   char const	input_str[] = "1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("operation=%s, ", ccsemver_op_string(cmp.op));
     ccsemver_fwrite(&cmp.version, stdout);
     printf("\n");
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 static void
@@ -705,16 +705,16 @@ doc_example_comparators_2_1_2 (void)
   char const		input_str[] = "<1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("operation=%s, ", ccsemver_op_string(cmp.op));
     ccsemver_fwrite(&cmp.version, stdout);
     printf("\n");
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 static void
@@ -725,16 +725,16 @@ doc_example_comparators_2_1_3 (void)
   char const		input_str[] = ">1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("operation=%s, ", ccsemver_op_string(cmp.op));
     ccsemver_fwrite(&cmp.version, stdout);
     printf("\n");
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 static void
@@ -745,16 +745,16 @@ doc_example_comparators_2_1_4 (void)
   char const		input_str[] = "<=1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("operation=%s, ", ccsemver_op_string(cmp.op));
     ccsemver_fwrite(&cmp.version, stdout);
     printf("\n");
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 static void
@@ -765,16 +765,16 @@ doc_example_comparators_2_1_5 (void)
   char const		input_str[] = ">=1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("operation=%s, ", ccsemver_op_string(cmp.op));
     ccsemver_fwrite(&cmp.version, stdout);
     printf("\n");
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -790,24 +790,24 @@ doc_example_comparators_2_2_1 (void)
     ccsemver_input_new(input_str_A, strlen(input_str_A), 0);
   ccsemver_input_t	input_B =
     ccsemver_input_new(input_str_B, strlen(input_str_B), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input_A);
+  rv = ccsemver_cmp_read(&cmp, &input_A);
   if (0 == rv) {
-    rv = ccsemver_comp_and(&cmp, &input_B);
+    rv = ccsemver_cmp_and(&cmp, &input_B);
     if (0 == rv) {
-      for (ccsemver_comp_t * iter = &cmp; iter; iter = iter->next) {
+      for (ccsemver_cmp_t * iter = &cmp; iter; iter = iter->next) {
 	printf("operation=%s, ", ccsemver_op_string(iter->op));
 	ccsemver_fwrite(&(iter->version), stdout);
 	printf("\n");
       }
       printf("comparator: ");
-      ccsemver_comp_fwrite(&cmp, stdout);
+      ccsemver_cmp_fwrite(&cmp, stdout);
       printf("\n");
     }
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -820,18 +820,18 @@ doc_example_comparators_3_1 (void)
   char const		input_str[] = "<=1.2.3";
   ccsemver_input_t	input =
     ccsemver_input_new(input_str, strlen(input_str), 0);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
   size_t		buffer_len = 32;
   char			buffer_ptr[buffer_len];
 
   memset(buffer_ptr, 0, buffer_len);
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     size_t	needed_count;
     size_t	actual_count;
-    needed_count = (size_t)ccsemver_comp_write(&cmp, buffer_ptr, buffer_len);
+    needed_count = (size_t)ccsemver_cmp_write(&cmp, buffer_ptr, buffer_len);
     if (0 < needed_count) {
       actual_count = (needed_count < buffer_len)? needed_count : buffer_len;
       printf("len=%lu, actual_count=%lu, comp=",
@@ -840,7 +840,7 @@ doc_example_comparators_3_1 (void)
       printf("\n");
     }
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
 }
 
 /* ------------------------------------------------------------------ */
@@ -857,17 +857,17 @@ doc_example_comparators_4_1_1 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -884,17 +884,17 @@ doc_example_comparators_4_1_2 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -913,17 +913,17 @@ doc_example_comparators_4_2_1 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -940,17 +940,17 @@ doc_example_comparators_4_2_2 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -969,17 +969,17 @@ doc_example_comparators_4_3_1 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -996,17 +996,17 @@ doc_example_comparators_4_3_2 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -1025,17 +1025,17 @@ doc_example_comparators_4_4_1 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -1052,17 +1052,17 @@ doc_example_comparators_4_4_2 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -1081,17 +1081,17 @@ doc_example_comparators_4_5_1 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -1108,17 +1108,17 @@ doc_example_comparators_4_5_2 (void)
   ccsemver_input_t	cmp_input =
     ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   char			rv;
 
   rv = ccsemver_read(&sv, &sv_input);
   if (0 == rv) {
-    rv = ccsemver_comp_read(&cmp, &cmp_input);
+    rv = ccsemver_cmp_read(&cmp, &cmp_input);
     if (0 == rv) {
       int	result = (int)ccsemver_match(&sv, &cmp);
       printf("matches?=%s\n", (result)? "yes" : "no");
     }
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
   }
   ccsemver_dtor(&sv);
 }
@@ -1181,7 +1181,7 @@ doc_example_ranges_2_1 (void)
   rv = ccsemver_range_read(&rn, &input);
   if (0 == rv) {
     printf("range: ");
-    ccsemver_comp_fwrite(&rn.comp, stdout);
+    ccsemver_cmp_fwrite(&rn.comp, stdout);
     printf("\n");
   }
   ccsemver_range_dtor(&rn);

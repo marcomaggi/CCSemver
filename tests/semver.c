@@ -46,7 +46,7 @@ void
 test_new (cce_destination_t upper_L, char const * const expected, char const * const input_str)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	sv_H[1];
+  cce_clean_handler_t	sv_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -72,7 +72,7 @@ test_new (cce_destination_t upper_L, char const * const expected, char const * c
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -80,7 +80,7 @@ void
 test_init (cce_destination_t upper_L, char const * const expected, char const * const input_str)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	sv_H[1];
+  cce_clean_handler_t	sv_H[1];
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -106,7 +106,7 @@ test_init (cce_destination_t upper_L, char const * const expected, char const * 
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -169,7 +169,7 @@ GOOD_INPUT_INIT(test_2_9, "1.2.3-al-pha.2+77.2","1.2.3-al-pha.2+77.2")
     } else {							\
       test_new(L, "", INPUT_STR);				\
       cctests_assert(L, false);					\
-      cce_run_cleanup_handlers(L);				\
+      cce_run_clean_handlers(L);				\
     }								\
   }
 
@@ -188,7 +188,7 @@ GOOD_INPUT_INIT(test_2_9, "1.2.3-al-pha.2+77.2","1.2.3-al-pha.2+77.2")
     } else {							\
       test_init(L, "", INPUT_STR);				\
       cctests_assert(L, false);					\
-      cce_run_cleanup_handlers(L);				\
+      cce_run_clean_handlers(L);				\
     }								\
   }
 

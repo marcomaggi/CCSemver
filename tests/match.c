@@ -47,7 +47,7 @@ test_match (char expected,
   ccsemver_input_t	cmp_input = ccsemver_input_new(cmp_str, cmp_len, 0);
   char			result;
   ccsemver_t		sv;
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
 
   printf("test: `%.*s` ^ `%.*s`", (int) sv_len, sv_str, (int) cmp_len, cmp_str);
   if (ccsemver_read(&sv, &sv_input)) {
@@ -59,7 +59,7 @@ test_match (char expected,
     return 1;
   }
 
-  if (ccsemver_comp_read(&cmp, &cmp_input)) {
+  if (ccsemver_cmp_read(&cmp, &cmp_input)) {
     puts("\tcouldn't parse comparator specification");
     return 1;
   }
@@ -81,7 +81,7 @@ test_match (char expected,
       rv = 0;
     }
     ccsemver_dtor(&sv);
-    ccsemver_comp_dtor(&cmp);
+    ccsemver_cmp_dtor(&cmp);
     return rv;
   }
 }

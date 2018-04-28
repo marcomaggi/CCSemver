@@ -70,6 +70,28 @@ ccsemver_input_looking_at_blanked_dash (ccsemver_input_t const * const that_inpu
  ** Parser functions.
  ** ----------------------------------------------------------------- */
 
+char
+ccsemver_input_parse_next (ccsemver_input_t * input)
+/* Whatever the next character is:  advance the parsing position over it
+   and return the  character itself.  If there is no  more input: return
+   zero. */
+{
+  if (ccsemver_input_more(input)) {
+    char	ch = ccsemver_input_next(input);
+    ++(input->off);
+    return ch;
+  } else {
+    return '\0';
+  }
+}
+
+void
+ccsemver_input_step_back (ccsemver_input_t * input)
+/* Step back from a previous call to "ccsemver_input_parse_next()". */
+{
+  --(input->off);
+}
+
 bool
 ccsemver_input_parse_v (ccsemver_input_t * input)
 /* If the next character is a  "v": advance the parsing position over it
@@ -217,9 +239,9 @@ ccsemver_input_parse_comparator_separator (ccsemver_input_t * that_input)
  *
  *	>=1.2.3 || <4.5.6
  *
- * This function returns  true if the input is: at  least one blank, end
- * of input  or a  character different from  '|'.  Otherwise  it returns
- * false.
+ * This  function returns  true  if the  input is:  at  least one  blank
+ * character, at least  one character different from  '|'.  Otherwise it
+ * returns false.
  */
 {
   ccsemver_input_t	input = *that_input;
@@ -234,7 +256,7 @@ ccsemver_input_parse_comparator_separator (ccsemver_input_t * that_input)
       }
     } else {
       that_input->off = input.off;
-      return true;
+      return false;
     }
   } else {
     return false;

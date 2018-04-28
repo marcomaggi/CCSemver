@@ -56,7 +56,7 @@ static void
 test_identifier_successful_parsing_new (cce_destination_t upper_L, char const * input_str, char const * expected_id)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	id_H[1];
+  cce_clean_handler_t	id_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -93,7 +93,7 @@ test_identifier_successful_parsing_new (cce_destination_t upper_L, char const * 
     cctests_assert(L, serial_len == strlen(expected_id));
     cctests_assert_ascii(L, expected_id, serial_str, strlen(expected_id));
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -160,7 +160,7 @@ test_1_2_1 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input    (cce_condition(L)) &&
 	ccsemver_condition_is_parser_empty_input (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -172,7 +172,7 @@ test_1_2_1 (cce_destination_t upper_L)
 
     ccsemver_id_new(L, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -186,7 +186,7 @@ test_1_2_2 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input     (cce_condition(L)) &&
 	ccsemver_condition_is_parser_end_of_input (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -198,7 +198,7 @@ test_1_2_2 (cce_destination_t upper_L)
 
     ccsemver_id_new(L, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -213,7 +213,7 @@ test_1_2_3 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input             (cce_condition(L)) &&
 	ccsemver_condition_is_parser_invalid_input_offset (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -225,7 +225,7 @@ test_1_2_3 (cce_destination_t upper_L)
 
     ccsemver_id_new(L, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -240,7 +240,7 @@ test_1_3_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_number_out_of_range(cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -252,7 +252,7 @@ test_1_3_1 (cce_destination_t upper_L)
 
     ccsemver_id_new(L, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -265,7 +265,7 @@ static void
 test_identifier_successful_parsing_init (cce_destination_t upper_L, char const * input_str, char const * expected_id)
 {
   cce_location_t	L[1];
-  cce_cleanup_handler_t	id_H[1];
+  cce_clean_handler_t	id_H[1];
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
@@ -278,7 +278,7 @@ test_identifier_successful_parsing_init (cce_destination_t upper_L, char const *
     size_t		serial_len	= 1024;
     char		serial_str[serial_len];
 
-    ccsemver_id_init(L, &input, id);
+    ccsemver_id_init(L, id, &input);
     ccsemver_handler_id_init(L, id_H, id);
 
     serial_len = ccsemver_id_write(id, serial_str, serial_len);
@@ -302,7 +302,7 @@ test_identifier_successful_parsing_init (cce_destination_t upper_L, char const *
     cctests_assert(L, serial_len == strlen(expected_id));
     cctests_assert_ascii(L, expected_id, serial_str, strlen(expected_id));
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -369,7 +369,7 @@ test_2_2_1 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input    (cce_condition(L)) &&
 	ccsemver_condition_is_parser_empty_input (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -380,9 +380,9 @@ test_2_2_1 (cce_destination_t upper_L)
     ccsemver_input_t	input		= ccsemver_input_new(input_str, input_len, input_off);
     ccsemver_id_t	id[1];
 
-    ccsemver_id_init(L, &input, id);
+    ccsemver_id_init(L, id, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -396,7 +396,7 @@ test_2_2_2 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input     (cce_condition(L)) &&
 	ccsemver_condition_is_parser_end_of_input (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -407,9 +407,9 @@ test_2_2_2 (cce_destination_t upper_L)
     ccsemver_input_t	input		= ccsemver_input_new(input_str, input_len, input_off);
     ccsemver_id_t	id[1];
 
-    ccsemver_id_init(L, &input, id);
+    ccsemver_id_init(L, id, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -424,7 +424,7 @@ test_2_2_3 (cce_destination_t upper_L)
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_no_input             (cce_condition(L)) &&
 	ccsemver_condition_is_parser_invalid_input_offset (cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -435,9 +435,9 @@ test_2_2_3 (cce_destination_t upper_L)
     ccsemver_input_t	input		= ccsemver_input_new(input_str, input_len, input_off);
     ccsemver_id_t	id[1];
 
-    ccsemver_id_init(L, &input, id);
+    ccsemver_id_init(L, id, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -452,7 +452,7 @@ test_2_3_1 (cce_destination_t upper_L)
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
     if (ccsemver_condition_is_parser_number_out_of_range(cce_condition(L))) {
-      cce_run_cleanup_handlers_final(L);
+      cce_run_clean_handlers_final(L);
     } else {
       cce_run_error_handlers_raise(L, upper_L);
     }
@@ -463,9 +463,9 @@ test_2_3_1 (cce_destination_t upper_L)
     ccsemver_input_t	input		= ccsemver_input_new(input_str, input_len, input_off);
     ccsemver_id_t	id[1];
 
-    ccsemver_id_init(L, &input, id);
+    ccsemver_id_init(L, id, &input);
     cce_raise(L, cctests_condition_new_failure());
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 

@@ -76,7 +76,7 @@ ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
       ccsemver_sv_t *	sv = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
       ccsemver_sv_parse(L, sv, input);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       return sv;
     }
   }
@@ -97,7 +97,7 @@ ccsemver_sv_new_range (cce_destination_t upper_L, ccsemver_input_t * input)
       sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
       ccsemver_sv_parse_range(L, sv, input);
-      cce_run_cleanup_handlers(L);
+      cce_run_clean_handlers(L);
       return sv;
     }
   }
@@ -141,6 +141,23 @@ ccsemver_sv_delete (ccsemver_sv_t * sv)
   }
 }
 
+void
+ccsemver_sv_reset (ccsemver_sv_t * sv)
+/* Reset the struct  to an initial, empty state.  This  function must be
+   used when we embed  a struct of this type into  another struct and we
+   might or  might not apply a  constructor to it: this  function resets
+   the struct to a safe, empty state. */
+{
+  sv->delete	= NULL;
+  sv->major	= 0;
+  sv->minor	= 0;
+  sv->patch	= 0;
+  sv->len	= 0;
+  sv->raw	= NULL;
+  ccsemver_id_reset(&(sv->prerelease));
+  ccsemver_id_reset(&(sv->build));
+}
+
 
 /** --------------------------------------------------------------------
  ** Exception handlers.
@@ -155,11 +172,11 @@ ccsemver_handler_sv_function (cce_condition_t const * C CCE_UNUSED, cce_handler_
 }
 
 void
-ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_sv_t * sv)
+ccsemver_clean_handler_sv_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_sv_t * sv)
 {
   H->handler.function	= ccsemver_handler_sv_function;
   H->handler.pointer	= sv;
-  cce_register_cleanup_handler(L, &(H->handler));
+  cce_register_clean_handler(L, &(H->handler));
 }
 
 void
@@ -173,10 +190,10 @@ ccsemver_error_handler_sv_init (cce_location_t * L, cce_error_handler_t * H, ccs
 /* ------------------------------------------------------------------ */
 
 ccsemver_sv_t *
-ccsemver_sv_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+ccsemver_sv_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
 {
   ccsemver_sv_t *	sv = ccsemver_sv_new(L, input);
-  ccsemver_cleanup_handler_sv_init(L, H, sv);
+  ccsemver_clean_handler_sv_init(L, H, sv);
   return sv;
 }
 
@@ -191,10 +208,10 @@ ccsemver_sv_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccs
 /* ------------------------------------------------------------------ */
 
 ccsemver_sv_t *
-ccsemver_sv_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_sv_t * sv, ccsemver_input_t * input)
+ccsemver_sv_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_sv_t * sv, ccsemver_input_t * input)
 {
   ccsemver_sv_init(L, sv, input);
-  ccsemver_cleanup_handler_sv_init(L, H, sv);
+  ccsemver_clean_handler_sv_init(L, H, sv);
   return sv;
 }
 
@@ -219,8 +236,8 @@ ccsemver_sv_parse (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * i
   sv->patch	= 0;
   sv->len	= 0;
   sv->raw	= input->str + input->off;
-  memset(&(sv->prerelease), 0, sizeof(ccsemver_id_t));
-  memset(&(sv->build),      0, sizeof(ccsemver_id_t));
+  ccsemver_id_reset(&(sv->prerelease));
+  ccsemver_id_reset(&(sv->build));
 
   /* Skip the initial "v" character, if any. */
   ccsemver_input_parse_v(input);
@@ -236,13 +253,13 @@ ccsemver_sv_parse (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * i
       /* Parse the  "prerelease tag", if  any.  It  is fine if  there is
 	 none. */
       if (ccsemver_input_parse_dash(input)) {
-	ccsemver_id_init(L, input, &(sv->prerelease));
+	ccsemver_id_init(L, &(sv->prerelease), input);
       }
 
       /* Parse the  "build metadata", if  any.  It  is fine if  there is
 	 none. */
       if (ccsemver_input_parse_plus(input)) {
-	ccsemver_id_init(L, input, &(sv->build));
+	ccsemver_id_init(L, &(sv->build), input);
       }
 
       sv->len = input->str + input->off - sv->raw;
@@ -299,13 +316,13 @@ ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input
       /* Parse the  "prerelease tag", if  any.  It  is fine if  there is
 	 none. */
       if (ccsemver_input_parse_dash(input)) {
-	ccsemver_id_init(L, input, &(sv->prerelease));
+	ccsemver_id_init(L, &(sv->prerelease), input);
       }
 
       /* Parse the  "build metadata", if  any.  It  is fine if  there is
 	 none. */
       if (ccsemver_input_parse_plus(input)) {
-	ccsemver_id_init(L, input, &(sv->build));
+	ccsemver_id_init(L, &(sv->build), input);
       }
 
       sv->len = input->str + input->off - sv->raw;

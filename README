@@ -31,7 +31,7 @@ original source is available at:
 		      <https://github.com/uael/sv>
 
   This package  supports POSIX platforms.   This package depends  on the
-package CCExceptions,  at least version  0.7.1.  To run the  test suite:
+package CCExceptions,  at least version  0.7.2.  To run the  test suite:
 this  package  depends  upon  the  package  CCTests,  at  least  version
 0.1.0-devel.1.
 

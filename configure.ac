@@ -76,8 +76,8 @@ dnl page
 #### external libraries
 
 MMUX_CHECK_PKG_CONFIG_MACROS
-PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.7.1])
-PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.1.0])
+PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.7.2])
+PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.2.0])
 
 AM_CONDITIONAL([CCSEMVER_TESTING_ENABLED],[test -n "$CCTESTS_LIBS"])
 

@@ -405,7 +405,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_number_out_of_range (cce_conditi
 typedef struct ccsemver_input_t		ccsemver_input_t;
 typedef struct ccsemver_sv_t		ccsemver_sv_t;
 typedef struct ccsemver_id_t		ccsemver_id_t;
-typedef struct ccsemver_comp_t		ccsemver_comp_t;
+typedef struct ccsemver_cmp_t		ccsemver_cmp_t;
 typedef struct ccsemver_range_t		ccsemver_range_t;
 
 enum ccsemver_op_t {
@@ -512,6 +512,14 @@ ccsemver_decl bool ccsemver_looking_at_blanked_dash (ccsemver_input_t const * in
 
 /* ------------------------------------------------------------------ */
 
+ccsemver_decl char ccsemver_input_parse_next	(ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl void ccsemver_input_step_back	(ccsemver_input_t * input)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
 ccsemver_decl bool ccsemver_input_parse_blanks	(ccsemver_input_t * input)
   __attribute__((__nonnull__(1)));
 
@@ -597,11 +605,18 @@ struct ccsemver_id_t {
 ccsemver_decl ccsemver_id_t * ccsemver_id_new  (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2),__returns_nonnull__));
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t * id)
+ccsemver_decl ccsemver_id_t * ccsemver_id_init (cce_destination_t L, ccsemver_id_t * id, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+/* ------------------------------------------------------------------ */
 
 ccsemver_decl void ccsemver_id_delete (ccsemver_id_t * id)
   __attribute__((__nonnull__(1)));
+
+ccsemver_decl void ccsemver_id_reset (ccsemver_id_t * id)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
 
 ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
@@ -611,16 +626,44 @@ ccsemver_decl int  ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t co
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cleanup_handler_id_init (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+ccsemver_decl void ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_id_t * id)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl void ccsemver_error_handler_id_init   (cce_location_t * L, cce_handler_t * H, ccsemver_id_t * id)
+ccsemver_decl void ccsemver_error_handler_id_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsemver_handler_id_init(L,id_H,id) \
+#define ccsemver_handler_id_init(L,id_H,id)				\
   _Generic((id_H),							\
-	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_id_init, \
-	   cce_error_handler_t		*: ccsemver_error_handler_id_init)(L,&(id_H->handler),id)
+	   cce_clean_handler_t	*: ccsemver_clean_handler_id_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_id_init)(L,id_H,id)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+#define ccsemver_id_new_guarded(L,H,input)				\
+  _Generic((H),								\
+	   cce_clean_handler_t	*: ccsemver_id_new_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_id_new_guarded_error)(L,H,input)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+								ccsemver_id_t * id, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+								ccsemver_id_t * id, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+#define ccsemver_id_init_guarded(L,H,id,input)				\
+  _Generic((H),								\
+	   cce_clean_handler_t	*: ccsemver_id_init_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_id_init_guarded_error)(L,H,id,input)
 
 
 /** --------------------------------------------------------------------
@@ -678,6 +721,11 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_range (cce_destination_t L, ccsem
 ccsemver_decl void ccsemver_sv_delete (ccsemver_sv_t * sv)
   __attribute__((__nonnull__(1)));
 
+ccsemver_decl void ccsemver_sv_reset (ccsemver_sv_t * sv)
+  __attribute__((__nonnull__(1)));
+
+/* ------------------------------------------------------------------ */
+
 ccsemver_decl int  ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
@@ -686,7 +734,7 @@ ccsemver_decl int  ccsemver_sv_comp  (ccsemver_sv_t const * sv1, ccsemver_sv_t c
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cleanup_handler_sv_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_sv_t * sv)
+ccsemver_decl void ccsemver_clean_handler_sv_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_sv_t * sv)
   __attribute__((__nonnull__(1,2,3)));
 
 ccsemver_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_sv_t * sv)
@@ -694,12 +742,12 @@ ccsemver_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_err
 
 #define ccsemver_handler_sv_init(L,H,sv)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_sv_init, \
+	   cce_clean_handler_t	*: ccsemver_clean_handler_sv_init, \
 	   cce_error_handler_t		*: ccsemver_error_handler_sv_init)(L,H,sv)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
 ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
@@ -707,12 +755,12 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_error   (cce_destination_t
 
 #define ccsemver_sv_new_guarded(L,H,input)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsemver_sv_new_guarded_cleanup, \
+	   cce_clean_handler_t	*: ccsemver_sv_new_guarded_clean, \
 	   cce_error_handler_t		*: ccsemver_sv_new_guarded_error)(L,H,input)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H,
+ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
 								ccsemver_sv_t * sv, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
 
@@ -722,7 +770,7 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_error   (cce_destination_
 
 #define ccsemver_sv_init_guarded(L,H,sv,input)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsemver_sv_init_guarded_cleanup, \
+	   cce_clean_handler_t	*: ccsemver_sv_init_guarded_clean, \
 	   cce_error_handler_t		*: ccsemver_sv_init_guarded_error)(L,H,sv,input)
 
 
@@ -730,14 +778,14 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_error   (cce_destination_
  ** Comparators.
  ** ----------------------------------------------------------------- */
 
-typedef void ccsemver_comp_delete_fun_t (ccsemver_comp_t * comp);
+typedef void ccsemver_cmp_delete_fun_t (ccsemver_cmp_t * comp);
 
-struct ccsemver_comp_t {
-  ccsemver_comp_delete_fun_t *	delete;
+struct ccsemver_cmp_t {
+  ccsemver_cmp_delete_fun_t *	delete;
 
   /* Pointer to the next node in the simply-linked list; NULL if this is
      the last node. */
-  ccsemver_comp_t *		next;
+  ccsemver_cmp_t *		next;
 
   /* The operator with  which the semantic version in this  node must be
      compared with other versions. */
@@ -747,68 +795,71 @@ struct ccsemver_comp_t {
   ccsemver_sv_t			sv;
 };
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_new  (cce_destination_t L, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new  (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_init (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_comp_delete (ccsemver_comp_t * cmp)
+ccsemver_decl void ccsemver_cmp_delete (ccsemver_cmp_t * cmp)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl void ccsemver_cmp_reset (ccsemver_cmp_t * cmp)
   __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_comp_and   (cce_destination_t L, ccsemver_comp_t * cmp, ccsemver_input_t * input)
+ccsemver_decl void ccsemver_cmp_and   (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl int  ccsemver_comp_write (ccsemver_comp_t const * cmp, char * buffer, size_t len)
+ccsemver_decl int  ccsemver_cmp_write (ccsemver_cmp_t const * cmp, char * buffer, size_t len)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_comp_t const * cmp)
+ccsemver_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_cmp_t const * cmp)
   __attribute__((__nonnull__(1,2)));
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cleanup_handler_comp_init (cce_location_t * L, cce_cleanup_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_decl void ccsemver_clean_handler_cmp_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_cmp_t * comp)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl void ccsemver_error_handler_comp_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_comp_t * comp)
+ccsemver_decl void ccsemver_error_handler_cmp_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_cmp_t * comp)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsemver_handler_comp_init(L,comp_H,comp) \
+#define ccsemver_handler_cmp_init(L,comp_H,comp) \
   _Generic((comp_H),							\
-	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_comp_init, \
-	   cce_error_handler_t		*: ccsemver_error_handler_comp_init)(L,&(comp_H->handler),comp)
+	   cce_clean_handler_t	*: ccsemver_clean_handler_cmp_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_cmp_init)(L,&(comp_H->handler),comp)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_new_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
-#define ccsemver_comp_new_guarded(L,H,input)				\
+#define ccsemver_cmp_new_guarded(L,H,input)				\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsemver_comp_new_guarded_cleanup, \
-	   cce_error_handler_t		*: ccsemver_comp_new_guarded_error)(L,H,input)
+	   cce_clean_handler_t	*: ccsemver_cmp_new_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_cmp_new_guarded_error)(L,H,input)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_init_guarded_cleanup (cce_destination_t L, cce_cleanup_handler_t * H,
-								    ccsemver_comp_t * cmp, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+								    ccsemver_cmp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
 
-ccsemver_decl ccsemver_comp_t * ccsemver_comp_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
-								    ccsemver_comp_t * cmp, ccsemver_input_t * input)
+ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+								    ccsemver_cmp_t * cmp, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
 
-#define ccsemver_comp_init_guarded(L,H,cmp,input)			\
+#define ccsemver_cmp_init_guarded(L,H,cmp,input)			\
   _Generic((H),								\
-	   cce_cleanup_handler_t	*: ccsemver_comp_init_guarded_cleanup, \
-	   cce_error_handler_t		*: ccsemver_comp_init_guarded_error)(L,H,cmp,input)
+	   cce_clean_handler_t	*: ccsemver_cmp_init_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_cmp_init_guarded_error)(L,H,cmp,input)
 
 
 /** --------------------------------------------------------------------
@@ -825,18 +876,21 @@ struct ccsemver_range_t {
   ccsemver_range_t *	next;
 
   /* The comparator of this node. */
-  ccsemver_comp_t	comp;
+  ccsemver_cmp_t	cmp;
 };
 
 ccsemver_decl ccsemver_range_t * ccsemver_range_new  (cce_destination_t L, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_init (cce_destination_t L, ccsemver_input_t * input, ccsemver_range_t * range)
+ccsemver_decl ccsemver_range_t * ccsemver_range_init (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3)));
 
 /* ------------------------------------------------------------------ */
 
 ccsemver_decl void ccsemver_range_delete (ccsemver_range_t * range)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl void ccsemver_range_reset (ccsemver_range_t * range)
   __attribute__((__nonnull__(1)));
 
 /* ------------------------------------------------------------------ */
@@ -849,16 +903,44 @@ ccsemver_decl int ccsemver_range_match (ccsemver_sv_t const * sv, ccsemver_range
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cleanup_handler_range_init (cce_location_t * L, cce_handler_t * H, ccsemver_range_t * range)
+ccsemver_decl void ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_range_t * range)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_handler_t * H, ccsemver_range_t * range)
+ccsemver_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_range_t * range)
   __attribute__((__nonnull__(1,2,3)));
 
-#define ccsemver_handler_range_init(L,range_H,range) \
+#define ccsemver_handler_range_init(L,range_H,range)			\
   _Generic((range_H),							\
-	   cce_cleanup_handler_t	*: ccsemver_cleanup_handler_range_init, \
-	   cce_error_handler_t		*: ccsemver_error_handler_range_init)(L,&(range_H->handler),range)
+	   cce_clean_handler_t	*: ccsemver_clean_handler_range_init, \
+	   cce_error_handler_t		*: ccsemver_error_handler_range_init)(L,range_H,range)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_range_t * ccsemver_range_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+ccsemver_decl ccsemver_range_t * ccsemver_range_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+
+#define ccsemver_range_new_guarded(L,H,input)				\
+  _Generic((H),								\
+	   cce_clean_handler_t	*: ccsemver_range_new_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_range_new_guarded_error)(L,H,input)
+
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+								      ccsemver_range_t * range, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+								      ccsemver_range_t * range, ccsemver_input_t * input)
+  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+
+#define ccsemver_range_init_guarded(L,H,range,input)			\
+  _Generic((H),								\
+	   cce_clean_handler_t	*: ccsemver_range_init_guarded_clean, \
+	   cce_error_handler_t		*: ccsemver_range_init_guarded_error)(L,H,range,input)
 
 
 /** --------------------------------------------------------------------
@@ -871,7 +953,7 @@ ccsemver_decl size_t ccsemver_id_fwrite (ccsemver_id_t const * idp, FILE * strea
 ccsemver_decl size_t ccsemver_sv_fwrite (ccsemver_sv_t const * sv, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
-ccsemver_decl size_t ccsemver_comp_fwrite  (ccsemver_comp_t const * cmp, FILE * stream)
+ccsemver_decl size_t ccsemver_cmp_fwrite  (ccsemver_cmp_t const * cmp, FILE * stream)
   __attribute__((__nonnull__(1,2)));
 
 ccsemver_decl size_t ccsemver_range_fwrite (ccsemver_range_t const * range, FILE * stream)

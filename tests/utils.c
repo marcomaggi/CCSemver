@@ -86,19 +86,19 @@ test_comparator_fwrite (void)
 {
   char const		input_str[] = "<=1.2.3";
   ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
-  ccsemver_comp_t	cmp;
+  ccsemver_cmp_t	cmp;
   int			rv;
 
-  rv = ccsemver_comp_read(&cmp, &input);
+  rv = ccsemver_cmp_read(&cmp, &input);
   if (0 == rv) {
     printf("test_comparator_fwrite: ");
-    ccsemver_comp_fwrite(&cmp, stdout);
+    ccsemver_cmp_fwrite(&cmp, stdout);
     if (0 == errno) {
       printf("\n");
       rv = 0;
     }
   }
-  ccsemver_comp_dtor(&cmp);
+  ccsemver_cmp_dtor(&cmp);
   return rv;
 }
 
