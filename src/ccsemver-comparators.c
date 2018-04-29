@@ -697,8 +697,14 @@ ccsemver_cmp_write (ccsemver_cmp_t const * self, char * buffer, size_t len)
   }
   ccsemver_sv_write(&(self->sv), semver, 256);
   if (self->next) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     return snprintf(buffer, len, "%s%s %.*s", op, semver, ccsemver_cmp_write(self->next, next, 1024), next);
   } else {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     return snprintf(buffer, len, "%s%s", op, semver);
   }
 }

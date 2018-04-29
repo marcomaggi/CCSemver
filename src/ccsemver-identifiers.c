@@ -322,8 +322,13 @@ ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
   char next[1024];
 
   if (id->next) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     return snprintf(buffer, len, "%.*s.%.*s", (int) id->len, id->raw, ccsemver_id_write(id->next, next, 1024), next);
   }
+  /* Remember  that "snprintf()"  writes the  null byte,  but returns  a
+     number of characters that does not include the terminating null! */
   return snprintf(buffer, len, "%.*s", (int) id->len, id->raw);
 }
 

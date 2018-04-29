@@ -243,11 +243,18 @@ ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
   char comp[1024], next[1024];
 
   if (self->next) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     return snprintf(buffer, len, "%.*s || %.*s",
 		    ccsemver_cmp_write(&(self->cmp), comp, 1024), comp,
 		    ccsemver_range_write(self->next, next, 1024), next);
+  } else {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
+    return snprintf(buffer, len, "%.*s", ccsemver_cmp_write(&(self->cmp), comp, 1024), comp);
   }
-  return snprintf(buffer, len, "%.*s", ccsemver_cmp_write(&(self->cmp), comp, 1024), comp);
 }
 
 /* end of file */

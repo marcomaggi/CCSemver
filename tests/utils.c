@@ -32,96 +32,96 @@
  ** ----------------------------------------------------------------- */
 
 #include <ccsemver.h>
-#include <stdlib.h>
+#include <cctests.h>
 #include <string.h>
-#include <errno.h>
 
 
-int
-test_id_fwrite (void)
+void
+test_id_fwrite (cce_destination_t upper_L)
 {
-  char const		input_str[] = "1.2.3-alpha.1+x86-64";
-  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
-  ccsemver_id_t		id;
-  int			rv;
+  cce_location_t	L[1];
+  cce_clean_handler_t	id_H[1];
 
-  rv = ccsemver_id_read(&id, &input);
-  if (0 == rv) {
-    printf("test_id_fwrite: ");
-    ccsemver_id_fwrite(&id, stdout);
-    if (0 == errno) {
-      printf("\n");
-      rv = 0;
-    }
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const		input_str[] = "alpha.1-beta.2-gamma.3";
+    ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
+    ccsemver_id_t *	id;
+
+    id = ccsemver_id_new_guarded(L, id_H, &input);
+    ccsemver_id_fwrite(L, id, stdout);
+    printf("\n");
+    fflush(stdout);
+    cce_run_cleanup_handlers(L);
   }
-  ccsemver_id_dtor(&id);
-  return rv;
 }
 
 
-int
-test_version_fwrite (void)
+void
+test_sv_fwrite (cce_destination_t upper_L)
 {
-  char const		input_str[] = "1.2.3-alpha.1+x86-64";
-  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
-  ccsemver_t		sv;
-  int			rv;
+  cce_location_t	L[1];
+  cce_clean_handler_t	sv_H[1];
 
-  rv = ccsemver_read(&sv, &input);
-  if (0 == rv) {
-    printf("test_version_fwrite: ");
-    ccsemver_fwrite(&sv, stdout);
-    if (0 == errno) {
-      printf("\n");
-      rv = 0;
-    }
+  if (cce_location(L)) {
+    if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const		input_str[] = "v1.2.3-alpha.1+x86-64";
+    ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
+    ccsemver_sv_t *	sv;
+
+    sv = ccsemver_sv_new_guarded(L, sv_H, &input);
+    ccsemver_sv_fwrite(L, sv, stdout);
+    printf("\n");
+    fflush(stdout);
+    cce_run_cleanup_handlers(L);
   }
-  ccsemver_dtor(&sv);
-  return 0;
 }
 
 
-int
-test_comparator_fwrite (void)
+void
+test_cmp_fwrite (cce_destination_t upper_L)
 {
-  char const		input_str[] = "<=1.2.3";
-  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
-  ccsemver_cmp_t	cmp;
-  int			rv;
+  cce_location_t	L[1];
+  cce_clean_handler_t	cmp_H[1];
 
-  rv = ccsemver_cmp_read(&cmp, &input);
-  if (0 == rv) {
-    printf("test_comparator_fwrite: ");
-    ccsemver_cmp_fwrite(&cmp, stdout);
-    if (0 == errno) {
-      printf("\n");
-      rv = 0;
-    }
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const		input_str[] = "<=1.2.3";
+    ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
+    ccsemver_cmp_t *	cmp;
+
+    cmp = ccsemver_cmp_new_guarded(L, cmp_H, &input);
+    ccsemver_cmp_fwrite(L, cmp, stdout);
+    printf("\n");
+    fflush(stdout);
+    cce_run_cleanup_handlers(L);
   }
-  ccsemver_cmp_dtor(&cmp);
-  return rv;
 }
 
 
-int
-test_range_fwrite (void)
+void
+test_range_fwrite (cce_destination_t upper_L)
 {
-  char const		input_str[] = ">=1.2.3 || <4.0.0";
-  ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 6);
-  ccsemver_range_t	rn;
-  int			rv;
+  cce_location_t	L[1];
+  cce_clean_handler_t	rn_H[1];
 
-  rv = ccsemver_range_read(&rn, &input);
-  if (0 == rv) {
-    printf("test_range_fwrite: ");
-    ccsemver_range_fwrite(&rn, stdout);
-    if (0 == errno) {
-      printf("\n");
-      rv = 0;
-    }
+  if (cce_location(L)) {
+    cce_run_error_handlers_raise(L, upper_L);
+  } else {
+    char const		input_str[] = ">=1.2.3 || <4.0.0";
+    ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
+    ccsemver_range_t *	rn;
+
+    rn = ccsemver_range_new_guarded(L, rn_H, &input);
+    ccsemver_range_fwrite(L, rn, stdout);
+    printf("\n");
+    fflush(stdout);
+    cce_run_cleanup_handlers(L);
   }
-  ccsemver_range_dtor(&rn);
-  return rv;
 }
 
 
@@ -129,24 +129,18 @@ int
 main (void)
 {
   ccsemver_init();
-
-  if (test_id_fwrite()) {
-    return EXIT_FAILURE;
+  cctests_init("utilities");
+  {
+    cctests_begin_group("printing");
+    {
+      cctests_run(test_id_fwrite);
+      cctests_run(test_sv_fwrite);
+      cctests_run(test_cmp_fwrite);
+      cctests_run(test_range_fwrite);
+    }
+    cctests_end_group();
   }
-
-  if (test_version_fwrite()) {
-    return EXIT_FAILURE;
-  }
-
-  if (test_comparator_fwrite()) {
-    return EXIT_FAILURE;
-  }
-
-  if (test_range_fwrite()) {
-    return EXIT_FAILURE;
-  }
-
-  return EXIT_SUCCESS;
+  cctests_final();
 }
 
 /* end of file */

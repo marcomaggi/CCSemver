@@ -365,19 +365,31 @@ ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
   int	rv;
 
   if (sv->prerelease.len && sv->build.len) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s+%.*s",
 		  sv->major, sv->minor, sv->patch,
 		  ccsemver_id_write(&(sv->prerelease), prerelease, 256), prerelease,
 		  ccsemver_id_write(&(sv->build), build, 256), build);
   } else if (sv->prerelease.len) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     rv = snprintf(buffer, len, "%ld.%ld.%ld-%.*s",
 		  sv->major, sv->minor, sv->patch,
 		  ccsemver_id_write(&(sv->prerelease), prerelease, 256), prerelease);
   } else if (sv->build.len) {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     rv = snprintf(buffer, len, "%ld.%ld.%ld+%.*s",
 		  sv->major, sv->minor, sv->patch,
 		  ccsemver_id_write(&(sv->build), build, 256), build);
   } else {
+    /* Remember that  "snprintf()" writes the  null byte, but  returns a
+       number  of  characters  that  does not  include  the  terminating
+       null! */
     rv = snprintf(buffer, len, "%ld.%ld.%ld", sv->major, sv->minor, sv->patch);
   }
   return rv;

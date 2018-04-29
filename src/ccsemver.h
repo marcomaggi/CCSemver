@@ -947,17 +947,17 @@ ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_error   (cce_destin
  ** Input/output.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl size_t ccsemver_id_fwrite (ccsemver_id_t const * idp, FILE * stream)
-  __attribute__((__nonnull__(1,2)));
+ccsemver_decl size_t ccsemver_id_fwrite (cce_destination_t L, ccsemver_id_t const * idp, FILE * stream)
+  __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl size_t ccsemver_sv_fwrite (ccsemver_sv_t const * sv, FILE * stream)
-  __attribute__((__nonnull__(1,2)));
+ccsemver_decl size_t ccsemver_sv_fwrite (cce_destination_t L, ccsemver_sv_t const * sv, FILE * stream)
+  __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl size_t ccsemver_cmp_fwrite  (ccsemver_cmp_t const * cmp, FILE * stream)
-  __attribute__((__nonnull__(1,2)));
+ccsemver_decl size_t ccsemver_cmp_fwrite  (cce_destination_t L, ccsemver_cmp_t const * cmp, FILE * stream)
+  __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl size_t ccsemver_range_fwrite (ccsemver_range_t const * range, FILE * stream)
-  __attribute__((__nonnull__(1,2)));
+ccsemver_decl size_t ccsemver_range_fwrite (cce_destination_t L, ccsemver_range_t const * range, FILE * stream)
+  __attribute__((__nonnull__(1,2,3)));
 
 ccsemver_decl char const * ccsemver_op_string (ccsemver_op_t op)
   __attribute__((__returns_nonnull__));

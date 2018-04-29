@@ -59,140 +59,170 @@ ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
 
 
 size_t
-ccsemver_id_fwrite (const ccsemver_id_t * idp, FILE * stream)
-/* Serialise the identifier to the  STREAM.  When successful: return the
-   number of bytes written and  set "errno" to zero.  When unsuccessful:
-   set "errno" to an error code. */
+ccsemver_fwrite (cce_destination_t L, void * bufptr, size_t item_size, size_t item_num, FILE * stream)
 {
+  size_t	rv;
+  errno = 0;
+  rv = fwrite(bufptr, item_size, item_num, stream);
+  if (! ferror(stream)) {
+    return rv;
+  } else {
+    cce_raise(L, cce_condition_new_errno_clear());
+  }
+}
+
+
+size_t
+ccsemver_id_fwrite (cce_destination_t upper_L, ccsemver_id_t const * const id, FILE * stream)
+/* Serialise  the struct  to the  STREAM.  When  successful: return  the
+   number of bytes written; otherwise raise an exception. */
+{
+
   size_t	stk_buffer_len = CCSEMVER_FWRITE_STACK_BUFLEN;
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_id_write(idp, stk_buffer_ptr, stk_buffer_len);
+  /* Remember  that  "ccsemver_id_write()"  writes the  null  byte,  but
+     returns  a  number   of  characters  that  does   not  include  the
+     terminating null! */
+  needed_count = (size_t)ccsemver_id_write(id, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
-    errno = 0;
-    return fwrite(stk_buffer_ptr, sizeof(char), needed_count, stream);
+    return ccsemver_fwrite(upper_L, stk_buffer_ptr, sizeof(char), needed_count, stream);
   } else {
-    size_t	dyn_buffer_len = needed_count+1;
-    char *	dyn_buffer_ptr;
-    errno = 0;
-    dyn_buffer_ptr = (char *)malloc(dyn_buffer_len);
-    if (NULL == dyn_buffer_ptr) {
-      return 0;
+    cce_location_t	L[1];
+    cce_clean_handler_t	H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
     } else {
-      size_t	actual_count  = ccsemver_id_write(idp, dyn_buffer_ptr, dyn_buffer_len);
-      size_t	written_count;
-      errno = 0;
-      written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
-      free(dyn_buffer_ptr);
-      return written_count;
+      size_t	dyn_buffer_len	= 1 + needed_count;
+      char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
+      /* Remember that  "ccsemver_id_write()" writes the null  byte, but
+	 returns  a  number of  characters  that  does not  include  the
+	 terminating null! */
+      size_t	actual_count	= ccsemver_id_write(id, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
+      cce_run_cleanup_handlers(L);
+      return rv;
     }
   }
 }
 
 
 size_t
-ccsemver_sv_fwrite (ccsemver_sv_t const * sv, FILE * stream)
-/* Serialise the  version to  the STREAM.   When successful:  return the
-   number of bytes written and  set "errno" to zero.  When unsuccessful:
-   set "errno" to an error code. */
+ccsemver_sv_fwrite (cce_destination_t upper_L, ccsemver_sv_t const * const id, FILE * stream)
+/* Serialise  the struct  to the  STREAM.  When  successful: return  the
+   number of bytes written; otherwise raise an exception. */
 {
+
   size_t	stk_buffer_len = CCSEMVER_FWRITE_STACK_BUFLEN;
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_sv_write(sv, stk_buffer_ptr, stk_buffer_len);
+  /* Remember  that  "ccsemver_sv_write()"  writes the  null  byte,  but
+     returns  a  number   of  characters  that  does   not  include  the
+     terminating null! */
+  needed_count = (size_t)ccsemver_sv_write(id, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
-    errno = 0;
-    return fwrite(stk_buffer_ptr, sizeof(char), needed_count, stream);
+    return ccsemver_fwrite(upper_L, stk_buffer_ptr, sizeof(char), needed_count, stream);
   } else {
-    size_t	dyn_buffer_len = needed_count+1;
-    char *	dyn_buffer_ptr;
-    errno = 0;
-    dyn_buffer_ptr = (char *)malloc(dyn_buffer_len);
-    if (NULL == dyn_buffer_ptr) {
-      return 0;
+    cce_location_t	L[1];
+    cce_clean_handler_t	H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
     } else {
-      size_t	actual_count  = ccsemver_sv_write(sv, dyn_buffer_ptr, dyn_buffer_len);
-      size_t	written_count;
-      errno = 0;
-      written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
-      free(dyn_buffer_ptr);
-      return written_count;
+      size_t	dyn_buffer_len	= 1 + needed_count;
+      char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
+      /* Remember that  "ccsemver_sv_write()" writes the null  byte, but
+	 returns  a  number of  characters  that  does not  include  the
+	 terminating null! */
+      size_t	actual_count	= ccsemver_sv_write(id, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
+      cce_run_cleanup_handlers(L);
+      return rv;
     }
   }
 }
 
 
 size_t
-ccsemver_cmp_fwrite (const ccsemver_cmp_t * compp, FILE * stream)
-/* Serialise the comparator to the  STREAM.  When successful: return the
-   number of bytes written and  set "errno" to zero.  When unsuccessful:
-   set "errno" to an error code. */
+ccsemver_cmp_fwrite (cce_destination_t upper_L, ccsemver_cmp_t const * const id, FILE * stream)
+/* Serialise  the struct  to the  STREAM.  When  successful: return  the
+   number of bytes written; otherwise raise an exception. */
 {
+
   size_t	stk_buffer_len = CCSEMVER_FWRITE_STACK_BUFLEN;
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_cmp_write(compp, stk_buffer_ptr, stk_buffer_len);
+  /* Remember  that  "ccsemver_cmp_write()"  writes the  null  byte,  but
+     returns  a  number   of  characters  that  does   not  include  the
+     terminating null! */
+  needed_count = (size_t)ccsemver_cmp_write(id, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
-    errno = 0;
-    return fwrite(stk_buffer_ptr, sizeof(char), needed_count, stream);
+    return ccsemver_fwrite(upper_L, stk_buffer_ptr, sizeof(char), needed_count, stream);
   } else {
-    size_t	dyn_buffer_len = needed_count+1;
-    char *	dyn_buffer_ptr;
-    errno = 0;
-    dyn_buffer_ptr = (char *)malloc(dyn_buffer_len);
-    if (NULL == dyn_buffer_ptr) {
-      return 0;
+    cce_location_t	L[1];
+    cce_clean_handler_t	H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
     } else {
-      size_t	actual_count  = ccsemver_cmp_write(compp, dyn_buffer_ptr, dyn_buffer_len);
-      size_t	written_count;
-      errno = 0;
-      written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
-      free(dyn_buffer_ptr);
-      return written_count;
+      size_t	dyn_buffer_len	= 1 + needed_count;
+      char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
+      /* Remember that "ccsemver_cmp_write()" writes  the null byte, but
+	 returns  a  number of  characters  that  does not  include  the
+	 terminating null! */
+      size_t	actual_count	= ccsemver_cmp_write(id, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
+      cce_run_cleanup_handlers(L);
+      return rv;
     }
   }
 }
 
 
 size_t
-ccsemver_range_fwrite (const ccsemver_range_t * rangep, FILE * stream)
-/* Serialise  the range  to  the STREAM.   When  successful: return  the
-   number of bytes written and  set "errno" to zero.  When unsuccessful:
-   set "errno" to an error code. */
+ccsemver_range_fwrite (cce_destination_t upper_L, ccsemver_range_t const * const id, FILE * stream)
+/* Serialise  the struct  to the  STREAM.  When  successful: return  the
+   number of bytes written; otherwise raise an exception. */
 {
+
   size_t	stk_buffer_len = CCSEMVER_FWRITE_STACK_BUFLEN;
   char		stk_buffer_ptr[stk_buffer_len];
   size_t	needed_count;
 
-  needed_count = (size_t )ccsemver_range_write(rangep, stk_buffer_ptr, stk_buffer_len);
+  /* Remember that  "ccsemver_range_write()" writes  the null  byte, but
+     returns  a  number   of  characters  that  does   not  include  the
+     terminating null! */
+  needed_count = (size_t)ccsemver_range_write(id, stk_buffer_ptr, stk_buffer_len);
   if (0 == needed_count) {
     return 0;
   } else if (needed_count < stk_buffer_len) {
-    errno = 0;
-    return fwrite(stk_buffer_ptr, sizeof(char), needed_count, stream);
+    return ccsemver_fwrite(upper_L, stk_buffer_ptr, sizeof(char), needed_count, stream);
   } else {
-    size_t	dyn_buffer_len = needed_count+1;
-    char *	dyn_buffer_ptr;
-    errno = 0;
-    dyn_buffer_ptr = (char *)malloc(dyn_buffer_len);
-    if (NULL == dyn_buffer_ptr) {
-      return 0;
+    cce_location_t	L[1];
+    cce_clean_handler_t	H[1];
+
+    if (cce_location(L)) {
+      cce_run_error_handlers_raise(L, upper_L);
     } else {
-      size_t	actual_count  = ccsemver_range_write(rangep, dyn_buffer_ptr, dyn_buffer_len);
-      size_t	written_count;
-      errno = 0;
-      written_count = fwrite(dyn_buffer_ptr, sizeof(char), actual_count, stdout);
-      free(dyn_buffer_ptr);
-      return written_count;
+      size_t	dyn_buffer_len	= 1 + needed_count;
+      char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
+      /* Remember  that "ccsemver_range_write()"  writes the  null byte,
+	 but returns  a number of  characters that does not  include the
+	 terminating null! */
+      size_t	actual_count	= ccsemver_range_write(id, dyn_buffer_ptr, dyn_buffer_len);
+      size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
+      cce_run_cleanup_handlers(L);
+      return rv;
     }
   }
 }
