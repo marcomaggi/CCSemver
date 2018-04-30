@@ -33,7 +33,7 @@ original source is available at:
   This package  supports POSIX platforms.   This package depends  on the
 package CCExceptions,  at least version  0.7.2.  To run the  test suite:
 this  package  depends  upon  the  package  CCTests,  at  least  version
-0.1.0-devel.1.
+0.2.0-devel.0.
 
   The package uses the GNU Autotools  and it is tested, using Travis CI,
 on both Ubuntu GNU+Linux systems and OS X systems.
