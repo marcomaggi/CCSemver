@@ -668,7 +668,7 @@ ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
  ** ----------------------------------------------------------------- */
 
 void
-ccsemver_init (void)
+ccsemver_library_init (void)
 {
   ccsemver_descriptor_parser_error_stru.descriptor.parent	= &(cce_descriptor_runtime_error_ptr->descriptor);
 }

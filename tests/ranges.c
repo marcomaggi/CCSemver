@@ -202,7 +202,7 @@ GOOD_INPUT_NEW(test_4_2_3,  true,	">=0.0.3 <0.0.4 || >=5.0.0",	"^0.0.3 || >=5")
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
   cctests_init("parsing ranges");
   {
     cctests_begin_group("parsing x-ranges");

@@ -106,7 +106,7 @@ extern "C" {
  ** Initialisation.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl void ccsemver_init (void)
+ccsemver_decl void ccsemver_library_init (void)
   __attribute__((__constructor__));
 
 
@@ -629,41 +629,41 @@ ccsemver_decl int  ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t co
 ccsemver_decl void ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_id_t * id)
   __attribute__((__nonnull__(1,2,3)));
 
-ccsemver_decl void ccsemver_error_handler_id_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
+ccsemver_decl void ccsemver_error_handler_id_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
   __attribute__((__nonnull__(1,2,3)));
 
 #define ccsemver_handler_id_init(L,id_H,id)				\
   _Generic((id_H),							\
-	   cce_clean_handler_t	*: ccsemver_clean_handler_id_init, \
-	   cce_error_handler_t		*: ccsemver_error_handler_id_init)(L,id_H,id)
+	   cce_clean_handler_t	*: ccsemver_clean_handler_id_init,	\
+	   cce_error_handler_t	*: ccsemver_error_handler_id_init)(L,id_H,id)
 
 /* ------------------------------------------------------------------ */
 
 ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
 
 #define ccsemver_id_new_guarded(L,H,input)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsemver_id_new_guarded_clean, \
-	   cce_error_handler_t		*: ccsemver_id_new_guarded_error)(L,H,input)
+	   cce_clean_handler_t	*: ccsemver_id_new_guarded_clean,	\
+	   cce_error_handler_t	*: ccsemver_id_new_guarded_error)(L,H,input)
 
 /* ------------------------------------------------------------------ */
 
 ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
-								ccsemver_id_t * id, ccsemver_input_t * input)
+							      ccsemver_id_t * id, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
-								ccsemver_id_t * id, ccsemver_input_t * input)
+ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_error (cce_destination_t L, cce_error_handler_t * H,
+							      ccsemver_id_t * id, ccsemver_input_t * input)
   __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
 
 #define ccsemver_id_init_guarded(L,H,id,input)				\
   _Generic((H),								\
-	   cce_clean_handler_t	*: ccsemver_id_init_guarded_clean, \
-	   cce_error_handler_t		*: ccsemver_id_init_guarded_error)(L,H,id,input)
+	   cce_clean_handler_t	*: ccsemver_id_init_guarded_clean,	\
+	   cce_error_handler_t	*: ccsemver_id_init_guarded_error)(L,H,id,input)
 
 
 /** --------------------------------------------------------------------

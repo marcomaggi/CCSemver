@@ -103,7 +103,7 @@ GOOD_INPUT(test_1_7, true,	true, "v1.2.3", ">1")
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
   cctests_init("matching ranges and semvers");
 
   cctests_begin_group("successful matching");

@@ -479,7 +479,7 @@ GOOD_APPEND(test_11_1_7,  true,	">=1.2.0 <1.3.0",					"1.2",	      "")
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
   cctests_init("parsing comparators");
   {
     cctests_begin_group("simple comparators: successful parsing, new function");

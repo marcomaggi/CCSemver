@@ -128,7 +128,7 @@ test_range_fwrite (cce_destination_t upper_L)
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
   cctests_init("utilities");
   {
     cctests_begin_group("printing");

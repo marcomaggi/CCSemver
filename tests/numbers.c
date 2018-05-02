@@ -577,7 +577,7 @@ test_3_6 (cce_destination_t L)
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
 
   cctests_init("number and numeric component parsers");
   {

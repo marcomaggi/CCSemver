@@ -266,7 +266,7 @@ BAD_INPUT_INIT(test_4_11, "v1.2.3-alpha.7+",	ccsemver_condition_is_parser_end_of
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
   cctests_init("semantic versions");
   {
     cctests_begin_group("correct parsing, new");

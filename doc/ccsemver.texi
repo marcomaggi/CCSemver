@@ -152,9 +152,9 @@ Indexes
 @chapter Overview of the package
 
 
-This document describes version @value{VERSION} of @value{PACKAGE}, a C language library
-implementing semantic versioning for the C language.  We can find definition of semantic versioning
-at:
+This document describes version @value{VERSION} of @value{PACKAGE}, a C11 language library
+implementing semantic versioning for the C language.  A @dfn{semantic version} is described by the
+@samp{v2.0.0} specification found at:
 
 @center @url{https://semver.org/}
 
@@ -168,10 +168,6 @@ This package supports @posix{} platforms.  This package depends on the package
 
 @strong{Notice that, before using the library, we need to call the global initialisation function
 @cfunc{ccsemver_init}}.
-
-A @dfn{semantic version} is described by the @samp{v2.0.0} specification found at:
-
-@center @url{http://semver.org/}
 
 @menu
 * overview linking::            Linking code with the library.
@@ -477,7 +473,7 @@ zero.
 @chapter Library initialisation
 
 
-@deftypefun void ccsemver_init (void)
+@deftypefun void ccsemver_library_init (void)
 Initialises the internal structures of the library.  It is fine to call this function multiple
 times.
 

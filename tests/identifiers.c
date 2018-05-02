@@ -69,8 +69,7 @@ test_identifier_successful_parsing_new (cce_destination_t upper_L, char const * 
     size_t		serial_len	= 1024;
     char		serial_str[serial_len];
 
-    id = ccsemver_id_new(L, &input);
-    ccsemver_handler_id_init(L, id_H, id);
+    id = ccsemver_id_new_guarded(L, id_H, &input);
 
     serial_len = ccsemver_id_write(id, serial_str, serial_len);
     if (0) {
@@ -202,7 +201,6 @@ test_1_2_2 (cce_destination_t upper_L)
   }
 }
 
-
 void
 test_1_2_3 (cce_destination_t upper_L)
 /* Exception: invalid input offset. */
@@ -278,8 +276,7 @@ test_identifier_successful_parsing_init (cce_destination_t upper_L, char const *
     size_t		serial_len	= 1024;
     char		serial_str[serial_len];
 
-    ccsemver_id_init(L, id, &input);
-    ccsemver_handler_id_init(L, id_H, id);
+    ccsemver_id_init_guarded(L, id_H, id, &input);
 
     serial_len = ccsemver_id_write(id, serial_str, serial_len);
     if (0) {
@@ -473,7 +470,7 @@ test_2_3_1 (cce_destination_t upper_L)
 int
 main (void)
 {
-  ccsemver_init();
+  ccsemver_library_init();
 
   cctests_init("identifiers");
   {
