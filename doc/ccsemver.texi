@@ -225,9 +225,9 @@ AC_CHECK_HEADERS([ccsemver.h],,
 @section Ranges
 
 
-A @dfn{version range} is a set of @dfn{comparators} which specify
-versions that satisfy the range.  A comparator is composed of an
-@dfn{operator} and a @dfn{version}.  The set of primitive operators is:
+A @dfn{version range} is a set of @dfn{comparators} which specify versions that satisfy the range.
+A comparator is composed of an @dfn{operator} and a @dfn{version}.  The set of primitive operators
+is:
 
 @table @code
 @item <
@@ -243,13 +243,12 @@ Greater than.
 Greater than or equal to.
 
 @item =
-Equal.  If no operator is specified, then equality is assumed, so this
-operator is optional, but MAY be included.
+Equal.  If no operator is specified, then equality is assumed, so this operator is optional, but MAY
+be included.
 @end table
 
-For example, the comparator @samp{>=1.2.7} would match the versions
-@samp{1.2.7}, @samp{1.2.8}, @samp{2.5.3}, and @samp{1.3.9}, but not the
-versions @samp{1.2.6} or @samp{1.1.0}.
+For example, the comparator @samp{>=1.2.7} would match the versions @samp{1.2.7}, @samp{1.2.8},
+@samp{2.5.3}, and @samp{1.3.9}, but not the versions @samp{1.2.6} or @samp{1.1.0}.
 
 Comparators can be joined by whitespace to form a @dfn{comparator set},
 which is satisfied by the @strong{intersection} of all of the
@@ -981,6 +980,18 @@ Return @ctrue{} if @var{C} is an @emph{number out of range} condition object; ot
 @chapter Parser input specification
 
 
+Every parser functions accepts as argument a pointer to @objtype{ccsemver_input_t} to keep track of
+which input characters have been consumed.  The whole parser input strings are meant to be loaded in
+memory.  Usage example:
+
+@example
+char const * const str    = "1.2.3-alpha.1+x86-64";
+size_t const       len    = strlen(str);
+size_t const       offset = 0;
+ccsemver_input_t   input  = ccsemver_input_new(str, len, offset);
+@end example
+
+
 @deftp {Struct Typedef} ccsemver_input_t
 Type of @code{struct} representing the input for the parser functions; the input is meant to be a
 string in @ascii{} format.  It has the following public fields:
@@ -990,7 +1001,7 @@ string in @ascii{} format.  It has the following public fields:
 Pointer to the first character in the input string.  Parser functions never mutate this value.
 
 @item size_t const len
-Number of character in the input string.  Parser functions never mutate this value.
+Number of characters in the input string.  Parser functions never mutate this value.
 
 @item size_t off
 Offset of the next character to parse in the input string.  This value is mutated by every parser
@@ -1016,14 +1027,23 @@ Unless otherwise specified, for every parser function: if the input string is em
 zero), the function returns unsuccessfully.
 @end deftp
 
+@c ------------------------------------------------------------------------
+
+@subsubheading Constructors
+
 
 @deftypefun ccsemver_input_t ccsemver_input_new (char const * @var{str}, size_t @var{len}, size_t @var{off})
 Build and return a new instance of @objtype{ccsemver_input_t}.
 @end deftypefun
 
+@c ------------------------------------------------------------------------
 
-@deftypefun char ccsemver_input_next (ccsemver_input_t * @var{input})
-Return the next character to parse.
+@subsubheading Predicates
+
+
+@deftypefun bool ccsemver_input_is_empty (ccsemver_input_t * @var{input})
+Return @ctrue{} if the input string has zero length; otherwise return @cfalse{}.  Notice that ``zero
+length'' is different from ``no more input''.
 @end deftypefun
 
 
@@ -1038,10 +1058,18 @@ Return @ctrue{} if there is @strong{no} more input to be parsed; return @cfalse{
 input to be processed.
 @end deftypefun
 
+@c ------------------------------------------------------------------------
 
-@deftypefun bool ccsemver_input_is_empty (ccsemver_input_t * @var{input})
-Return @ctrue{} if the input string has zero length; return @cfalse{} if there is more input to be
-processed.  Notice that ``zero length'' is different from ``no more input''.
+@subsubheading Operations
+
+
+@deftypefun char ccsemver_input_next (ccsemver_input_t * @var{input})
+Return the next character to parse.  Do @strong{not} mutate the field @code{off}.
+@end deftypefun
+
+
+@deftypefun void ccsemver_input_step (ccsemver_input_t * @var{input})
+Increment the field @code{off}.
 @end deftypefun
 
 @c page

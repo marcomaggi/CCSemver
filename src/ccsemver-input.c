@@ -78,7 +78,7 @@ ccsemver_input_parse_next (ccsemver_input_t * input)
 {
   if (ccsemver_input_more(input)) {
     char	ch = ccsemver_input_next(input);
-    ++(input->off);
+    ccsemver_input_step(input);
     return ch;
   } else {
     return '\0';
@@ -98,7 +98,7 @@ ccsemver_input_parse_v (ccsemver_input_t * input)
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('v' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -111,7 +111,7 @@ ccsemver_input_parse_dot (ccsemver_input_t * input)
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('.' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -124,7 +124,7 @@ ccsemver_input_parse_dash (ccsemver_input_t * input)
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('-' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -137,7 +137,7 @@ ccsemver_input_parse_plus (ccsemver_input_t * input)
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('+' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -150,7 +150,7 @@ ccsemver_input_parse_bar (ccsemver_input_t * input)
    and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('|' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -163,7 +163,7 @@ ccsemver_input_parse_equal (ccsemver_input_t * input)
    it and return true; otherwise return false. */
 {
   if (ccsemver_input_more(input) && ('=' == ccsemver_input_next(input))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     return true;
   } else {
     return false;
@@ -184,7 +184,7 @@ ccsemver_input_parse_blanks (ccsemver_input_t * input)
 	  ('\t' == ccsemver_input_next(input)) ||
 	  ('\r' == ccsemver_input_next(input)) ||
 	  ('\n' == ccsemver_input_next(input)))) {
-    ++(input->off);
+    ccsemver_input_step(input);
     at_least_one_found = true;
   }
   return at_least_one_found;

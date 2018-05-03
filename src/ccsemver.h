@@ -455,12 +455,12 @@ struct ccsemver_input_t {
   size_t const		len;
 
   /* Offset of the next character to parse in the input string. */
-  size_t	off;
+  size_t		off;
 };
 
 __attribute__((__always_inline__,__nonnull__(1)))
 static inline ccsemver_input_t
-ccsemver_input_new (char const * str, size_t len, size_t off)
+ccsemver_input_new (char const * const str, size_t const len, size_t const off)
 {
   ccsemver_input_t	input = {
     .str	= str,
@@ -470,12 +470,23 @@ ccsemver_input_new (char const * str, size_t len, size_t off)
   return input;
 }
 
+/* ------------------------------------------------------------------ */
+
 __attribute__((__always_inline__,__nonnull__(1)))
 static inline char
 ccsemver_input_next (ccsemver_input_t * input)
 {
   return input->str[input->off];
 }
+
+__attribute__((__always_inline__,__nonnull__(1)))
+static inline void
+ccsemver_input_step (ccsemver_input_t * input)
+{
+  ++(input->off);
+}
+
+/* ------------------------------------------------------------------ */
 
 __attribute__((__always_inline__,__nonnull__(1)))
 static inline bool
