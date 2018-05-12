@@ -1073,19 +1073,63 @@ Increment the field @code{off}.
 @end deftypefun
 
 @c page
-@c page
 @node semvers
 @chapter Parsing semantic versions
 
 
-The versions @api{} does @strong{not} duplicate the input strings.
-
 @menu
+* semvers intro::               Introduction to semantic versions.
 * semvers typedefs::            Type definitions.
 * semvers reading::             Parsing from a string.
 * semvers writing::             Writing to a string.
 * semvers comparing::           Versions comparison.
 @end menu
+
+@c page
+@node semvers intro
+@section Introduction to semantic versions
+
+
+For the full specification version @samp{v2.0.0} we should refer to:
+
+@center @url{https://semver.org/}
+
+@dfn{Semantic versions} are strings in @ascii{} encoding with the following format:
+
+@example
+1.2.3-alpha.1-beta.2+x86-64
+@end example
+
+@noindent
+where:
+
+@table @samp
+@item 1
+Is the major version number; it is mandatory.
+
+@item 2
+Is the minor version number; it is mandatory.
+
+@item 3
+Is the patch level; it is mandatory.
+
+@item -alpha.1-beta.2
+Is the prerelease tag; it is optional.  The leading dash character is the separator: if a dash is
+present after the patch level, there must be a prerelease tag.  Prerelease tags cannot be empty.
+
+@item +x86-64
+Is the build metadata; it is optional.  The leading plus character is the separator: if a plus is
+present after the patch level or the prerelease tag, there must be a build metadata.  The build
+metadata cannot be empty.
+@end table
+
+Other examples of valid semantic versions:
+
+@example
+1.2.3
+1.2.3-alpha.1-beta.2
+1.2.3+x86-64
+@end example
 
 @c page
 @node semvers typedefs
@@ -1098,6 +1142,8 @@ All the following symbols are defined in the header file @file{ccsemver.h}.
 @deftp {Struct Typedef} ccsemver_sv_t
 Type of data structures representing parsed versions.  Instances of this structure are initialised
 with @cfunc{ccsemver_ctor}.  Instances of this structure are finalised with @cfunc{ccsemver_dtor}.
+
+The semantic versions @api{} does @strong{not} duplicate the input strings.
 
 It has the following public fields:
 
