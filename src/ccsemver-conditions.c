@@ -60,8 +60,6 @@ static ccsemver_descriptor_parser_error_t ccsemver_descriptor_parser_error_stru 
 
 ccsemver_descriptor_parser_error_t const * const ccsemver_descriptor_parser_error_ptr = &ccsemver_descriptor_parser_error_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_error_t const ccsemver_condition_parser_error_stru = {
   .runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_error_stru.descriptor)
 };
@@ -115,8 +113,6 @@ static ccsemver_descriptor_parser_no_input_t ccsemver_descriptor_parser_no_input
 ccsemver_descriptor_parser_no_input_t const * const ccsemver_descriptor_parser_no_input_ptr =
   &ccsemver_descriptor_parser_no_input_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_no_input_t const ccsemver_condition_parser_no_input_stru = {
   .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_no_input_stru.descriptor)
 };
@@ -171,8 +167,6 @@ static ccsemver_descriptor_parser_empty_input_t ccsemver_descriptor_parser_empty
 ccsemver_descriptor_parser_empty_input_t const * const ccsemver_descriptor_parser_empty_input_ptr =
   &ccsemver_descriptor_parser_empty_input_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_empty_input_t const ccsemver_condition_parser_empty_input_stru = {
   .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_empty_input_stru.descriptor)
 };
@@ -227,8 +221,6 @@ static ccsemver_descriptor_parser_end_of_input_t ccsemver_descriptor_parser_end_
 ccsemver_descriptor_parser_end_of_input_t const * const ccsemver_descriptor_parser_end_of_input_ptr =
   &ccsemver_descriptor_parser_end_of_input_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_end_of_input_t const ccsemver_condition_parser_end_of_input_stru = {
   .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_end_of_input_stru.descriptor)
 };
@@ -283,8 +275,6 @@ static ccsemver_descriptor_parser_invalid_input_offset_t ccsemver_descriptor_par
 ccsemver_descriptor_parser_invalid_input_offset_t const * const ccsemver_descriptor_parser_invalid_input_offset_ptr =
   &ccsemver_descriptor_parser_invalid_input_offset_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_invalid_input_offset_t const ccsemver_condition_parser_invalid_input_offset_stru = {
   .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor =
     &(ccsemver_descriptor_parser_invalid_input_offset_stru.descriptor)
@@ -340,8 +330,6 @@ static ccsemver_descriptor_parser_invalid_input_t ccsemver_descriptor_parser_inv
 ccsemver_descriptor_parser_invalid_input_t const * const ccsemver_descriptor_parser_invalid_input_ptr =
   &ccsemver_descriptor_parser_invalid_input_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_invalid_input_t const ccsemver_condition_parser_invalid_input_stru = {
   .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_invalid_input_stru.descriptor)
 };
@@ -396,8 +384,6 @@ static ccsemver_descriptor_parser_expected_number_t ccsemver_descriptor_parser_e
 ccsemver_descriptor_parser_expected_number_t const * const ccsemver_descriptor_parser_expected_number_ptr =
   &ccsemver_descriptor_parser_expected_number_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_expected_number_t const ccsemver_condition_parser_expected_number_stru = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
   &(ccsemver_descriptor_parser_expected_number_stru.descriptor)
@@ -453,8 +439,6 @@ static ccsemver_descriptor_parser_expected_numeric_component_t ccsemver_descript
 ccsemver_descriptor_parser_expected_numeric_component_t const * const ccsemver_descriptor_parser_expected_numeric_component_ptr =
   &ccsemver_descriptor_parser_expected_numeric_component_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_expected_numeric_component_t const ccsemver_condition_parser_expected_numeric_component_stru = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
   &(ccsemver_descriptor_parser_expected_numeric_component_stru.descriptor)
@@ -510,8 +494,6 @@ static ccsemver_descriptor_parser_expected_xrange_numeric_component_t ccsemver_d
 ccsemver_descriptor_parser_expected_xrange_numeric_component_t const * const ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr =
   &ccsemver_descriptor_parser_expected_xrange_numeric_component_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_expected_xrange_numeric_component_t const ccsemver_condition_parser_expected_xrange_numeric_component_stru = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
   &(ccsemver_descriptor_parser_expected_xrange_numeric_component_stru.descriptor)
@@ -567,8 +549,6 @@ static ccsemver_descriptor_parser_expected_identifier_t ccsemver_descriptor_pars
 ccsemver_descriptor_parser_expected_identifier_t const * const ccsemver_descriptor_parser_expected_identifier_ptr =
   &ccsemver_descriptor_parser_expected_identifier_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_expected_identifier_t const ccsemver_condition_parser_expected_identifier_stru = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
   &(ccsemver_descriptor_parser_expected_identifier_stru.descriptor)
@@ -624,8 +604,6 @@ static ccsemver_descriptor_parser_number_out_of_range_t ccsemver_descriptor_pars
 ccsemver_descriptor_parser_number_out_of_range_t const * const ccsemver_descriptor_parser_number_out_of_range_ptr =
   &ccsemver_descriptor_parser_number_out_of_range_stru;
 
-/* This is  the single  instance of  the "invalid  pathname" exceptional
-   condition.  It is used by "cce_raise()" and "cce_retry()". */
 static ccsemver_condition_parser_number_out_of_range_t const ccsemver_condition_parser_number_out_of_range_stru = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
   &(ccsemver_descriptor_parser_number_out_of_range_stru.descriptor)
