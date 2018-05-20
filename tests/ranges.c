@@ -70,7 +70,7 @@ test_new (cce_destination_t upper_L, char const * const expected, char const * c
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
@@ -106,7 +106,7 @@ test_init (cce_destination_t upper_L, char const * const expected, char const * 
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 

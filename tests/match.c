@@ -73,7 +73,7 @@ test_match (cce_destination_t upper_L, bool expected, char const * const sv_str,
 
     cctests_assert(L, expected == ccsemver_match(sv, cmp));
 
-    cce_run_cleanup_handlers(L);
+    cce_run_clean_handlers(L);
   }
 }
 
