@@ -46,7 +46,8 @@
  ** Documentation snippets: parsing identifiers.
  ** ----------------------------------------------------------------- */
 
-static void
+#if 0
+void
 doc_example_identifiers_1_1 (cce_destination_t upper_L)
 {
   ccsemver_id_t	id;
@@ -58,7 +59,7 @@ doc_example_identifiers_1_1 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_1_2 (cce_destination_t upper_L)
 {
   ccsemver_id_t *	idp;
@@ -77,7 +78,7 @@ doc_example_identifiers_1_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_identifiers_2_1 (cce_destination_t upper_L)
 /* Parsing a single numeric identifier. */
 {
@@ -97,7 +98,7 @@ doc_example_identifiers_2_1 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_2_2 (cce_destination_t upper_L)
 /* Parsing a single alphabetic identifier. */
 {
@@ -117,7 +118,7 @@ doc_example_identifiers_2_2 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_2_3 (cce_destination_t upper_L)
 /* Parsing a compound identifier. */
 {
@@ -138,7 +139,7 @@ doc_example_identifiers_2_3 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_2_4 (cce_destination_t upper_L)
 /* Parsing a compound identifier with build metadata. */
 {
@@ -162,7 +163,7 @@ doc_example_identifiers_2_4 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_2_5 (cce_destination_t upper_L)
 /* Parsing the empty string. */
 {
@@ -186,7 +187,7 @@ doc_example_identifiers_2_5 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_identifiers_3_1 (cce_destination_t upper_L)
 /* Writing a compound identifier, enough room in the buffer. */
 {
@@ -220,7 +221,7 @@ doc_example_identifiers_3_1 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id);
 }
 
-static void
+void
 doc_example_identifiers_3_2 (cce_destination_t upper_L)
 /* Writing a compound identifier, *not* enough room in the buffer. */
 {
@@ -256,7 +257,7 @@ doc_example_identifiers_3_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_identifiers_4_1 (cce_destination_t upper_L)
 /* Comparing identifiers: A < B. */
 {
@@ -288,7 +289,7 @@ doc_example_identifiers_4_1 (cce_destination_t upper_L)
   ccsemver_id_dtor(&id_A);
 }
 
-static void
+void
 doc_example_identifiers_4_2 (cce_destination_t upper_L)
 /* Comparing identifiers: A < B. */
 {
@@ -319,13 +320,15 @@ doc_example_identifiers_4_2 (cce_destination_t upper_L)
   }
   ccsemver_id_dtor(&id_A);
 }
+#endif
 
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing numeric components.
  ** ----------------------------------------------------------------- */
 
-static void
+#if 0
+void
 doc_example_numeric_components_1_1 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -341,7 +344,7 @@ doc_example_numeric_components_1_1 (cce_destination_t upper_L)
   }
 }
 
-static void
+void
 doc_example_numeric_components_1_2 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -357,7 +360,7 @@ doc_example_numeric_components_1_2 (cce_destination_t upper_L)
   }
 }
 
-static void
+void
 doc_example_numeric_components_1_3 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -373,7 +376,7 @@ doc_example_numeric_components_1_3 (cce_destination_t upper_L)
   }
 }
 
-static void
+void
 doc_example_numeric_components_1_4 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -389,7 +392,7 @@ doc_example_numeric_components_1_4 (cce_destination_t upper_L)
   }
 }
 
-static void
+void
 doc_example_numeric_components_1_5 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -407,7 +410,7 @@ doc_example_numeric_components_1_5 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_numeric_components_2_1 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -416,7 +419,7 @@ doc_example_numeric_components_2_1 (cce_destination_t upper_L)
   printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
-static void
+void
 doc_example_numeric_components_2_2 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -425,7 +428,7 @@ doc_example_numeric_components_2_2 (cce_destination_t upper_L)
   printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
-static void
+void
 doc_example_numeric_components_2_3 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -434,7 +437,7 @@ doc_example_numeric_components_2_3 (cce_destination_t upper_L)
   printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
 
-static void
+void
 doc_example_numeric_components_2_4 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -442,13 +445,15 @@ doc_example_numeric_components_2_4 (cce_destination_t upper_L)
   int	B = 123;
   printf("A=%d, B=%d, compar=%d\n", A, B, (int)ccsemver_num_comp(A, B));
 }
+#endif
 
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing versions.
  ** ----------------------------------------------------------------- */
 
-static void
+#if 0
+void
 doc_example_versions_1_1 (cce_destination_t upper_L)
 {
   ccsemver_t	version;
@@ -460,7 +465,7 @@ doc_example_versions_1_1 (cce_destination_t upper_L)
   ccsemver_dtor(&version);
 }
 
-static void
+void
 doc_example_versions_1_2 (cce_destination_t upper_L)
 {
   ccsemver_t *	sv;
@@ -479,7 +484,7 @@ doc_example_versions_1_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_versions_2_1 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -502,7 +507,7 @@ doc_example_versions_2_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_versions_2_2 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -525,7 +530,7 @@ doc_example_versions_2_2 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_versions_2_3 (cce_destination_t upper_L)
 {
   printf("\n\n--- %s:\n", __func__);
@@ -548,7 +553,7 @@ doc_example_versions_2_3 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_versions_2_4 (cce_destination_t upper_L)
 /* Parsing the empty string. */
 {
@@ -576,7 +581,7 @@ doc_example_versions_2_4 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_versions_3_1 (cce_destination_t upper_L)
 /* Writing a sv, enough room in the buffer. */
 {
@@ -609,7 +614,7 @@ doc_example_versions_3_1 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_versions_4_1 (cce_destination_t upper_L)
 /* Comparing versions: A < B. */
 {
@@ -640,13 +645,15 @@ doc_example_versions_4_1 (cce_destination_t upper_L)
   }
   ccsemver_dtor(&sv_A);
 }
+#endif
 
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing comparators.
  ** ----------------------------------------------------------------- */
 
-static void
+#if 0
+void
 doc_example_comparators_1_1 (cce_destination_t upper_L)
 {
   ccsemver_cmp_t	cmp;
@@ -658,7 +665,7 @@ doc_example_comparators_1_1 (cce_destination_t upper_L)
   ccsemver_cmp_dtor(&cmp);
 }
 
-static void
+void
 doc_example_comparators_1_2 (cce_destination_t upper_L)
 {
   ccsemver_cmp_t *	cmp;
@@ -677,7 +684,7 @@ doc_example_comparators_1_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_2_1_1 (cce_destination_t upper_L)
 /* Parsing equal comparator. */
 {
@@ -697,7 +704,7 @@ doc_example_comparators_2_1_1 (cce_destination_t upper_L)
   ccsemver_cmp_dtor(&cmp);
 }
 
-static void
+void
 doc_example_comparators_2_1_2 (cce_destination_t upper_L)
 /* Parsing less than comparator. */
 {
@@ -717,7 +724,7 @@ doc_example_comparators_2_1_2 (cce_destination_t upper_L)
   ccsemver_cmp_dtor(&cmp);
 }
 
-static void
+void
 doc_example_comparators_2_1_3 (cce_destination_t upper_L)
 /* Parsing greater than comparator. */
 {
@@ -737,7 +744,7 @@ doc_example_comparators_2_1_3 (cce_destination_t upper_L)
   ccsemver_cmp_dtor(&cmp);
 }
 
-static void
+void
 doc_example_comparators_2_1_4 (cce_destination_t upper_L)
 /* Parsing less than or equal to comparator. */
 {
@@ -757,7 +764,7 @@ doc_example_comparators_2_1_4 (cce_destination_t upper_L)
   ccsemver_cmp_dtor(&cmp);
 }
 
-static void
+void
 doc_example_comparators_2_1_5 (cce_destination_t upper_L)
 /* Parsing greater than or equal to comparator. */
 {
@@ -779,7 +786,7 @@ doc_example_comparators_2_1_5 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_2_2_1 (cce_destination_t upper_L)
 /* Extending a comparator. */
 {
@@ -812,7 +819,7 @@ doc_example_comparators_2_2_1 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_3_1 (cce_destination_t upper_L)
 /* Writing a comparator, enough room in the buffer. */
 {
@@ -845,7 +852,7 @@ doc_example_comparators_3_1 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_4_1_1 (cce_destination_t upper_L)
 /* Equality comparator, matches. */
 {
@@ -872,7 +879,7 @@ doc_example_comparators_4_1_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_comparators_4_1_2 (cce_destination_t upper_L)
 /* Equality comparator, does not match. */
 {
@@ -901,7 +908,7 @@ doc_example_comparators_4_1_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_4_2_1 (cce_destination_t upper_L)
 /* Less than comparator, matches. */
 {
@@ -928,7 +935,7 @@ doc_example_comparators_4_2_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_comparators_4_2_2 (cce_destination_t upper_L)
 /* Less than comparator, does not match. */
 {
@@ -957,7 +964,7 @@ doc_example_comparators_4_2_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_4_3_1 (cce_destination_t upper_L)
 /* Greater than comparator, matches. */
 {
@@ -984,7 +991,7 @@ doc_example_comparators_4_3_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_comparators_4_3_2 (cce_destination_t upper_L)
 /* Greater than comparator, does not match. */
 {
@@ -1013,7 +1020,7 @@ doc_example_comparators_4_3_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_4_4_1 (cce_destination_t upper_L)
 /* Less than or equal to comparator, matches. */
 {
@@ -1040,7 +1047,7 @@ doc_example_comparators_4_4_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_comparators_4_4_2 (cce_destination_t upper_L)
 /* Less than or equal to comparator, does not match. */
 {
@@ -1069,7 +1076,7 @@ doc_example_comparators_4_4_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_comparators_4_5_1 (cce_destination_t upper_L)
 /* Greater than or equal to comparator, matches. */
 {
@@ -1096,7 +1103,7 @@ doc_example_comparators_4_5_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_comparators_4_5_2 (cce_destination_t upper_L)
 /* Greater than or equal to comparator, does not match. */
 {
@@ -1122,13 +1129,15 @@ doc_example_comparators_4_5_2 (cce_destination_t upper_L)
   }
   ccsemver_dtor(&sv);
 }
+#endif
 
 
 /** --------------------------------------------------------------------
  ** Documentation snippets: parsing ranges.
  ** ----------------------------------------------------------------- */
 
-static void
+#if 0
+void
 doc_example_ranges_1_1 (cce_destination_t upper_L)
 {
   char const		input_str[] = "1.2.3";
@@ -1144,7 +1153,7 @@ doc_example_ranges_1_1 (cce_destination_t upper_L)
   ccsemver_range_dtor(&rn);
 }
 
-static void
+void
 doc_example_ranges_1_2 (cce_destination_t upper_L)
 {
   char const		input_str[] = "1.2.3";
@@ -1167,7 +1176,7 @@ doc_example_ranges_1_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_ranges_2_1 (cce_destination_t upper_L)
 /* Reading a simple range. */
 {
@@ -1187,7 +1196,7 @@ doc_example_ranges_2_1 (cce_destination_t upper_L)
   ccsemver_range_dtor(&rn);
 }
 
-static void
+void
 doc_example_ranges_2_2 (cce_destination_t upper_L)
 /* Reading a complex range. */
 {
@@ -1209,7 +1218,7 @@ doc_example_ranges_2_2 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_ranges_3_1 (cce_destination_t upper_L)
 /* Writing a range, enough room in the buffer. */
 {
@@ -1242,7 +1251,7 @@ doc_example_ranges_3_1 (cce_destination_t upper_L)
 
 /* ------------------------------------------------------------------ */
 
-static void
+void
 doc_example_ranges_4_1 (cce_destination_t upper_L)
 /* Matching, matches. */
 {
@@ -1269,7 +1278,7 @@ doc_example_ranges_4_1 (cce_destination_t upper_L)
   ccsemver_dtor(&sv);
 }
 
-static void
+void
 doc_example_ranges_4_2 (cce_destination_t upper_L)
 /* Matching, does not match. */
 {
@@ -1295,6 +1304,7 @@ doc_example_ranges_4_2 (cce_destination_t upper_L)
   }
   ccsemver_dtor(&sv);
 }
+#endif
 
 
 /** --------------------------------------------------------------------
@@ -1302,11 +1312,12 @@ doc_example_ranges_4_2 (cce_destination_t upper_L)
  ** ----------------------------------------------------------------- */
 
 int
-main (cce_destination_t upper_L)
+main (void)
 {
   ccsemver_library_init();
   cctests_init("documentation examples");
   {
+#if 0
     cctests_begin_group("identifiers examples");
     {
       cctests_run(doc_example_identifiers_1_1);
@@ -1385,6 +1396,7 @@ main (cce_destination_t upper_L)
       cctests_run(doc_example_ranges_4_2);
     }
     cctests_end_group();
+#endif
   }
   cctests_final();
 }
