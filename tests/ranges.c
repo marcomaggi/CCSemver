@@ -46,7 +46,7 @@ test_new (cce_destination_t upper_L, char const * const expected, char const * c
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
     char		buffer[1024];
@@ -82,7 +82,7 @@ test_init (cce_destination_t upper_L, char const * const expected, char const * 
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
     char		buffer[1024];

@@ -43,7 +43,7 @@ test_id_fwrite (cce_destination_t upper_L)
   cce_clean_handler_t	id_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const		input_str[] = "alpha.1-beta.2-gamma.3";
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
@@ -66,7 +66,7 @@ test_sv_fwrite (cce_destination_t upper_L)
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const		input_str[] = "v1.2.3-alpha.1+x86-64";
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
@@ -88,7 +88,7 @@ test_cmp_fwrite (cce_destination_t upper_L)
   cce_clean_handler_t	cmp_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const		input_str[] = "<=1.2.3";
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);
@@ -110,7 +110,7 @@ test_range_fwrite (cce_destination_t upper_L)
   cce_clean_handler_t	rn_H[1];
 
   if (cce_location(L)) {
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     char const		input_str[] = ">=1.2.3 || <4.0.0";
     ccsemver_input_t	input = ccsemver_input_new(input_str, strlen(input_str), 0);

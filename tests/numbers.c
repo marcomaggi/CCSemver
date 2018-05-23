@@ -59,7 +59,7 @@ test_number_successful_parsing (cce_destination_t upper_L, char const * input_st
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     size_t		input_len	= strlen(input_str);
     size_t		input_off	= 0;
@@ -110,7 +110,7 @@ test_1_2_1 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_empty_input (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "";
@@ -136,7 +136,7 @@ test_1_2_2 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_end_of_input (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -163,7 +163,7 @@ test_1_2_3 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_invalid_input_offset (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -190,7 +190,7 @@ test_1_3_1 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_number(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -215,7 +215,7 @@ test_1_3_2 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_number(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "-123";
@@ -240,7 +240,7 @@ test_1_3_3 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_number(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "+123";
@@ -265,7 +265,7 @@ test_1_3_4 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_number_out_of_range(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";
@@ -291,7 +291,7 @@ test_numeric_component_successful_parsing (cce_destination_t upper_L, char const
 
   if (cce_location(L)) {
     if (0) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     size_t		input_len	= strlen(input_str);
     size_t		input_off	= 0;
@@ -363,7 +363,7 @@ test_2_2_1 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_empty_input (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "";
@@ -389,7 +389,7 @@ test_2_2_2 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_end_of_input (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -416,7 +416,7 @@ test_2_2_3 (cce_destination_t upper_L)
 	ccsemver_condition_is_parser_invalid_input_offset (cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -443,7 +443,7 @@ test_2_3_1 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_numeric_component(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "ciao";
@@ -468,7 +468,7 @@ test_2_3_2 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_numeric_component(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "-123";
@@ -493,7 +493,7 @@ test_2_3_3 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_expected_numeric_component(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "+123";
@@ -518,7 +518,7 @@ test_2_3_4 (cce_destination_t upper_L)
     if (ccsemver_condition_is_parser_number_out_of_range(cce_condition(L))) {
       cce_run_clean_handlers_final(L);
     } else {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     }
   } else {
     char const *	input_str	= "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";

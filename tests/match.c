@@ -47,7 +47,7 @@ test_match (cce_destination_t upper_L, bool expected, char const * const sv_str,
 
   if (cce_location(L)) {
     if (1) { fprintf(stderr, "%s: %s\n", __func__, cce_condition_static_message(cce_condition(L))); }
-    cce_run_error_handlers_raise(L, upper_L);
+    cce_run_catch_handlers_raise(L, upper_L);
   } else {
     ccsemver_input_t	sv_input  = ccsemver_input_new(sv_str,  strlen(sv_str),  0);
     ccsemver_input_t	cmp_input = ccsemver_input_new(cmp_str, strlen(cmp_str), 0);
