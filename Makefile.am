@@ -3,10 +3,9 @@
 ACLOCAL_AMFLAGS		= -I meta/autotools
 AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= INSTALL \
-			  meta/slackstuff/config.in	\
 			  meta/slackware/slack-desc.in
 dist_doc_DATA		= README UNLICENSE
-AM_CFLAGS		= -I$(srcdir)/src $(AX_CFLAGS)
+AM_CFLAGS		= $(MMUX_CFLAGS) -I$(srcdir)/src
 
 ## --------------------------------------------------------------------
 
@@ -17,11 +16,13 @@ nodist_pkgconfig_DATA	= meta/scripts/ccsemver.pc
 ## --------------------------------------------------------------------
 
 AM_MAKEINFOFLAGS	= --no-split
+AM_MAKEINFOHTMLFLAGS	= --split=node -c WORDS_IN_PAGE=0 \
+	-c PRE_BODY_CLOSE="<p>This document describes version <tt>$(PACKAGE_VERSION)</tt> of <em>$(PACKAGE_NAME)</em>.</p>"
 
 info_TEXINFOS		= doc/ccsemver.texi
 doc_ccsemver_TEXINFOS	= doc/macros.texi
 
-#page
+
 #### libraries
 
 ccsemver_CURRENT	= @ccsemver_VERSION_INTERFACE_CURRENT@
@@ -48,7 +49,7 @@ libccsemver_la_SOURCES	= \
 	src/ccsemver-ranges.c			\
 	src/ccsemver-utils.c
 
-#page
+
 #### tests
 
 check_PROGRAMS	= \
@@ -101,7 +102,7 @@ tests_utils_LDADD		= $(ccsemver_tests_ldadd)
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done
 
-#page
+
 #### testing under GDB
 
 $(builddir)/.gdbinit:
@@ -116,7 +117,7 @@ $(builddir)/.gdbinit:
 gdb-test: $(builddir)/.gdbinit
 	libtool --mode=execute gdb $$FILE
 
-#page
+
 #### Static analysis with Clang's Static Analyzer
 #
 # See the documentation for the command line tool at:
@@ -129,16 +130,12 @@ gdb-test: $(builddir)/.gdbinit
 #    $ make clang-static-analysis
 #
 # The  program  "scan-build"  works  by  overriding  the  CC  and  CXX
-# environment variables.  Automake defines CXX as:
-#
-#    CXX = g++ -std=c++11
-#
-# so we override CXXFLAGS to include the language specification.
+# environment variables.
 #
 
 .PHONY: clang-static-analysis
 
 clang-static-analysis:
-	scan-build make CXXFLAGS='-std=c++11'
+	scan-build make
 
 ### end of file

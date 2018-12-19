@@ -1,9 +1,13 @@
-dnl @configure_input@
-dnl
+# @configure_input@
+#
 
 AC_PREREQ([2.69])
-AC_INIT([CCSemver],[0.1.0-devel.0],,[ccsemver],[http://github.com/marcomaggi/ccsemver])
-dnl This is the revision number of this configure.ac
+MMUX_PKG_VERSIONS([0],[1],[1],[devel.0])
+AC_INIT([CCSemver],[MMUX_PACKAGE_VERSION],
+  [marco.maggi-ipsu@poste.it],
+  [ccsemver],[http://github.com/marcomaggi/ccsemver])
+MMUX_INIT
+MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsemver],1,0,0)
 AC_REVISION([0.1])
 AC_COPYRIGHT([This is free and unencumbered software released into the public domain.
 
@@ -34,7 +38,7 @@ AC_CONFIG_AUX_DIR([meta/autotools])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([foreign dist-xz no-dist-gzip subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 AM_PROG_AR
@@ -46,55 +50,40 @@ AC_PROG_MKDIR_P
 LT_PREREQ([2.4])
 LT_INIT
 
-dnl page
-#### libraries interface version
-
-MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsemver],1,0,0)
-
-dnl This is the version stored in the pkg-config data file.
-AC_SUBST([CCSEMVER_PKG_CONFIG_VERSION],[0.1.0])
-
-AS_VAR_SET([SLACKSTUFF_PACKAGE_VERSION],[0.1d0.0])
-AC_SUBST([SLACKSTUFF_PACKAGE_VERSION])
-
-dnl page
+
 #### basic system inspection
 
 MMUX_CHECK_TARGET_OS
 
 AC_LANG([C])
 MMUX_LANG_C11
-AC_SUBST(AX_CFLAGS)
 
 AM_PROG_AS
 AM_PROG_CC_C_O
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### external libraries
 
 MMUX_CHECK_PKG_CONFIG_MACROS
 PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.8.0])
-PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.2.0],,[AC_MSG_WARN([package CCTests not found])])
+PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.3.0],,[AC_MSG_WARN([package CCTests not found])])
 
 AM_CONDITIONAL([CCSEMVER_TESTING_ENABLED],[test -n "$CCTESTS_LIBS"])
 
 AC_CACHE_SAVE
 
-dnl page
+
 #### finish
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile]
    [meta/scripts/ccsemver.pc]
-   [meta/slackstuff/config]
    [meta/slackware/slack-desc])
+MMUX_OUTPUT
 AC_OUTPUT
 
 ### end of file
-# Local Variables:
-# mode: autoconf
-# page-delimiter: "^dnl page"
-# End:
