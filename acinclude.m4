@@ -19,5 +19,7 @@ m4_include(meta/autoconf/mmux-check-page-size.m4)
 m4_include(meta/autoconf/mmux-check-page-shift.m4)
 m4_include(meta/autoconf/mmux-determine-sizeof.m4)
 m4_include(meta/autoconf/mmux-c-headers-includes.m4)
+m4_include(meta/autoconf/mmux-pkg-config-find-include-file.m4)
+dnl m4_include(meta/autoconf/ax-pthread.m4)
 
 ### end of file

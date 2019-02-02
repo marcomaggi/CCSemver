@@ -4,7 +4,7 @@
 #
 # LICENSE
 #
-#   Copyright (c) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+#   Copyright (c) 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
 #
 #   Copying and distribution of this file, with or without modification,
 #   are permitted in  any medium without royalty  provided the copyright
@@ -114,6 +114,9 @@ AC_DEFUN([MMUX_INIT],[
   AC_MSG_NOTICE([package version:] MMUX_PACKAGE_VERSION)
   AC_MSG_NOTICE([package semantic version:] MMUX_PACKAGE_SEMANTIC_VERSION)
   AC_MSG_NOTICE([package pkg-config module version:] MMUX_PACKAGE_PKG_CONFIG_VERSION)
+
+  # This is used to generate TAGS files for the C language.
+  AS_VAR_SET([MMUX_DEPENDENCIES_INCLUDES])
 ])
 
 
@@ -149,6 +152,9 @@ AC_DEFUN([MMUX_OUTPUT],[
   # Slackware  packages.   It  should  be  something  like  "noarch"  or
   # "x84_64".
   AC_SUBST([SLACKWARE_BUILD_METADATA],MMUX_PACKAGE_BUILD_METADATA)
+
+  # This is used to generate TAGS files for the C language.
+  AC_SUBST([MMUX_DEPENDENCIES_INCLUDES])
 ])
 
 ### end of file
