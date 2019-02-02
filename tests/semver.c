@@ -138,6 +138,7 @@ GOOD_INPUT_NEW(test_1_6, "1.2.3-alpha.2+77",	"v1.2.3-alpha.2+77")
 GOOD_INPUT_NEW(test_1_7, "1.2.3-alpha.2+77.2",	"1.2.3-alpha.2+77.2")
 GOOD_INPUT_NEW(test_1_8, "1.2.3-al-pha.2+77",	"v1.2.3-al-pha.2+77")
 GOOD_INPUT_NEW(test_1_9, "1.2.3-al-pha.2+77.2",	"1.2.3-al-pha.2+77.2")
+GOOD_INPUT_NEW(test_1_10, "1.2.3",		"1.2.03")
 
 GOOD_INPUT_INIT(test_2_1, "1.2.3",		"1.2.3")
 GOOD_INPUT_INIT(test_2_2, "1.2.3-alpha",	"v1.2.3-alpha")
@@ -280,6 +281,7 @@ main (void)
       cctests_run(test_1_7);
       cctests_run(test_1_8);
       cctests_run(test_1_9);
+      cctests_run(test_1_10);
     }
     cctests_end_group();
 
