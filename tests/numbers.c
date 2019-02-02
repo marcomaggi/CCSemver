@@ -96,6 +96,13 @@ test_1_1_3 (cce_destination_t upper_L)
   test_number_successful_parsing(upper_L, "12.3", 12);
 }
 
+void
+test_1_1_4 (cce_destination_t upper_L)
+/* Successfully parsing a number starting with zero. */
+{
+  test_number_successful_parsing(upper_L, "012", 12);
+}
+
 /* ------------------------------------------------------------------ */
 
 void
@@ -586,6 +593,7 @@ main (void)
       cctests_run(test_1_1_1);
       cctests_run(test_1_1_2);
       cctests_run(test_1_1_3);
+      cctests_run(test_1_1_4);
 
       cctests_run(test_1_2_1);
       cctests_run(test_1_2_2);
