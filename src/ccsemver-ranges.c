@@ -71,14 +71,14 @@ ccsemver_range_new (cce_destination_t upper_L, ccsemver_input_t * input)
     cce_error_handler_t		range_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       range		= cce_sys_malloc_guarded(L, range_H, sizeof(ccsemver_range_t));
       range->delete	= ccsemver_range_delete_after_new;
       range->next	= NULL;
       ccsemver_cmp_reset(&(range->cmp));
       ccsemver_range_parse(L, range, input);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
     return range;
   }
@@ -149,7 +149,7 @@ ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, 
 {
   H->handler.function	= ccsemver_handler_range_function;
   H->handler.pointer	= range;
-  cce_register_clean_handler(L, &(H->handler));
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -157,7 +157,7 @@ ccsemver_error_handler_range_init (cce_location_t * L, cce_error_handler_t * H, 
 {
   H->handler.function	= ccsemver_handler_range_function;
   H->handler.pointer	= range;
-  cce_register_error_handler(L, &(H->handler));
+  cce_register_error_handler(L, H);
 }
 
 /* ------------------------------------------------------------------ */

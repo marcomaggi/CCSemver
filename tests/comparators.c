@@ -74,7 +74,7 @@ test_new (cce_destination_t upper_L, char const * const expected, char const * c
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -110,7 +110,7 @@ test_init (cce_destination_t upper_L, char const * const expected, char const * 
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -160,7 +160,7 @@ test_cmp_and (cce_destination_t upper_L,
       cctests_assert_ascii(L, expected, buffer, slen);
     }
 
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -290,7 +290,7 @@ GOOD_INPUT_INIT(test_2_5_5, false,	">=0.0.0",		"* || *")
     } else {								\
       test_new(L, "", INPUT_STR, false);				\
       cctests_assert(L, false);						\
-      cce_run_clean_handlers(L);					\
+      cce_run_body_handlers(L);					\
     }									\
   }
 
@@ -310,7 +310,7 @@ GOOD_INPUT_INIT(test_2_5_5, false,	">=0.0.0",		"* || *")
     } else {								\
       test_init(L, "", INPUT_STR, false);				\
       cctests_assert(L, false);						\
-      cce_run_clean_handlers(L);					\
+      cce_run_body_handlers(L);					\
     }									\
   }
 

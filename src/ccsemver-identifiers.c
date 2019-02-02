@@ -72,12 +72,12 @@ ccsemver_id_new (cce_destination_t upper_L, ccsemver_input_t * input)
     cce_error_handler_t		id_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       id         = cce_sys_malloc_guarded(L, id_H, sizeof(ccsemver_id_t));
       id->delete = ccsemver_id_delete_after_new;
       ccsemver_id_parse(L, input, id);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
     return id;
   }
@@ -146,7 +146,7 @@ ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccs
 {
   H->handler.function	= ccsemver_handler_id_function;
   H->handler.pointer	= id;
-  cce_register_clean_handler(L, &(H->handler));
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -154,7 +154,7 @@ ccsemver_error_handler_id_init (cce_location_t * L, cce_error_handler_t * H, ccs
 {
   H->handler.function	= ccsemver_handler_id_function;
   H->handler.pointer	= id;
-  cce_register_error_handler(L, &(H->handler));
+  cce_register_error_handler(L, H);
 }
 
 /* ------------------------------------------------------------------ */

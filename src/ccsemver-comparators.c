@@ -85,12 +85,12 @@ ccsemver_cmp_new (cce_destination_t upper_L, ccsemver_input_t * input)
     cce_error_handler_t		cmp_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       cmp         = cce_sys_malloc_guarded(L, cmp_H, sizeof(ccsemver_cmp_t));
       cmp->delete = ccsemver_cmp_delete_after_new;
       ccsemver_cmp_parse(L, cmp, input);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
     return cmp;
   }
@@ -172,7 +172,7 @@ ccsemver_clean_handler_cmp_init (cce_location_t * L, cce_clean_handler_t * H, cc
 {
   H->handler.function	= ccsemver_handler_cmp_function;
   H->handler.pointer	= cmp;
-  cce_register_clean_handler(L, &(H->handler));
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -180,7 +180,7 @@ ccsemver_error_handler_cmp_init (cce_location_t * L, cce_error_handler_t * H, cc
 {
   H->handler.function	= ccsemver_handler_cmp_function;
   H->handler.pointer	= cmp;
-  cce_register_error_handler(L, &(H->handler));
+  cce_register_error_handler(L, H);
 }
 
 /* ------------------------------------------------------------------ */
@@ -561,7 +561,7 @@ parse_hyphen_tail (cce_destination_t upper_L, ccsemver_cmp_t * cmp, ccsemver_inp
     cce_error_handler_t	partial_sv_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsemver_sv_init_range(L, &partial_sv, input);
       ccsemver_handler_sv_init(L, partial_sv_H, &partial_sv);
@@ -587,7 +587,7 @@ parse_hyphen_tail (cce_destination_t upper_L, ccsemver_cmp_t * cmp, ccsemver_inp
 	}
       }
 
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
     }
   }
 }

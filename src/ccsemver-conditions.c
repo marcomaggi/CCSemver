@@ -91,7 +91,7 @@ ccsemver_condition_new_parser_error (void)
 bool
 ccsemver_condition_is_parser_error (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_error_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_error_ptr->descriptor));
 }
 
 
@@ -145,7 +145,7 @@ ccsemver_condition_new_parser_no_input (void)
 bool
 ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_no_input_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_no_input_ptr->descriptor));
 }
 
 
@@ -199,7 +199,7 @@ ccsemver_condition_new_parser_empty_input (void)
 bool
 ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_empty_input_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_empty_input_ptr->descriptor));
 }
 
 
@@ -253,7 +253,7 @@ ccsemver_condition_new_parser_end_of_input (void)
 bool
 ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_end_of_input_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_end_of_input_ptr->descriptor));
 }
 
 
@@ -308,7 +308,7 @@ ccsemver_condition_new_parser_invalid_input_offset (void)
 bool
 ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_invalid_input_offset_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_invalid_input_offset_ptr->descriptor));
 }
 
 
@@ -362,7 +362,7 @@ ccsemver_condition_new_parser_invalid_input (void)
 bool
 ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_invalid_input_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_invalid_input_ptr->descriptor));
 }
 
 
@@ -417,7 +417,7 @@ ccsemver_condition_new_parser_expected_number (void)
 bool
 ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_number_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_number_ptr->descriptor));
 }
 
 
@@ -472,7 +472,7 @@ ccsemver_condition_new_parser_expected_numeric_component (void)
 bool
 ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_numeric_component_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_numeric_component_ptr->descriptor));
 }
 
 
@@ -527,7 +527,7 @@ ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
 bool
 ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr->descriptor));
 }
 
 
@@ -582,7 +582,7 @@ ccsemver_condition_new_parser_expected_identifier (void)
 bool
 ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_expected_identifier_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_identifier_ptr->descriptor));
 }
 
 
@@ -637,7 +637,7 @@ ccsemver_condition_new_parser_number_out_of_range (void)
 bool
 ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
 {
-  return cce_is_condition(C, &(ccsemver_descriptor_parser_number_out_of_range_ptr->descriptor));
+  return cce_condition_is(C, &(ccsemver_descriptor_parser_number_out_of_range_ptr->descriptor));
 }
 
 

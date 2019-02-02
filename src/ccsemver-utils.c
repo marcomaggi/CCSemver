@@ -95,7 +95,7 @@ ccsemver_id_fwrite (cce_destination_t upper_L, ccsemver_id_t const * const id, F
     cce_clean_handler_t	H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       size_t	dyn_buffer_len	= 1 + needed_count;
       char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
@@ -104,7 +104,7 @@ ccsemver_id_fwrite (cce_destination_t upper_L, ccsemver_id_t const * const id, F
 	 terminating null! */
       size_t	actual_count	= ccsemver_id_write(id, dyn_buffer_ptr, dyn_buffer_len);
       size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return rv;
     }
   }
@@ -134,7 +134,7 @@ ccsemver_sv_fwrite (cce_destination_t upper_L, ccsemver_sv_t const * const id, F
     cce_clean_handler_t	H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       size_t	dyn_buffer_len	= 1 + needed_count;
       char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
@@ -143,7 +143,7 @@ ccsemver_sv_fwrite (cce_destination_t upper_L, ccsemver_sv_t const * const id, F
 	 terminating null! */
       size_t	actual_count	= ccsemver_sv_write(id, dyn_buffer_ptr, dyn_buffer_len);
       size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return rv;
     }
   }
@@ -173,7 +173,7 @@ ccsemver_cmp_fwrite (cce_destination_t upper_L, ccsemver_cmp_t const * const id,
     cce_clean_handler_t	H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       size_t	dyn_buffer_len	= 1 + needed_count;
       char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
@@ -182,7 +182,7 @@ ccsemver_cmp_fwrite (cce_destination_t upper_L, ccsemver_cmp_t const * const id,
 	 terminating null! */
       size_t	actual_count	= ccsemver_cmp_write(id, dyn_buffer_ptr, dyn_buffer_len);
       size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return rv;
     }
   }
@@ -212,7 +212,7 @@ ccsemver_range_fwrite (cce_destination_t upper_L, ccsemver_range_t const * const
     cce_clean_handler_t	H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       size_t	dyn_buffer_len	= 1 + needed_count;
       char *	dyn_buffer_ptr	= cce_sys_malloc_guarded(L, H, dyn_buffer_len);
@@ -221,7 +221,7 @@ ccsemver_range_fwrite (cce_destination_t upper_L, ccsemver_range_t const * const
 	 terminating null! */
       size_t	actual_count	= ccsemver_range_write(id, dyn_buffer_ptr, dyn_buffer_len);
       size_t	rv		= ccsemver_fwrite(L, dyn_buffer_ptr, sizeof(char), actual_count, stream);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return rv;
     }
   }

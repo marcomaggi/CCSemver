@@ -71,12 +71,12 @@ ccsemver_sv_new (cce_destination_t upper_L, ccsemver_input_t * input)
     cce_error_handler_t		sv_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsemver_sv_t *	sv = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
       ccsemver_sv_parse(L, sv, input);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return sv;
     }
   }
@@ -91,13 +91,13 @@ ccsemver_sv_new_range (cce_destination_t upper_L, ccsemver_input_t * input)
     cce_error_handler_t		sv_H[1];
 
     if (cce_location(L)) {
-      cce_run_error_handlers_raise(L, upper_L);
+      cce_run_catch_handlers_raise(L, upper_L);
     } else {
       ccsemver_sv_t *	sv;
       sv         = cce_sys_malloc_guarded(L, sv_H, sizeof(ccsemver_sv_t));
       sv->delete = ccsemver_sv_delete_after_new;
       ccsemver_sv_parse_range(L, sv, input);
-      cce_run_clean_handlers(L);
+      cce_run_body_handlers(L);
       return sv;
     }
   }
@@ -176,7 +176,7 @@ ccsemver_clean_handler_sv_init (cce_location_t * L, cce_clean_handler_t * H, ccs
 {
   H->handler.function	= ccsemver_handler_sv_function;
   H->handler.pointer	= sv;
-  cce_register_clean_handler(L, &(H->handler));
+  cce_register_clean_handler(L, H);
 }
 
 void
@@ -184,7 +184,7 @@ ccsemver_error_handler_sv_init (cce_location_t * L, cce_error_handler_t * H, ccs
 {
   H->handler.function	= ccsemver_handler_sv_function;
   H->handler.pointer	= sv;
-  cce_register_error_handler(L, &(H->handler));
+  cce_register_error_handler(L, H);
 }
 
 /* ------------------------------------------------------------------ */

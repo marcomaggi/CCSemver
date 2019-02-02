@@ -53,7 +53,7 @@ test_id_fwrite (cce_destination_t upper_L)
     ccsemver_id_fwrite(L, id, stdout);
     printf("\n");
     fflush(stdout);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -76,7 +76,7 @@ test_sv_fwrite (cce_destination_t upper_L)
     ccsemver_sv_fwrite(L, sv, stdout);
     printf("\n");
     fflush(stdout);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -98,7 +98,7 @@ test_cmp_fwrite (cce_destination_t upper_L)
     ccsemver_cmp_fwrite(L, cmp, stdout);
     printf("\n");
     fflush(stdout);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
@@ -120,7 +120,7 @@ test_range_fwrite (cce_destination_t upper_L)
     ccsemver_range_fwrite(L, rn, stdout);
     printf("\n");
     fflush(stdout);
-    cce_run_clean_handlers(L);
+    cce_run_body_handlers(L);
   }
 }
 
