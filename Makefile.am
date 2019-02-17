@@ -5,12 +5,11 @@ AUTOMAKE_OPTIONS	= foreign
 EXTRA_DIST		= INSTALL \
 			  meta/slackware/slack-desc.in
 dist_doc_DATA		= README UNLICENSE
-AM_CFLAGS		= $(MMUX_CFLAGS) -I$(srcdir)/src
+AM_CPPFLAGS		= -I$(srcdir)/src
+AM_CFLAGS		= $(MMUX_CFLAGS)
 
 ## --------------------------------------------------------------------
 
-EXTRA_DIST		+= meta/scripts/ccsemver.pc.in
-pkgconfigdir		= $(libdir)/pkgconfig
 nodist_pkgconfig_DATA	= meta/scripts/ccsemver.pc
 
 
@@ -33,9 +32,10 @@ ccsemver_AGE		= @ccsemver_VERSION_INTERFACE_AGE@
 include_HEADERS		= src/ccsemver.h
 
 lib_LTLIBRARIES		= libccsemver.la
-libccsemver_la_CPPFLAGS	= $(CCEXCEPTIONS_CFLAGS)
+libccsemver_la_CPPFLAGS	= $(AM_CPPFLAGS)
+libccsemver_la_CFLAGS	= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
 libccsemver_la_LDFLAGS	= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE) \
-			  $(CCEXCEPTIONS_LIBS)
+			  $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
 libccsemver_la_SOURCES	= \
 	src/ccsemver.h				\
 	src/ccsemver-internals.h		\
@@ -68,34 +68,46 @@ if CCSEMVER_TESTING_ENABLED
 TESTS				= $(check_PROGRAMS)
 endif
 
-ccsemver_tests_cppflags		= -I$(srcdir)/src $(CCEXCEPTIONS_CFLAGS) $(CCTESTS_CFLAGS)
-ccsemver_tests_ldadd		= libccsemver.la $(CCEXCEPTIONS_LIBS) $(CCTESTS_LIBS)
+ccsemver_tests_cppflags		= $(AM_CPPFLAGS)
+ccsemver_tests_cflags		= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
+ccsemver_tests_ldadd		= libccsemver.la $(CCTESTS_LIBS)
+
+## --------------------------------------------------------------------
 
 tests_version_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_version_CFLAGS		= $(ccsemver_tests_cflags)
 tests_version_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_numbers_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_numbers_CFLAGS		= $(ccsemver_tests_cflags)
 tests_numbers_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_identifiers_CPPFLAGS	= $(ccsemver_tests_cppflags)
+tests_identifiers_CFLAGS	= $(ccsemver_tests_cflags)
 tests_identifiers_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_comparators_CPPFLAGS	= $(ccsemver_tests_cppflags)
+tests_comparators_CFLAGS	= $(ccsemver_tests_cflags)
 tests_comparators_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_documentation_CPPFLAGS	= $(ccsemver_tests_cppflags)
+tests_documentation_CFLAGS	= $(ccsemver_tests_cflags)
 tests_documentation_LDADD	= $(ccsemver_tests_ldadd)
 
 tests_match_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_match_CFLAGS		= $(ccsemver_tests_cflags)
 tests_match_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_ranges_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_ranges_CFLAGS		= $(ccsemver_tests_cflags)
 tests_ranges_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_semver_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_semver_CFLAGS		= $(ccsemver_tests_cflags)
 tests_semver_LDADD		= $(ccsemver_tests_ldadd)
 
 tests_utils_CPPFLAGS		= $(ccsemver_tests_cppflags)
+tests_utils_CFLAGS		= $(ccsemver_tests_cflags)
 tests_utils_LDADD		= $(ccsemver_tests_ldadd)
 
 ## --------------------------------------------------------------------
