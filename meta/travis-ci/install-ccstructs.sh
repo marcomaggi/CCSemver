@@ -3,14 +3,14 @@
 # Installation  script  to  run  from  the  Travis  config  file  before
 # attempting a build.
 #
-# Install  CCTests  under the  directory  "/usr/local".   We assume  the
+# Install  CCStructs under  the directory  "/usr/local".  We  assume the
 # script is run from the top directory of the build tree.
 
 PROGNAME="${0##*/}"
-VERSION=0.3.0-devel.6
-STEM="cctests-${VERSION}"
+VERSION=0.2.0-devel.1
+STEM="ccstructs-${VERSION}"
 ARCHIVE="${STEM}.tar.gz"
-SOURCE_URI="https://github.com/marcomaggi/cctests/archive/v${VERSION}.tar.gz"
+SOURCE_URI="https://github.com/marcomaggi/ccstructs/archive/v${VERSION}.tar.gz"
 LOCAL_ARCHIVE="/tmp/${ARCHIVE}"
 TOP_SRCDIR="/tmp/${STEM}"
 prefix=/usr/local
