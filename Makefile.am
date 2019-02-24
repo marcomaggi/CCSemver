@@ -20,7 +20,12 @@ AM_MAKEINFOHTMLFLAGS	= --split=node -c WORDS_IN_PAGE=0 \
 	-c PRE_BODY_CLOSE="<p>This document describes version <tt>$(PACKAGE_VERSION)</tt> of <em>$(PACKAGE_NAME)</em>.</p>"
 
 info_TEXINFOS		= doc/ccsemver.texi
-doc_ccsemver_TEXINFOS	= doc/macros.texi
+doc_ccsemver_TEXINFOS	= \
+	doc/macros.texi			\
+	doc/overview-linking.texi	\
+	doc/overview-ccnames.texi	\
+	doc/overview-ccexceptions.texi	\
+	doc/overview-ccmemory.texi
 
 
 #### libraries

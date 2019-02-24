@@ -41,19 +41,35 @@
 
 @c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
 @c list of copyright years.
-@set COPYRIGHT_YEARS            2017, 2018
+@set COPYRIGHT_YEARS            2017, 2018, 2019
 
 @c ------------------------------------------------------------
 
-@set CCEXCEPTIONS_VERSION       0.8.0
-@set CCTESTS_VERSION            0.2.0
+@set CCExceptionsVersion       0.8.0
+@set CCMemoryVersion           0.2.1
+@set CCStructsVersion          0.2.0
+@set CCTestsVersion            0.3.0
 
-@set GITHUB_URL                 @url{https://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
-@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
-@set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
-@set DOCUMENTATION_URL          @url{https://marcomaggi.github.io/docs/@value{PACKAGE_NICKNAME}.html}
+@c ------------------------------------------------------------
 
-@set ORIGIN_URL                 @url{https://github.com/uael/sv/}
+@set PackageAutoconfPrefix              CCSEMVER
+@set PackagePkgconfigModule             ccsemver
+@set PackageLibsVar                     @env{CCSEMVER_LIBS}
+@set PackageCflagsVar                   @env{CCSEMVER_CFLAGS}
+@c This is the stem of the library in "libccsemver.so".
+@set PackageLibstem                     ccsemver
+@set PackageApiPrefixLower              ccsemver_
+@set PackageApiPrefixUpper              CCSEMVER_
+
+@set PackageHeader                      ccsemver.h
+@set PackageHeaderFile                  @file{@value{PackageHeader}}
+
+@set GithubUrl                 @url{https://github.com/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set BitbucketUrl              @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}}
+@set DownloadUrl               @url{https://bitbucket.org/marcomaggi/@value{PACKAGE_NICKNAME}/downloads}
+@set DocumentationUrl          @url{https://marcomaggi.github.io/docs/@value{PACKAGE_NICKNAME}.html}
+
+@set OriginUrl                 @url{https://github.com/uael/sv/}
 
 @c page
 @c ------------------------------------------------------------
@@ -64,30 +80,31 @@
 This document describes version @value{VERSION} of @value{PACKAGE}, a C11 language library
 implementing semantic versioning for the C language.
 
-This package supports @posix{} platforms.  This package depends on the package CCExceptions, at
-least version @value{CCEXCEPTIONS_VERSION}.  To run the test suite: this package depends upon the
-package CCTests, at least version @value{CCTESTS_VERSION}.
+The library supports @posix{} platforms.  The library depends on the packages: CCExceptions, at
+least version @value{CCExceptionsVersion}; CCMemory, at least version @value{CCMemoryVersion};
+CCStructs, at least version @value{CCStructsVersion}.  To run the test suite: the package depends
+upon the package CCTests, at least version @value{CCTestsVersion}.
 
 The package is distributed under the terms of the Unlicense, see @url{http://unlicense.org}.
 
 The latest release can be downloaded from:
 
-@center @value{DOWNLOAD_URL}
+@center @value{DownloadUrl}
 
 @noindent
 development takes place at:
 
-@center @value{GITHUB_URL}
+@center @value{GithubUrl}
 
 @noindent
 and as backup at:
 
-@center @value{BITBUCKET_URL}
+@center @value{BitbucketUrl}
 
 This package is a fork of the project Libsv by @value{ORIGIN_AUTHOR}; the original project is
 available at:
 
-@center @value{ORIGIN_URL}
+@center @value{OriginUrl}
 @end copying
 
 @c page
@@ -158,67 +175,35 @@ implementing semantic versioning for the C language.  A @dfn{semantic version} i
 
 @center @url{https://semver.org/}
 
-This package supports @posix{} platforms.  This package depends on the package
-@url{https://github.com/marcomaggi/ccexceptions/, CCExceptions}, at least version
-@value{CCEXCEPTIONS_VERSION}.
+This package supports @posix{} platforms.  This package depends on the packages: CCExceptions, at
+least version @value{CCExceptionsVersion}; CCMemory, at least version @value{CCMemoryVersion};
+CCStructs, at least version @value{CCStructsVersion}.  To run the test suite: this package depends
+upon the package CCTests, at least version @value{CCTestsVersion}.
 
-@value{PACKAGE} installs the single header file @file{ccsemver.h}.  All the function names in the
-@api{} are prefixed with @code{ccsemver_}; all the constant names are prefixed with
-@code{CCSEMVER_}; all the type names are prefixed with @code{ccsemver_} and suffixed with @code{_t}.
+@cindex @value{PackageHeaderFile}, header file
+@cindex Header file @value{PackageHeaderFile}
+@value{PACKAGE} installs the single header file @value{PackageHeaderFile}.  All the function names
+in the @api{} are prefixed with @code{@value{PackageApiPrefixLower}}; all the preprocessor symbol
+names are prefixed with @code{@value{PackageApiPrefixUpper}}; all the type names are prefixed with
+@code{@value{PackageApiPrefixLower}} and suffixed with @code{_t}.
 
 @strong{Notice that, before using the library, we need to call the global initialisation function
 @cfunc{ccsemver_init}}.
 
 @menu
 * overview linking::            Linking code with the library.
+* overview ccnames::            Generated function names.
+* overview exceptions::         Handling exceptional conditions.
+* overview allocation::         Memory allocation for pathname instances.
 * overview ranges::             Ranges.
 * overview tags::               Prerelease tags.
 * overview advanced::           Advanced range syntax.
 @end menu
 
-@c page
-@node overview linking
-@section Linking code with the library
-
-
-This package installs a data file for @command{pkg-config}, so when searching for the installed
-library with the @gnu{} Autotools, we can add the following macro use to @file{configure.ac}:
-
-@example
-PKG_CHECK_MODULES([CCSEMVER],[ccsemver >= 0.1])
-@end example
-
-@noindent
-which will set the variables @code{CCSEMVER_LIBS} and @code{CCSEMVER_CFLAGS}.  To avoid
-problems with @command{pkg-config}, we need to remember that:
-
-@itemize
-@item
-The macro file defining @code{PKG_CHECK_MODULES} is installed by the package @code{pkg-config}; such
-file usually is in one of the locations:
-
-@center @file{/usr/share/aclocal/pkg.m4}
-@center @file{/usr/local/share/aclocal/pkg.m4}
-
-@item
-The macro file is located by @command{aclocal}, which in turn is installed by the package @gnu{}
-Automake; @command{aclocal} is used by @command{autoreconf}.  We must make sure that
-@command{aclocal} finds the installed macro files; for this purpose we can use the environment
-variable @env{ACLOCAL_PATH}; under a Bourne shell we can do this with:
-
-@example
-export ACLOCAL_PATH=/usr/local/share/aclocal:/usr/share/aclocal
-@end example
-@end itemize
-
-Alternatively we can use the raw @gnu{} Autoconf macros:
-
-@example
-AC_CHECK_LIB([ccsemver],[ccsemver_version_string],,
-  [AC_MSG_FAILURE([test for CCSemver library failed])])
-AC_CHECK_HEADERS([ccsemver.h],,
-  [AC_MSG_FAILURE([test for CCSemver header failed])])
-@end example
+@include overview-linking.texi
+@include overview-ccnames.texi
+@include overview-ccexceptions.texi
+@include overview-ccmemory.texi
 
 @c page
 @node overview ranges
@@ -2585,27 +2570,37 @@ For more information, please refer to @url{http://unlicense.org}.
 
 The documentation of @value{PACKAGE} is available online:
 
-@center @value{DOCUMENTATION_URL}
+@center @value{DocumentationUrl}
 
 @noindent
 the latest release of this package can be downloaded from:
 
-@center @value{DOWNLOAD_URL}
+@center @value{DownloadUrl}
 
 @noindent
 development takes place at:
 
-@center @value{GITHUB_URL}
+@center @value{GithubUrl}
 
 @noindent
 and as backup at:
 
-@center @value{BITBUCKET_URL}
+@center @value{BitbucketUrl}
 
 @noindent
 the package CCExceptions is available at:
 
 @center @url{https://github.com/marcomaggi/ccexceptions/}
+
+@noindent
+the package CCMemory is available at:
+
+@center @url{https://github.com/marcomaggi/ccmemory/}
+
+@noindent
+the package CCStructs is available at:
+
+@center @url{https://github.com/marcomaggi/ccstructs/}
 
 @noindent
 the package CCTests is available at:
@@ -2615,7 +2610,7 @@ the package CCTests is available at:
 This package is a fork of the project Libsv by @value{ORIGIN_AUTHOR}; the original project is
 available at:
 
-@center @value{ORIGIN_URL}
+@center @value{OriginUrl}
 
 @c page
 @node concept index
