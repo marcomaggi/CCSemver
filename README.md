@@ -17,17 +17,20 @@ source is available at:
 
 [https://github.com/uael/sv](https://github.com/uael/sv)
 
-This  package supports  POSIX platforms.   This package  depends on  the
-package CCExceptions,  at least version  0.8.0.  To run the  test suite:
-this package depends upon the package CCTests, at least version 0.2.0.
+The  library  targets  POSIX  systems.   This  package  depends  on  the
+packages:  CCExceptions,  at least  version  0.8.0;  CCMemory, at  least
+version  0.2.1; CCStructs,  at least  version  0.2.0.  To  run the  test
+suite: this package  depends upon the package CCTests,  at least version
+0.3.0.
 
 The package uses the GNU Autotools and it is tested, using Travis CI, on
-both Ubuntu GNU+Linux systems and OS X systems.
+both Ubuntu GNU+Linux  systems and OS X systems.  The  package relies on
+`pkg-config` to find the dependencies installed on the system.
 
 
 ## License
 
-Copyright (c) 2017, 2018 Marco Maggi <marco.maggi-ipsu@poste.it><br/>
+Copyright (c) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it><br/>
 Copyright (c) 2017 Lucas Abel <https://github.com/uael/><br/>
 
 This is free and unencumbered software released into the public domain.
@@ -189,6 +192,14 @@ the package CCExceptions is available at:
 
 [https://github.com/marcomaggi/ccexceptions/](https://github.com/marcomaggi/ccexceptions/)
 
+the package CCMemory is available at:
+
+[https://github.com/marcomaggi/ccmemory/](https://github.com/marcomaggi/ccmemory/)
+
+the package CCStructs is available at:
+
+[https://github.com/marcomaggi/ccstructs/](https://github.com/marcomaggi/ccstructs/)
+
 the package CCTests is available at:
 
 [https://github.com/marcomaggi/cctests/](https://github.com/marcomaggi/cctests/)
@@ -247,3 +258,12 @@ Usage of  this service is  implemented through direct  interface between
 GitHub and Codecov  sites; it configured through  the file `codecov.yml`
 and appropriate entries in Travis CI's matrix of builds.
 
+### Codacy
+
+Codacy is  an online service  providing code  review.  We can  find this
+project's dashboard at:
+
+[https://www.codacy.com/app/marcomaggi/ccsemver](https://www.codacy.com/app/marcomaggi/ccsemver)
+
+Usage of this service is  implemented through direct integration between
+GitHub and Codacy sites.
