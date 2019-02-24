@@ -35,7 +35,7 @@ lib_LTLIBRARIES		= libccsemver.la
 libccsemver_la_CPPFLAGS	= $(AM_CPPFLAGS)
 libccsemver_la_CFLAGS	= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
 libccsemver_la_LDFLAGS	= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE) \
-			  $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
+			  $(AM_LDFLAGS) $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
 libccsemver_la_SOURCES	= \
 	src/ccsemver.h				\
 	src/ccsemver-internals.h		\
@@ -64,13 +64,13 @@ check_PROGRAMS	= \
 	tests/semver		\
 	tests/utils
 
-if CCSEMVER_TESTING_ENABLED
+if MMUX_TESTING_ENABLED
 TESTS				= $(check_PROGRAMS)
 endif
 
 ccsemver_tests_cppflags		= $(AM_CPPFLAGS)
 ccsemver_tests_cflags		= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $(CCSTRUCTS_CFLAGS)
-ccsemver_tests_ldadd		= libccsemver.la $(CCTESTS_LIBS)
+ccsemver_tests_ldadd		= $(AM_LDFLAGS) libccsemver.la $(CCTESTS_LIBS)
 
 ## --------------------------------------------------------------------
 
