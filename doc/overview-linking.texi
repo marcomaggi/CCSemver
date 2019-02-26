@@ -10,8 +10,9 @@ PKG_CHECK_MODULES([@value{PackageAutoconfPrefix}],[@value{PackagePkgconfigModule
 @end example
 
 @noindent
-which will set the variables @value{PackageLibsVar} and @value{PackageCflagsVar}.  To avoid
-problems with @command{pkg-config}, we need to remember that:
+which will set the variables @value{PackageLibsVar} and @value{PackageCflagsVar}.  The macros for
+@gnu{} Autoconf installed by @code{pkg-config} are documented in the manual page
+@code{pkg-config(1)}.  To avoid problems with @command{pkg-config}, we need to remember that:
 
 @itemize
 @item
