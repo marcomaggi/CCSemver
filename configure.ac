@@ -8,7 +8,7 @@ AC_INIT([CCSemver],[MMUX_PACKAGE_VERSION],
   [ccsemver],[http://github.com/marcomaggi/ccsemver])
 MMUX_INIT
 MMUX_LIBTOOL_LIBRARY_VERSIONS([ccsemver],1,0,0)
-AC_REVISION([0.1])
+AC_REVISION([0.2])
 AC_COPYRIGHT([This is free and unencumbered software released into the public domain.
 
 Anyone  is  free  to  copy,  modify, publish,  use,  compile,  sell,  or
