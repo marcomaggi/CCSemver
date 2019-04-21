@@ -5,31 +5,27 @@
 
   Abstract
 
-	This  file defines  the CCExceptions  condition objects  used by
-	CCSemver.  It also holds the library initialisation function.
+	This file  defines the CCExceptions  condition objects used by  CCSemver.  It
+	also holds the library initialisation function.
 
-  This  is  free and  unencumbered  software  released into  the  public
-  domain.
+  This is free and unencumbered software released into the public domain.
 
-  Anyone  is free  to  copy,  modify, publish,  use,  compile, sell,  or
-  distribute this software, either in source  code form or as a compiled
-  binary,  for any  purpose, commercial  or non-commercial,  and by  any
-  means.
+  Anyone is  free to copy,  modify, publish, use,  compile, sell, or  distribute this
+  software, either  in source  code form or  as a compiled  binary, for  any purpose,
+  commercial or non-commercial, and by any means.
 
-  In jurisdictions that recognize copyright  laws, the author or authors
-  of  this software  dedicate  any  and all  copyright  interest in  the
-  software  to the  public  domain.   We make  this  dedication for  the
-  benefit of the public  at large and to the detriment  of our heirs and
-  successors.   We  intend  this  dedication  to  be  an  overt  act  of
-  relinquishment in perpetuity of all  present and future rights to this
+  In  jurisdictions that  recognize copyright  laws, the  author or  authors of  this
+  software dedicate  any and  all copyright  interest in the  software to  the public
+  domain.  We make this dedication for the benefit  of the public at large and to the
+  detriment of our  heirs and successors.  We  intend this dedication to  be an overt
+  act  of relinquishment  in perpetuity  of  all present  and future  rights to  this
   software under copyright law.
 
-  THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-  EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-  IN NO  EVENT SHALL  THE AUTHORS  BE LIABLE FOR  ANY CLAIM,  DAMAGES OR
-  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT OR OTHERWISE,
-  ARISING FROM, OUT OF OR IN CONNECTION  WITH THE SOFTWARE OR THE USE OR
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING  BUT NOT  LIMITED TO  THE WARRANTIES  OF MERCHANTABILITY,  FITNESS FOR  A
+  PARTICULAR PURPOSE  AND NONINFRINGEMENT.  IN NO  EVENT SHALL THE AUTHORS  BE LIABLE
+  FOR ANY CLAIM, DAMAGES  OR OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT
+  OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   OTHER DEALINGS IN THE SOFTWARE.
 
   For more information, please refer to <http://unlicense.org>
@@ -49,7 +45,7 @@
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_error;
 
-static ccsemver_descriptor_parser_error_t ccsemver_descriptor_parser_error_stru = {
+static ccsemver_descriptor_parser_error_t ccsemver_descriptor_parser_error = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
   .descriptor.parent		= NULL,
@@ -58,13 +54,9 @@ static ccsemver_descriptor_parser_error_t ccsemver_descriptor_parser_error_stru 
   .descriptor.static_message	= ccsemver_condition_static_message_parser_error
 };
 
-ccsemver_descriptor_parser_error_t const * const ccsemver_descriptor_parser_error_ptr = &ccsemver_descriptor_parser_error_stru;
-
-static ccsemver_condition_parser_error_t const ccsemver_condition_parser_error_stru = {
-  .runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_error_stru.descriptor)
+static ccsemver_condition_parser_error_t const ccsemver_condition_parser_error = {
+  .runtime_error.error.root.condition.descriptor = cce_descriptor_pointer(ccsemver_descriptor_parser_error)
 };
-
-ccsemver_condition_parser_error_t const * const ccsemver_condition_parser_error_ptr = &ccsemver_condition_parser_error_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -85,13 +77,13 @@ ccsemver_condition_init_parser_error (ccsemver_condition_parser_error_t * C)
 cce_condition_t const *
 ccsemver_condition_new_parser_error (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_error_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_error;
 }
 
 bool
 ccsemver_condition_is_parser_error (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_error_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_error));
 }
 
 
@@ -101,24 +93,18 @@ ccsemver_condition_is_parser_error (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_no_input;
 
-static ccsemver_descriptor_parser_no_input_t ccsemver_descriptor_parser_no_input_stru = {
+static ccsemver_descriptor_parser_no_input_t ccsemver_descriptor_parser_no_input = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_error),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_no_input
 };
 
-ccsemver_descriptor_parser_no_input_t const * const ccsemver_descriptor_parser_no_input_ptr =
-  &ccsemver_descriptor_parser_no_input_stru;
-
-static ccsemver_condition_parser_no_input_t const ccsemver_condition_parser_no_input_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_no_input_stru.descriptor)
+static ccsemver_condition_parser_no_input_t const ccsemver_condition_parser_no_input = {
+  .parser_error.runtime_error.error.root.condition.descriptor = cce_descriptor_pointer(ccsemver_descriptor_parser_no_input)
 };
-
-ccsemver_condition_parser_no_input_t const * const ccsemver_condition_parser_no_input_ptr =
-  &ccsemver_condition_parser_no_input_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -139,13 +125,13 @@ ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * 
 cce_condition_t const *
 ccsemver_condition_new_parser_no_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_no_input_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_no_input;
 }
 
 bool
 ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_no_input_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_no_input));
 }
 
 
@@ -155,24 +141,18 @@ ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_empty_input;
 
-static ccsemver_descriptor_parser_empty_input_t ccsemver_descriptor_parser_empty_input_stru = {
+static ccsemver_descriptor_parser_empty_input_t ccsemver_descriptor_parser_empty_input = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_no_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_empty_input
 };
 
-ccsemver_descriptor_parser_empty_input_t const * const ccsemver_descriptor_parser_empty_input_ptr =
-  &ccsemver_descriptor_parser_empty_input_stru;
-
-static ccsemver_condition_parser_empty_input_t const ccsemver_condition_parser_empty_input_stru = {
-  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_empty_input_stru.descriptor)
+static ccsemver_condition_parser_empty_input_t const ccsemver_condition_parser_empty_input = {
+  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = cce_descriptor_pointer(ccsemver_descriptor_parser_empty_input)
 };
-
-ccsemver_condition_parser_empty_input_t const * const ccsemver_condition_parser_empty_input_ptr =
-  &ccsemver_condition_parser_empty_input_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -193,13 +173,13 @@ ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_inpu
 cce_condition_t const *
 ccsemver_condition_new_parser_empty_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_empty_input_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_empty_input;
 }
 
 bool
 ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_empty_input_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_empty_input));
 }
 
 
@@ -209,24 +189,18 @@ ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_end_of_input;
 
-static ccsemver_descriptor_parser_end_of_input_t ccsemver_descriptor_parser_end_of_input_stru = {
+static ccsemver_descriptor_parser_end_of_input_t ccsemver_descriptor_parser_end_of_input = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_no_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_end_of_input
 };
 
-ccsemver_descriptor_parser_end_of_input_t const * const ccsemver_descriptor_parser_end_of_input_ptr =
-  &ccsemver_descriptor_parser_end_of_input_stru;
-
-static ccsemver_condition_parser_end_of_input_t const ccsemver_condition_parser_end_of_input_stru = {
-  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_end_of_input_stru.descriptor)
+static ccsemver_condition_parser_end_of_input_t const ccsemver_condition_parser_end_of_input = {
+  .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor = cce_descriptor_pointer(ccsemver_descriptor_parser_end_of_input)
 };
-
-ccsemver_condition_parser_end_of_input_t const * const ccsemver_condition_parser_end_of_input_ptr =
-  &ccsemver_condition_parser_end_of_input_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -247,13 +221,13 @@ ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_in
 cce_condition_t const *
 ccsemver_condition_new_parser_end_of_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_end_of_input_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_end_of_input;
 }
 
 bool
 ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_end_of_input_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_end_of_input));
 }
 
 
@@ -263,25 +237,19 @@ ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_invalid_input_offset;
 
-static ccsemver_descriptor_parser_invalid_input_offset_t ccsemver_descriptor_parser_invalid_input_offset_stru = {
+static ccsemver_descriptor_parser_invalid_input_offset_t ccsemver_descriptor_parser_invalid_input_offset = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_no_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_no_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_invalid_input_offset
 };
 
-ccsemver_descriptor_parser_invalid_input_offset_t const * const ccsemver_descriptor_parser_invalid_input_offset_ptr =
-  &ccsemver_descriptor_parser_invalid_input_offset_stru;
-
-static ccsemver_condition_parser_invalid_input_offset_t const ccsemver_condition_parser_invalid_input_offset_stru = {
+static ccsemver_condition_parser_invalid_input_offset_t const ccsemver_condition_parser_invalid_input_offset = {
   .parser_no_input.parser_error.runtime_error.error.root.condition.descriptor =
-    &(ccsemver_descriptor_parser_invalid_input_offset_stru.descriptor)
+    cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input_offset)
 };
-
-ccsemver_condition_parser_invalid_input_offset_t const * const ccsemver_condition_parser_invalid_input_offset_ptr =
-  &ccsemver_condition_parser_invalid_input_offset_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -302,13 +270,13 @@ ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_i
 cce_condition_t const *
 ccsemver_condition_new_parser_invalid_input_offset (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_invalid_input_offset_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_invalid_input_offset;
 }
 
 bool
 ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_invalid_input_offset_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input_offset));
 }
 
 
@@ -318,24 +286,18 @@ ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_invalid_input;
 
-static ccsemver_descriptor_parser_invalid_input_t ccsemver_descriptor_parser_invalid_input_stru = {
+static ccsemver_descriptor_parser_invalid_input_t ccsemver_descriptor_parser_invalid_input = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_error_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_error),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_invalid_input
 };
 
-ccsemver_descriptor_parser_invalid_input_t const * const ccsemver_descriptor_parser_invalid_input_ptr =
-  &ccsemver_descriptor_parser_invalid_input_stru;
-
-static ccsemver_condition_parser_invalid_input_t const ccsemver_condition_parser_invalid_input_stru = {
-  .parser_error.runtime_error.error.root.condition.descriptor = &(ccsemver_descriptor_parser_invalid_input_stru.descriptor)
+static ccsemver_condition_parser_invalid_input_t const ccsemver_condition_parser_invalid_input = {
+  .parser_error.runtime_error.error.root.condition.descriptor = cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input)
 };
-
-ccsemver_condition_parser_invalid_input_t const * const ccsemver_condition_parser_invalid_input_ptr =
-  &ccsemver_condition_parser_invalid_input_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -356,13 +318,13 @@ ccsemver_condition_init_parser_invalid_input (ccsemver_condition_parser_invalid_
 cce_condition_t const *
 ccsemver_condition_new_parser_invalid_input (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_invalid_input_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_invalid_input;
 }
 
 bool
 ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_invalid_input_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input));
 }
 
 
@@ -372,25 +334,19 @@ ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_number;
 
-static ccsemver_descriptor_parser_expected_number_t ccsemver_descriptor_parser_expected_number_stru = {
+static ccsemver_descriptor_parser_expected_number_t ccsemver_descriptor_parser_expected_number = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_number
 };
 
-ccsemver_descriptor_parser_expected_number_t const * const ccsemver_descriptor_parser_expected_number_ptr =
-  &ccsemver_descriptor_parser_expected_number_stru;
-
-static ccsemver_condition_parser_expected_number_t const ccsemver_condition_parser_expected_number_stru = {
+static ccsemver_condition_parser_expected_number_t const ccsemver_condition_parser_expected_number = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
-  &(ccsemver_descriptor_parser_expected_number_stru.descriptor)
+  cce_descriptor_pointer(ccsemver_descriptor_parser_expected_number)
 };
-
-ccsemver_condition_parser_expected_number_t const * const ccsemver_condition_parser_expected_number_ptr =
-  &ccsemver_condition_parser_expected_number_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -411,13 +367,13 @@ ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expect
 cce_condition_t const *
 ccsemver_condition_new_parser_expected_number (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_expected_number_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_expected_number;
 }
 
 bool
 ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_number_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_expected_number));
 }
 
 
@@ -427,25 +383,19 @@ ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_numeric_component;
 
-static ccsemver_descriptor_parser_expected_numeric_component_t ccsemver_descriptor_parser_expected_numeric_component_stru = {
+static ccsemver_descriptor_parser_expected_numeric_component_t ccsemver_descriptor_parser_expected_numeric_component = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_numeric_component
 };
 
-ccsemver_descriptor_parser_expected_numeric_component_t const * const ccsemver_descriptor_parser_expected_numeric_component_ptr =
-  &ccsemver_descriptor_parser_expected_numeric_component_stru;
-
-static ccsemver_condition_parser_expected_numeric_component_t const ccsemver_condition_parser_expected_numeric_component_stru = {
+static ccsemver_condition_parser_expected_numeric_component_t const ccsemver_condition_parser_expected_numeric_component = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
-  &(ccsemver_descriptor_parser_expected_numeric_component_stru.descriptor)
+  cce_descriptor_pointer(ccsemver_descriptor_parser_expected_numeric_component)
 };
-
-ccsemver_condition_parser_expected_numeric_component_t const * const ccsemver_condition_parser_expected_numeric_component_ptr =
-  &ccsemver_condition_parser_expected_numeric_component_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -466,13 +416,13 @@ ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_pa
 cce_condition_t const *
 ccsemver_condition_new_parser_expected_numeric_component (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_expected_numeric_component_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_expected_numeric_component;
 }
 
 bool
 ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_numeric_component_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_expected_numeric_component));
 }
 
 
@@ -482,25 +432,19 @@ ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const *
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_xrange_numeric_component;
 
-static ccsemver_descriptor_parser_expected_xrange_numeric_component_t ccsemver_descriptor_parser_expected_xrange_numeric_component_stru = {
+static ccsemver_descriptor_parser_expected_xrange_numeric_component_t ccsemver_descriptor_parser_expected_xrange_numeric_component = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_xrange_numeric_component
 };
 
-ccsemver_descriptor_parser_expected_xrange_numeric_component_t const * const ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr =
-  &ccsemver_descriptor_parser_expected_xrange_numeric_component_stru;
-
-static ccsemver_condition_parser_expected_xrange_numeric_component_t const ccsemver_condition_parser_expected_xrange_numeric_component_stru = {
+static ccsemver_condition_parser_expected_xrange_numeric_component_t const ccsemver_condition_parser_expected_xrange_numeric_component = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
-  &(ccsemver_descriptor_parser_expected_xrange_numeric_component_stru.descriptor)
+  cce_descriptor_pointer(ccsemver_descriptor_parser_expected_xrange_numeric_component)
 };
-
-ccsemver_condition_parser_expected_xrange_numeric_component_t const * const ccsemver_condition_parser_expected_xrange_numeric_component_ptr =
-  &ccsemver_condition_parser_expected_xrange_numeric_component_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -521,13 +465,13 @@ ccsemver_condition_init_parser_expected_xrange_numeric_component (ccsemver_condi
 cce_condition_t const *
 ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_expected_xrange_numeric_component_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_expected_xrange_numeric_component;
 }
 
 bool
 ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_xrange_numeric_component_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_expected_xrange_numeric_component));
 }
 
 
@@ -537,25 +481,19 @@ ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t 
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_expected_identifier;
 
-static ccsemver_descriptor_parser_expected_identifier_t ccsemver_descriptor_parser_expected_identifier_stru = {
+static ccsemver_descriptor_parser_expected_identifier_t ccsemver_descriptor_parser_expected_identifier = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_expected_identifier
 };
 
-ccsemver_descriptor_parser_expected_identifier_t const * const ccsemver_descriptor_parser_expected_identifier_ptr =
-  &ccsemver_descriptor_parser_expected_identifier_stru;
-
-static ccsemver_condition_parser_expected_identifier_t const ccsemver_condition_parser_expected_identifier_stru = {
+static ccsemver_condition_parser_expected_identifier_t const ccsemver_condition_parser_expected_identifier = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
-  &(ccsemver_descriptor_parser_expected_identifier_stru.descriptor)
+  cce_descriptor_pointer(ccsemver_descriptor_parser_expected_identifier)
 };
-
-ccsemver_condition_parser_expected_identifier_t const * const ccsemver_condition_parser_expected_identifier_ptr =
-  &ccsemver_condition_parser_expected_identifier_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -576,13 +514,13 @@ ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_ex
 cce_condition_t const *
 ccsemver_condition_new_parser_expected_identifier (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_expected_identifier_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_expected_identifier;
 }
 
 bool
 ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_expected_identifier_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_expected_identifier));
 }
 
 
@@ -592,25 +530,19 @@ ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
 
 static cce_condition_static_message_fun_t	ccsemver_condition_static_message_parser_number_out_of_range;
 
-static ccsemver_descriptor_parser_number_out_of_range_t ccsemver_descriptor_parser_number_out_of_range_stru = {
+static ccsemver_descriptor_parser_number_out_of_range_t ccsemver_descriptor_parser_number_out_of_range = {
   /* This  "parent" field  is  set below  by  the module  initialisation
      function. */
-  .descriptor.parent		= &(ccsemver_descriptor_parser_invalid_input_stru.descriptor),
+  .descriptor.parent		= cce_descriptor_pointer(ccsemver_descriptor_parser_invalid_input),
   .descriptor.delete		= NULL,
   .descriptor.final		= NULL,
   .descriptor.static_message	= ccsemver_condition_static_message_parser_number_out_of_range
 };
 
-ccsemver_descriptor_parser_number_out_of_range_t const * const ccsemver_descriptor_parser_number_out_of_range_ptr =
-  &ccsemver_descriptor_parser_number_out_of_range_stru;
-
-static ccsemver_condition_parser_number_out_of_range_t const ccsemver_condition_parser_number_out_of_range_stru = {
+static ccsemver_condition_parser_number_out_of_range_t const ccsemver_condition_parser_number_out_of_range = {
   .parser_invalid_input.parser_error.runtime_error.error.root.condition.descriptor =
-  &(ccsemver_descriptor_parser_number_out_of_range_stru.descriptor)
+  cce_descriptor_pointer(ccsemver_descriptor_parser_number_out_of_range)
 };
-
-ccsemver_condition_parser_number_out_of_range_t const * const ccsemver_condition_parser_number_out_of_range_ptr =
-  &ccsemver_condition_parser_number_out_of_range_stru;
 
 /* ------------------------------------------------------------------ */
 
@@ -631,13 +563,13 @@ ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_nu
 cce_condition_t const *
 ccsemver_condition_new_parser_number_out_of_range (void)
 {
-  return (cce_condition_t const *) ccsemver_condition_parser_number_out_of_range_ptr;
+  return (cce_condition_t const *) &ccsemver_condition_parser_number_out_of_range;
 }
 
 bool
 ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)
 {
-  return cce_condition_is(C, &(ccsemver_descriptor_parser_number_out_of_range_ptr->descriptor));
+  return cce_condition_is(C, cce_descriptor_pointer(ccsemver_descriptor_parser_number_out_of_range));
 }
 
 
@@ -652,7 +584,7 @@ ccsemver_library_init (void)
 
   if (to_be_initialised) {
     to_be_initialised = false;
-    ccsemver_descriptor_parser_error_stru.descriptor.parent	= &(cce_descriptor_runtime_error_ptr->descriptor);
+    cce_descriptor_set_parent_to(cce_descriptor_runtime_error_t)(cce_descriptor_pointer(ccsemver_descriptor_parser_error));
   }
 }
 

@@ -6,6 +6,7 @@
 
 @include version.texi
 @include macros.texi
+@include ccexceptions-macros.texi
 
 @c page
 @c ------------------------------------------------------------
@@ -45,10 +46,10 @@
 
 @c ------------------------------------------------------------
 
-@set CCExceptionsVersion       0.8.0
+@set CCExceptionsVersion       0.9.0
 @set CCMemoryVersion           0.2.1
-@set CCStructsVersion          0.2.0
-@set CCTestsVersion            0.3.0
+@set CCStructsVersion          0.3.0
+@set CCTestsVersion            0.4.1
 
 @c ------------------------------------------------------------
 

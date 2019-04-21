@@ -3,28 +3,24 @@
   Contents: parsing ranges and creating range objects
 
 
-  This  is  free and  unencumbered  software  released into  the  public
-  domain.
+  This is free and unencumbered software released into the public domain.
 
-  Anyone  is free  to  copy,  modify, publish,  use,  compile, sell,  or
-  distribute this software, either in source  code form or as a compiled
-  binary,  for any  purpose, commercial  or non-commercial,  and by  any
-  means.
+  Anyone is  free to copy,  modify, publish, use,  compile, sell, or  distribute this
+  software, either  in source  code form or  as a compiled  binary, for  any purpose,
+  commercial or non-commercial, and by any means.
 
-  In jurisdictions that recognize copyright  laws, the author or authors
-  of  this software  dedicate  any  and all  copyright  interest in  the
-  software  to the  public  domain.   We make  this  dedication for  the
-  benefit of the public  at large and to the detriment  of our heirs and
-  successors.   We  intend  this  dedication  to  be  an  overt  act  of
-  relinquishment in perpetuity of all  present and future rights to this
+  In  jurisdictions that  recognize copyright  laws, the  author or  authors of  this
+  software dedicate  any and  all copyright  interest in the  software to  the public
+  domain.  We make this dedication for the benefit  of the public at large and to the
+  detriment of our  heirs and successors.  We  intend this dedication to  be an overt
+  act  of relinquishment  in perpetuity  of  all present  and future  rights to  this
   software under copyright law.
 
-  THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-  EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-  IN NO  EVENT SHALL  THE AUTHORS  BE LIABLE FOR  ANY CLAIM,  DAMAGES OR
-  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT OR OTHERWISE,
-  ARISING FROM, OUT OF OR IN CONNECTION  WITH THE SOFTWARE OR THE USE OR
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING  BUT NOT  LIMITED TO  THE WARRANTIES  OF MERCHANTABILITY,  FITNESS FOR  A
+  PARTICULAR PURPOSE  AND NONINFRINGEMENT.  IN NO  EVENT SHALL THE AUTHORS  BE LIABLE
+  FOR ANY CLAIM, DAMAGES  OR OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT
+  OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   OTHER DEALINGS IN THE SOFTWARE.
 
   For more information, please refer to <http://unlicense.org>
@@ -136,28 +132,18 @@ ccsemver_range_reset (ccsemver_range_t * range)
  ** Exception handlers.
  ** ----------------------------------------------------------------- */
 
-__attribute__((__nonnull__(1,2)))
-static void
-ccsemver_handler_range_function (cce_condition_t const * C CCE_UNUSED, cce_handler_t * H)
-{
-  ccsemver_range_delete(H->pointer);
-  if (0) { fprintf(stderr, "%s: done\n", __func__); }
-}
-
 void
 ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_range_t * range)
 {
-  H->handler.function	= ccsemver_handler_range_function;
-  H->handler.pointer	= range;
-  cce_register_clean_handler(L, H);
+  cce_init_and_register_handler(L, H, cce_default_clean_handler_function,
+				cce_resource_pointer(range), cce_resource_destructor(ccsemver_range_delete));
 }
 
 void
 ccsemver_error_handler_range_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_range_t * range)
 {
-  H->handler.function	= ccsemver_handler_range_function;
-  H->handler.pointer	= range;
-  cce_register_error_handler(L, H);
+  cce_init_and_register_handler(L, H, cce_default_error_handler_function,
+				cce_resource_pointer(range), cce_resource_destructor(ccsemver_range_delete));
 }
 
 /* ------------------------------------------------------------------ */

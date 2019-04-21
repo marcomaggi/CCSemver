@@ -5,31 +5,27 @@
 
   Abstract
 
-	This public header file must be included in all the source files
-	that use the CCSemver facilities.
+	This public header file must be included in all the source files that use the
+	CCSemver facilities.
 
-  This  is  free and  unencumbered  software  released into  the  public
-  domain.
+  This is free and unencumbered software released into the public domain.
 
-  Anyone  is free  to  copy,  modify, publish,  use,  compile, sell,  or
-  distribute this software, either in source  code form or as a compiled
-  binary,  for any  purpose, commercial  or non-commercial,  and by  any
-  means.
+  Anyone is  free to copy,  modify, publish, use,  compile, sell, or  distribute this
+  software, either  in source  code form or  as a compiled  binary, for  any purpose,
+  commercial or non-commercial, and by any means.
 
-  In jurisdictions that recognize copyright  laws, the author or authors
-  of  this software  dedicate  any  and all  copyright  interest in  the
-  software  to the  public  domain.   We make  this  dedication for  the
-  benefit of the public  at large and to the detriment  of our heirs and
-  successors.   We  intend  this  dedication  to  be  an  overt  act  of
-  relinquishment in perpetuity of all  present and future rights to this
+  In  jurisdictions that  recognize copyright  laws, the  author or  authors of  this
+  software dedicate  any and  all copyright  interest in the  software to  the public
+  domain.  We make this dedication for the benefit  of the public at large and to the
+  detriment of our  heirs and successors.  We  intend this dedication to  be an overt
+  act  of relinquishment  in perpetuity  of  all present  and future  rights to  this
   software under copyright law.
 
-  THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
-  EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
-  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-  IN NO  EVENT SHALL  THE AUTHORS  BE LIABLE FOR  ANY CLAIM,  DAMAGES OR
-  OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT OR OTHERWISE,
-  ARISING FROM, OUT OF OR IN CONNECTION  WITH THE SOFTWARE OR THE USE OR
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+  INCLUDING  BUT NOT  LIMITED TO  THE WARRANTIES  OF MERCHANTABILITY,  FITNESS FOR  A
+  PARTICULAR PURPOSE  AND NONINFRINGEMENT.  IN NO  EVENT SHALL THE AUTHORS  BE LIABLE
+  FOR ANY CLAIM, DAMAGES  OR OTHER LIABILITY, WHETHER IN AN  ACTION OF CONTRACT, TORT
+  OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   OTHER DEALINGS IN THE SOFTWARE.
 
   For more information, please refer to <http://unlicense.org>
@@ -47,8 +43,8 @@
 extern "C" {
 #endif
 
-/* The  macro  CCSEMVER_UNUSED  indicates   that  a  function,  function
-   argument or variable may potentially be unused. Usage examples:
+/* The macro CCSEMVER_UNUSED indicates that a function, function argument or variable
+   may potentially be unused. Usage examples:
 
    static int unused_function (char arg) CCSEMVER_UNUSED;
    int foo (char unused_argument CCSEMVER_UNUSED);
@@ -121,7 +117,7 @@ ccsemver_decl int		ccsemver_version_interface_age		(void);
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error.
+ ** Exceptional-condition objects: parser error.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_error_t	ccsemver_descriptor_parser_error_t;
@@ -146,7 +142,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, no input.
+ ** Exceptional-condition objects: parser error, no input.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_no_input_t	ccsemver_descriptor_parser_no_input_t;
@@ -171,7 +167,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_no_input (cce_condition_t const 
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, input is empty.
+ ** Exceptional-condition objects: parser error, input is empty.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_empty_input_t	ccsemver_descriptor_parser_empty_input_t;
@@ -196,7 +192,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_empty_input (cce_condition_t con
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, unexpected end-of-input.
+ ** Exceptional-condition objects: parser error, unexpected end-of-input.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_end_of_input_t	ccsemver_descriptor_parser_end_of_input_t;
@@ -221,7 +217,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_end_of_input (cce_condition_t co
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, invalid input offset.
+ ** Exceptional-condition objects: parser error, invalid input offset.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_invalid_input_offset_t	ccsemver_descriptor_parser_invalid_input_offset_t;
@@ -246,7 +242,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_invalid_input_offset (cce_condit
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, expected number.
+ ** Exceptional-condition objects: parser error, expected number.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_invalid_input_t	ccsemver_descriptor_parser_invalid_input_t;
@@ -271,7 +267,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_invalid_input (cce_condition_t c
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, expected number.
+ ** Exceptional-condition objects: parser error, expected number.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_expected_number_t	ccsemver_descriptor_parser_expected_number_t;
@@ -296,7 +292,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_number (cce_condition_t
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, expected numeric component.
+ ** Exceptional-condition objects: parser error, expected numeric component.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_expected_numeric_component_t	ccsemver_descriptor_parser_expected_numeric_component_t;
@@ -321,7 +317,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_numeric_component (cce_
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, expected X-Range numeric component.
+ ** Exceptional-condition objects: parser error, expected X-Range numeric component.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_expected_xrange_numeric_component_t
@@ -349,7 +345,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_xrange_numeric_componen
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, expected identifier.
+ ** Exceptional-condition objects: parser error, expected identifier.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_expected_identifier_t	ccsemver_descriptor_parser_expected_identifier_t;
@@ -374,7 +370,7 @@ ccsemver_decl bool ccsemver_condition_is_parser_expected_identifier (cce_conditi
 
 
 /** --------------------------------------------------------------------
- ** Condition objects: parser error, number out of range.
+ ** Exceptional-condition objects: parser error, number out of range.
  ** ----------------------------------------------------------------- */
 
 typedef struct ccsemver_descriptor_parser_number_out_of_range_t		ccsemver_descriptor_parser_number_out_of_range_t;

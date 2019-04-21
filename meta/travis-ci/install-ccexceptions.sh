@@ -7,7 +7,7 @@
 # script is run from the top directory of the build tree.
 
 PROGNAME="${0##*/}"
-VERSION=0.8.0-devel.11
+VERSION=0.9.0-devel.2
 STEM="ccexceptions-${VERSION}"
 ARCHIVE="${STEM}.tar.gz"
 SOURCE_URI="https://github.com/marcomaggi/ccexceptions/archive/v${VERSION}.tar.gz"

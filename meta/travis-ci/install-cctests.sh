@@ -7,7 +7,7 @@
 # script is run from the top directory of the build tree.
 
 PROGNAME="${0##*/}"
-VERSION=0.3.0-devel.7
+VERSION=0.4.1-devel.0
 STEM="cctests-${VERSION}"
 ARCHIVE="${STEM}.tar.gz"
 SOURCE_URI="https://github.com/marcomaggi/cctests/archive/v${VERSION}.tar.gz"

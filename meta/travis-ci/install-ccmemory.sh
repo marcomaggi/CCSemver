@@ -7,7 +7,7 @@
 # script is run from the top directory of the build tree.
 
 PROGNAME="${0##*/}"
-VERSION=0.2.1-devel.4
+VERSION=0.2.2-devel.1
 STEM="ccmemory-${VERSION}"
 ARCHIVE="${STEM}.tar.gz"
 SOURCE_URI="https://github.com/marcomaggi/ccmemory/archive/v${VERSION}.tar.gz"

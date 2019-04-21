@@ -21,7 +21,7 @@ sysconfdir=@sysconfdir@
 Name: @PACKAGE_NAME@
 Description: semantic versioning for the C11 language
 Version: @MMUX_PKG_CONFIG_VERSION@
-Requires: ccexceptions >= 0.8.0
+Requires: ccexceptions >= 0.9.0, ccmemory >= 0.2.2, ccstructs >= 0.3.0
 Libs: -L${libdir} -lccsemver
 Cflags: -I${includedir}
 

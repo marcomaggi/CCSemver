@@ -1,0 +1,276 @@
+@c Texinfo macros to format the common functions for the exceptional-condition objects public API as
+@c defined by CCExceptions.
+@c
+@c This set of macros requires two values to automatically build type and function names: LIBPREFIX,
+@c TYPESTEM.  Given an exceptional-condition object type.
+@c
+@c   my_condition_error_1_t
+@c
+@c the LIPREFIX is "my" and the TYPESTEM is "error_1".
+
+@c Copyright (c) 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
+@c
+@c The author hereby  grant permission to use,  copy, modify, distribute, and  license this software
+@c and its documentation for  any purpose, provided that existing copyright  notices are retained in
+@c all copies and that this notice is included verbatim in any distributions.  No written agreement,
+@c license,  or royalty  fee is  required for  any of  the authorised  uses.  Modifications  to this
+@c software may be  copyrighted by their authors  and need not follow the  licensing terms described
+@c here, provided that the new terms are clearly indicated on the first page of each file where they
+@c apply.
+@c
+@c IN  NO EVENT  SHALL THE  AUTHOR OR  DISTRIBUTORS BE  LIABLE TO  ANY PARTY  FOR DIRECT,  INDIRECT,
+@c SPECIAL,  INCIDENTAL, OR  CONSEQUENTIAL DAMAGES  ARISING OUT  OF THE  USE OF  THIS SOFTWARE,  ITS
+@c DOCUMENTATION,  OR  ANY  DERIVATIVES THEREOF,  EVEN  IF  THE  AUTHOR  HAVE BEEN  ADVISED  OF  THE
+@c POSSIBILITY OF SUCH DAMAGE.
+@c
+@c THE AUTHOR AND DISTRIBUTORS SPECIFICALLY DISCLAIM  ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+@c THE   IMPLIED  WARRANTIES   OF   MERCHANTABILITY,   FITNESS  FOR   A   PARTICULAR  PURPOSE,   AND
+@c NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, AND THE AUTHOR AND DISTRIBUTORS
+@c HAVE NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+@c
+
+@c page
+@c ------------------------------------------------------------------------
+@c Type definitions.
+@c ------------------------------------------------------------------------
+
+
+@c Format the type of exceptional-condition object.
+@c
+@macro CCEConditionObjectType{LIBPREFIX,TYPESTEM}
+\LIBPREFIX\_condition_\TYPESTEM\_t
+@end macro
+@macro CCEConditionObjectTypeCode{LIBPREFIX,TYPESTEM}
+@code{@CCEConditionObjectType{\LIBPREFIX\,\TYPESTEM\}}
+@end macro
+
+
+@c Format the type of exceptional-condition object-type descriptor.
+@c
+@macro CCEDescriptorType{LIBPREFIX,TYPESTEM}
+\LIBPREFIX\_descriptor_\TYPESTEM\_t
+@end macro
+@macro CCEDescriptorTypeCode{LIBPREFIX,TYPESTEM}
+@code{@CCEDescriptorType{\LIBPREFIX\,\TYPESTEM\}}
+@end macro
+
+
+@c Format the definition of the exceptional-condition object-type descriptor.
+@c
+@macro CCEDescriptorTypedef{LIBPREFIX,TYPESTEM,PARENTTYPE}
+@deftp {Struct Typedef} @CCEDescriptorType{\LIBPREFIX\,\TYPESTEM\}
+Structure type representing the exceptional--condition object--type descriptor.  This descriptor has
+the descriptor @code{\PARENTTYPE\} as parent.  It has the following public fields:
+
+@table @code
+@item cce_descriptor_t descriptor
+Core values of the exceptional--condition object--type descriptor.
+@end table
+@end deftp
+@end macro
+
+@c page
+@c ------------------------------------------------------------------------
+@c Constructors and destructors.
+@c ------------------------------------------------------------------------
+
+@c Format the exceptional-condition  object initialisation function, for the special  case in which:
+@c there   are  no   additional   arguments;   there  is   a   single   preallocated  and   prebuilt
+@c exceptional-condition object.
+@c
+@macro CCEConditionObjectNewNoArgsStatic{LIBPREFIX,TYPESTEM}
+@deftypefun {cce_condition_t const *} \LIBPREFIX\_condition_new_\TYPESTEM\ (void)
+Return a pointer to the predefined, statically allocated, structure representing the
+exceptional--condition object of type @CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\}.
+@end deftypefun
+@end macro
+
+
+@c Format the exceptional-condition  object initialisation function, for the special  case in which:
+@c there are no additional arguments.
+@c
+@macro CCEConditionObjectNewNoArgs{LIBPREFIX,TYPESTEM}
+@deftypefun {cce_condition_t const *} \LIBPREFIX\_condition_new_\TYPESTEM\ (void)
+Return a pointer to a newly built exceptional--condition object of type
+@CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\}.
+@end deftypefun
+@end macro
+
+
+@c Format the exceptional-condition  object initialisation function, for the special  case in which:
+@c there are additional arguments.  We should wrap in braces the ARGS argument to this macro.
+@c
+@macro CCEConditionObjectNew{LIBPREFIX,TYPESTEM,ARGS}
+@deftypefun {cce_condition_t const *} \LIBPREFIX\_condition_new_\TYPESTEM\ (cce_destination_t @var{L}, \ARGS\)
+Return a pointer to a newly built exceptional--condition object of type
+@CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\}.  If an error occurs: raise an exception by
+performing a non--local exit to @var{L}.
+@end deftypefun
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@c Format the exceptional-condition object initialisation function, for the special case in which:
+@c there are no additional arguments; the initialisation cannot fail.
+@c
+@macro CCEConditionObjectInitNoArgs{LIBPREFIX,TYPESTEM}
+@deftypefun void \LIBPREFIX\_condition_init_\TYPESTEM\ (@CCEConditionObjectType{\LIBPREFIX\,\TYPESTEM\} * @var{C})
+Initialise an already allocated exceptional--condition object.  We should call this function from
+the initialisation function of the derived type.
+@end deftypefun
+@end macro
+
+
+@c Format the exceptional-condition object initialisation function, for the special case in which:
+@c there are additional arguments; the initialisation cannot fail.
+@c
+@macro CCEConditionObjectInit{LIBPREFIX,TYPESTEM,ARGS}
+@deftypefun void \LIBPREFIX\_condition_init_\TYPESTEM\ (@CCEConditionObjectType{\LIBPREFIX\,\TYPESTEM\} * @var{C}, \ARGS\)
+Initialise an already allocated exceptional--condition object.  We should call this function from
+the initialisation function of the derived type.
+@end deftypefun
+@end macro
+
+
+@c Format the exceptional-condition object initialisation function, for the special case in which:
+@c there are no additional arguments; the initialisation may fail.
+@c
+@macro CCEConditionObjectInitNoArgsFailing{LIBPREFIX,TYPESTEM}
+@deftypefun void \LIBPREFIX\_condition_init_\TYPESTEM\ (cce_destination_t @var{L}, @CCEConditionObjectType{\LIBPREFIX\,\TYPESTEM\} * @var{C})
+Initialise an already allocated exceptional--condition object.  We should call this function from
+the initialisation function of the derived type.  If an error occurs: raise an exception by
+performing a non--local exit to @var{L}.
+@end deftypefun
+@end macro
+
+
+@c Format the exceptional-condition object initialisation function, for the special case in which:
+@c there are additional arguments; the initialisation may fail.
+@c
+@macro CCEConditionObjectInitFailing{LIBPREFIX,TYPESTEM,ARGS}
+@deftypefun void \LIBPREFIX\_condition_init_\TYPESTEM\ (cce_destination_t @var{L}, @CCEConditionObjectType{\LIBPREFIX\,\TYPESTEM\} * @var{C}, \ARGS\)
+Initialise an already allocated exceptional--condition object.  We should call this function from
+the initialisation function of the derived type.  If an error occurs: raise an exception by
+performing a non--local exit to @var{L}.
+@end deftypefun
+@end macro
+
+@c page
+@c ------------------------------------------------------------------------
+@c Type predicates.
+@c ------------------------------------------------------------------------
+
+@c Format the exceptional-condition object predicate.
+@c
+@macro CCEConditionObjectPredicate{LIBPREFIX,TYPESTEM}
+@deftypefun bool \LIBPREFIX\_condition_is_\TYPESTEM\ (cce_condition_t const * @var{C})
+Return @code{true} if the exceptional--condition object referenced by @var{C} is of type
+@CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\} or it is derived from it; otherwise return
+@code{false}.
+@end deftypefun
+@end macro
+
+@c page
+@c ------------------------------------------------------------------------
+@c Miscellaneous functions.
+@c ------------------------------------------------------------------------
+
+@c Format the initialisation function used to set the parent of an exceptional-condition object-type
+@c descriptor.
+@c
+@macro CCEDescriptorSetParentTo{LIBPREFIX,TYPESTEM}
+@deftypefun void {cce_descriptor_set_parent_to(@CCEDescriptorType{\LIBPREFIX\,\TYPESTEM\})} (cce_descriptor_t * @var{D})
+Mutate the exceptional--condition object--type descriptor referenced by @var{D} so that its parent
+is the descriptor of @CCEDescriptorTypeCode{\LIBPREFIX\,\TYPESTEM\}.  We should call this function
+in the initialisation module of the derived type.
+@end deftypefun
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@c Insert a whole section of documentation describing  the subtyping facilities for the special case
+@c in which:  the initialisation function has  no additional arguments; the  initialisation function
+@c cannot fail.
+@c
+@macro CCEConditionSubtypingFacilitiesNoArgs{LIBPREFIX,TYPESTEM}
+@subsubheading Facilities to derive an exceptional--condition object subtype
+
+When deriving a subtype from @CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\} we need the
+following functions.
+
+
+@CCEDescriptorSetParentTo{\LIBPREFIX\,\TYPESTEM\}
+
+
+@CCEConditionObjectInitNoArgs{\LIBPREFIX\,\TYPESTEM\}
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@c Insert a whole section of documentation describing  the subtyping facilities for the special case
+@c in which:  the initialisation function has  no additional arguments; the  initialisation function
+@c may fail.
+@c
+@macro CCEConditionSubtypingFacilitiesNoArgsFailing{LIBPREFIX,TYPESTEM}
+@subsubheading Facilities to derive an exceptional--condition object subtype
+
+When deriving a subtype from @CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\} we need the
+following functions.
+
+
+@CCEDescriptorSetParentTo{\LIBPREFIX\,\TYPESTEM\}
+
+
+@CCEConditionObjectInitNoArgsFailing{\LIBPREFIX\,\TYPESTEM\}
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@c Insert a whole section of documentation describing  the subtyping facilities for the special case
+@c in  which: the  initialisation function  has  additional arguments;  the initialisation  function
+@c cannot fail.
+@c
+@macro CCEConditionSubtypingFacilities{LIBPREFIX,TYPESTEM,ARGS}
+@subsubheading Facilities to derive an exceptional--condition object subtype
+
+When deriving a subtype from @CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\} we need the
+following functions.
+
+
+@CCEDescriptorSetParentTo{\LIBPREFIX\,\TYPESTEM\}
+
+
+@CCEConditionObjectInit{\LIBPREFIX\,\TYPESTEM\,\ARGS\}
+@end macro
+
+@c ------------------------------------------------------------------------
+
+@c Insert a whole section of documentation describing  the subtyping facilities for the special case
+@c in which: the  initialisation function has additional arguments; the  initialisation function may
+@c fail.
+@c
+@macro CCEConditionSubtypingFacilitiesFailing{LIBPREFIX,TYPESTEM,ARGS}
+@subsubheading Facilities to derive an exceptional--condition object subtype
+
+When deriving a subtype from @CCEConditionObjectTypeCode{\LIBPREFIX\,\TYPESTEM\} we need the
+following functions.
+
+
+@CCEDescriptorSetParentTo{\LIBPREFIX\,\TYPESTEM\}
+
+
+@CCEConditionObjectInitFailing{\LIBPREFIX\,\TYPESTEM\,\ARGS\}
+@end macro
+
+@c page
+@c ------------------------------------------------------------------------
+@c Done.
+@c ------------------------------------------------------------------------
+
+@c Local Variables:
+@c mode: texinfo
+@c TeX-master: "ccexceptions"
+@c fill-column: 100
+@c page-delimiter: "^@c page"
+@c ispell-local-dictionary: "en_GB-ise-w_accents"
+@c End:

@@ -2,7 +2,7 @@
 #
 
 AC_PREREQ([2.69])
-MMUX_PKG_VERSIONS([0],[1],[1],[devel.0])
+MMUX_PKG_VERSIONS([0],[1],[0],[devel.0])
 AC_INIT([CCSemver],[MMUX_PACKAGE_VERSION],
   [marco.maggi-ipsu@poste.it],
   [ccsemver],[http://github.com/marcomaggi/ccsemver])
@@ -74,7 +74,7 @@ PKG_INSTALLDIR
 MMUX_CHECK_PKG_CONFIG_MACROS
 PKG_CHECK_MODULES([CCEXCEPTIONS],[ccexceptions >= 0.8.0])
 PKG_CHECK_MODULES([CCMEMORY],[ccmemory >= 0.2.1])
-PKG_CHECK_MODULES([CCSTRUCTS],[ccstructs >= 0.2.0])
+PKG_CHECK_MODULES([CCSTRUCTS],[ccstructs >= 0.3.0])
 PKG_CHECK_MODULES([CCTESTS],[cctests >= 0.3.0],,[AC_MSG_WARN([package CCTests not found])])
 
 AM_CONDITIONAL([MMUX_TESTING_ENABLED],[test -n "$CCTESTS_LIBS"])
