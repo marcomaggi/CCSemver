@@ -73,7 +73,7 @@ ccsemver_parse_numeric_component (cce_destination_t L, ccsemver_input_t * input)
       input->off += endptr - input->str - input->off;
       return num;
     } else {
-      cce_raise(L, ccsemver_condition_new_parser_expected_numeric_component());
+      cce_raise(L, ccsemver_condition_new_parser_expected_numeric_component(L));
     }
   }
 }
@@ -95,7 +95,7 @@ ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
     input->off += endptr - input->str - input->off;
     return num;
   } else {
-    cce_raise(L, ccsemver_condition_new_parser_expected_number());
+    cce_raise(L, ccsemver_condition_new_parser_expected_number(L));
   }
 }
 

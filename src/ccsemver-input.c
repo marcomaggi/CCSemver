@@ -272,11 +272,11 @@ void
 ccsemver_input_assert_more_input (cce_destination_t L, ccsemver_input_t * input)
 {
   if (ccsemver_input_is_empty(input)) {
-    cce_raise(L, ccsemver_condition_new_parser_empty_input());
+    cce_raise(L, ccsemver_condition_new_parser_empty_input(L));
   } else if (ccsemver_input_at_end(input)) {
-    cce_raise(L, ccsemver_condition_new_parser_end_of_input());
+    cce_raise(L, ccsemver_condition_new_parser_end_of_input(L));
   } else if (ccsemver_input_invalid_offset(input)) {
-    cce_raise(L, ccsemver_condition_new_parser_invalid_input_offset());
+    cce_raise(L, ccsemver_condition_new_parser_invalid_input_offset(L));
   }
 }
 

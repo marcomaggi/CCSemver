@@ -131,10 +131,15 @@ struct ccsemver_condition_parser_error_t {
   cce_condition_runtime_error_t		runtime_error;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_error (ccsemver_condition_parser_error_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_error_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_error (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_error (cce_destination_t L, ccsemver_condition_parser_error_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_error (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_error (cce_condition_t const * C)
@@ -156,10 +161,15 @@ struct ccsemver_condition_parser_no_input_t {
   ccsemver_condition_parser_error_t	parser_error;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_no_input_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_no_input (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_no_input (cce_destination_t L, ccsemver_condition_parser_no_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_no_input (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_no_input (cce_condition_t const * C)
@@ -181,10 +191,15 @@ struct ccsemver_condition_parser_empty_input_t {
   ccsemver_condition_parser_no_input_t	parser_no_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_input_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_empty_input_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_empty_input (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_empty_input (cce_destination_t L, ccsemver_condition_parser_empty_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_empty_input (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_empty_input (cce_condition_t const * C)
@@ -206,10 +221,15 @@ struct ccsemver_condition_parser_end_of_input_t {
   ccsemver_condition_parser_no_input_t	parser_no_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_input_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_end_of_input_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_end_of_input (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_end_of_input (cce_destination_t L, ccsemver_condition_parser_end_of_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_end_of_input (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_end_of_input (cce_condition_t const * C)
@@ -231,10 +251,16 @@ struct ccsemver_condition_parser_invalid_input_offset_t {
   ccsemver_condition_parser_no_input_t	parser_no_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_invalid_input_offset_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_invalid_input_offset_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input_offset (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_invalid_input_offset
+  (cce_destination_t L, ccsemver_condition_parser_invalid_input_offset_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input_offset (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * C)
@@ -256,10 +282,15 @@ struct ccsemver_condition_parser_invalid_input_t {
   ccsemver_condition_parser_error_t	parser_error;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_invalid_input (ccsemver_condition_parser_invalid_input_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_invalid_input_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_invalid_input (cce_destination_t L, ccsemver_condition_parser_invalid_input_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_invalid_input (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_invalid_input (cce_condition_t const * C)
@@ -281,10 +312,15 @@ struct ccsemver_condition_parser_expected_number_t {
   ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expected_number_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_number_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_number (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_number (cce_destination_t L, ccsemver_condition_parser_expected_number_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_number (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_expected_number (cce_condition_t const * C)
@@ -306,10 +342,16 @@ struct ccsemver_condition_parser_expected_numeric_component_t {
   ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_parser_expected_numeric_component_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_numeric_component_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_numeric_component (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_numeric_component
+  (cce_destination_t L, ccsemver_condition_parser_expected_numeric_component_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_numeric_component (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * C)
@@ -333,11 +375,16 @@ struct ccsemver_condition_parser_expected_xrange_numeric_component_t {
   ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_expected_xrange_numeric_component
-  (ccsemver_condition_parser_expected_xrange_numeric_component_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_xrange_numeric_component_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_xrange_numeric_component
+  (cce_destination_t L, ccsemver_condition_parser_expected_xrange_numeric_component_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_xrange_numeric_component (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * C)
@@ -359,10 +406,16 @@ struct ccsemver_condition_parser_expected_identifier_t {
   ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_expected_identifier_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_identifier_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_identifier (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_expected_identifier
+  (cce_destination_t L, ccsemver_condition_parser_expected_identifier_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_expected_identifier (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * C)
@@ -384,10 +437,16 @@ struct ccsemver_condition_parser_number_out_of_range_t {
   ccsemver_condition_parser_invalid_input_t	parser_invalid_input;
 };
 
-ccsemver_decl void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * C)
+ccsemver_decl void cce_descriptor_set_parent_to(ccsemver_descriptor_parser_number_out_of_range_t) (cce_descriptor_t * D)
   __attribute__((__nonnull__(1)));
 
-ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_number_out_of_range (void)
+/* ------------------------------------------------------------------ */
+
+ccsemver_decl void ccsemver_condition_init_parser_number_out_of_range
+  (cce_destination_t L, ccsemver_condition_parser_number_out_of_range_t * C)
+  __attribute__((__nonnull__(1)));
+
+ccsemver_decl cce_condition_t const * ccsemver_condition_new_parser_number_out_of_range (cce_destination_t L)
   __attribute__((__returns_nonnull__));
 
 ccsemver_decl bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * C)

@@ -251,11 +251,11 @@ ccsemver_sv_parse (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * i
       sv->len = input->str + input->off - sv->raw;
     } else {
       /* Missing patch level is an error. */
-      cce_raise(L, ccsemver_condition_new_parser_invalid_input());
+      cce_raise(L, ccsemver_condition_new_parser_invalid_input(L));
     }
   } else {
     /* Missing minor version is an error. */
-    cce_raise(L, ccsemver_condition_new_parser_invalid_input());
+    cce_raise(L, ccsemver_condition_new_parser_invalid_input(L));
   }
 }
 
@@ -284,7 +284,7 @@ ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input
        be absent or  be a wildcard too.  The semver  "x.x" is fine.  The
        semver "x.2" is an error, because the 2 would be ignored. */
     if ((CCSEMVER_NUM_X == sv->major) && (CCSEMVER_NUM_X != sv->minor)) {
-      cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component());
+      cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component(L));
     }
 
     /* Parse the patch level, if any. It is fine if there is none. */
@@ -296,7 +296,7 @@ ccsemver_sv_parse_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input
 	 The  semver  "1.x.3"  is  an  error, because  the  3  would  be
 	 ignored. */
       if ((CCSEMVER_NUM_X == sv->minor) && (CCSEMVER_NUM_X != sv->patch)) {
-	cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component());
+	cce_raise(L, ccsemver_condition_new_parser_expected_xrange_numeric_component(L));
       }
 
       /* Parse the  "prerelease tag", if  any.  It  is fine if  there is

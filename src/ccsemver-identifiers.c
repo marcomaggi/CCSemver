@@ -211,7 +211,7 @@ ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t 
 	   with zero, for example "0123".
 
 	   FIXME Is this a good idea?  (Marco Maggi; Apr 7, 2018) */
-	cce_raise(L, ccsemver_condition_new_parser_expected_identifier());
+	cce_raise(L, ccsemver_condition_new_parser_expected_identifier(L));
       }
     }
   }
@@ -219,7 +219,7 @@ ccsemver_id_parse (cce_destination_t L, ccsemver_input_t * input, ccsemver_id_t 
   if (0 == component_len) {
     /* If we are here: there is no identifier component at the beginning
        of the input string. */
-    cce_raise(L, ccsemver_condition_new_parser_expected_identifier());
+    cce_raise(L, ccsemver_condition_new_parser_expected_identifier(L));
   }
 
   /* Here we know that the input string holds an identifier component of

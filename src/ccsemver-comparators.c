@@ -592,9 +592,9 @@ ccsemver_cmp_and (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * 
   if (ccsemver_input_is_empty(input)) {
     return;
   } else if (ccsemver_input_at_end(input)) {
-    cce_raise(L, ccsemver_condition_new_parser_end_of_input());
+    cce_raise(L, ccsemver_condition_new_parser_end_of_input(L));
   } else if (ccsemver_input_invalid_offset(input)) {
-    cce_raise(L, ccsemver_condition_new_parser_invalid_input_offset());
+    cce_raise(L, ccsemver_condition_new_parser_invalid_input_offset(L));
   } else {
     /* Read a comparator from the input string. */
     ccsemver_cmp_t *	new = ccsemver_cmp_new(L, input);

@@ -518,38 +518,24 @@ Return an integer representing the library interface current age.
 The @dfn{parser error exceptional--condition object} has the purpose of describing an exceptional
 condition caused by attempting to parse an invalid input string.
 
-There should be only one @emph{parser error} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_error_t
-Structure type representing the descriptor for @emph{parser error} condition objects.  This
-descriptor has @objtype{cce_descriptor_runtime_error_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_error,cce_descriptor_runtime_error_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_error}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_error_t
-Structure type representing an @emph{parser error} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_error}
 
 
-@deftypefun void ccsemver_condition_init_parser_error (ccsemver_condition_parser_error_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_error_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_error}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_error (void)
-Return a pointer to the statically allocated structure representing the single @emph{parser error}
-condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_error (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{parser error} condition object; otherwise return @cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_error}
 
 @c page
 @node conditions parser input
@@ -571,37 +557,24 @@ Return @ctrue{} if @var{C} is an @emph{parser error} condition object; otherwise
 The @dfn{no input exceptional--condition object} has the purpose of describing an exceptional
 condition caused by finding no available input while parsing semantic version strings.
 
-There should be only one @emph{no input} condition object: the one predefined by @value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_no_input_t
-Structure type representing the descriptor for @emph{no input} condition objects.  This descriptor
-has @objtype{ccsemver_descriptor_parser_error_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_no_input,ccsemver_descriptor_parser_error_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_no_input}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_no_input_t
-Structure type representing an @emph{no input} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_no_input}
 
 
-@deftypefun void ccsemver_condition_init_parser_no_input (ccsemver_condition_parser_no_input_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_no_input_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_no_input}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_no_input (void)
-Return a pointer to the statically allocated structure representing the single @emph{no input}
-condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_no_input (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{no input} condition object; otherwise return @cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_no_input}
 
 @c page
 @node conditions parser input empty
@@ -611,37 +584,24 @@ Return @ctrue{} if @var{C} is an @emph{no input} condition object; otherwise ret
 The @dfn{empty input exceptional--condition object} has the purpose of describing an exceptional
 condition caused by empty input while parsing semantic version strings.
 
-There should be only one @emph{empty input} condition object: the one predefined by @value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_empty_input_t
-Structure type representing the descriptor for @emph{empty input} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_empty_input,ccsemver_descriptor_parser_no_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_empty_input}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_empty_input_t
-Structure type representing an @emph{empty input} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_empty_input}
 
 
-@deftypefun void ccsemver_condition_init_parser_empty_input (ccsemver_condition_parser_empty_input_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_empty_input_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_empty_input}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_empty_input (void)
-Return a pointer to the statically allocated structure representing the single @emph{empty input}
-condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_empty_input (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{empty input} condition object; otherwise return @cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_empty_input}
 
 @c page
 @node conditions parser input eoi
@@ -651,39 +611,24 @@ Return @ctrue{} if @var{C} is an @emph{empty input} condition object; otherwise 
 The @dfn{unexpected end--of--input exceptional--condition object} has the purpose of describing an
 exceptional condition caused by an unexpected end--of--input while parsing semantic version strings.
 
-There should be only one @emph{unexpected end--of--input} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_end_of_input_t
-Structure type representing the descriptor for @emph{unexpected end--of--input} condition objects.
-This descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_end_of_input,ccsemver_descriptor_parser_no_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_end_of_input}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_end_of_input_t
-Structure type representing an @emph{unexpected end--of--input} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_end_of_input}
 
 
-@deftypefun void ccsemver_condition_init_parser_end_of_input (ccsemver_condition_parser_end_of_input_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_end_of_input_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_end_of_input}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_end_of_input (void)
-Return a pointer to the statically allocated structure representing the single @emph{unexpected
-end--of--input} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_end_of_input (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{unexpected end--of--input} condition object; otherwise return
-@cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_end_of_input}
 
 @c page
 @node conditions parser input offset
@@ -694,39 +639,24 @@ The @dfn{invalid input offset exceptional--condition object} has the purpose of 
 exceptional condition caused by attempting to access the input string at an invalid offset, while
 parsing semantic version strings.
 
-There should be only one @emph{invalid input offset} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_invalid_input_offset_t
-Structure type representing the descriptor for @emph{invalid input offset} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_no_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_invalid_input_offset,ccsemver_descriptor_parser_no_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_invalid_input_offset}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_invalid_input_offset_t
-Structure type representing an @emph{invalid input offset} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_invalid_input_offset}
 
 
-@deftypefun void ccsemver_condition_init_parser_invalid_input_offset (ccsemver_condition_parser_invalid_input_offset_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_invalid_input_offset_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_invalid_input_offset}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_invalid_input_offset (void)
-Return a pointer to the statically allocated structure representing the single @emph{invalid input
-offset} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_invalid_input_offset (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{invalid input offset} condition object; otherwise return
-@cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_invalid_input_offset}
 
 @c page
 @node conditions parser invalid
@@ -750,41 +680,25 @@ The @dfn{expected number exceptional--condition object} has the purpose of descr
 condition caused by invalid input when a number was expected, while parsing semantic version
 strings.
 
-There should be only one @emph{expected number} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_number_t
-Structure type representing the descriptor for @emph{expected number} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_expected_number,ccsemver_descriptor_parser_invalid_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_expected_number}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_expected_number_t
-Structure type representing an @emph{expected number} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_expected_number}
 
 
-@deftypefun void ccsemver_condition_init_parser_expected_number (ccsemver_condition_parser_expected_number_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_expected_number_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_expected_number}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_number (void)
-Return a pointer to the statically allocated structure representing the single @emph{expected
-number} condition object.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_expected_number}
 
-
-@deftypefun bool ccsemver_condition_is_parser_expected_number (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{expected number} condition object; otherwise return
-@cfalse{}.
-@end deftypefun
-
-
 @c page
 @node conditions parser invalid numcomp
 @subsection Expected numeric component
@@ -794,39 +708,24 @@ The @dfn{expected numeric component exceptional--condition object} has the purpo
 exceptional condition caused by invalid input when a numeric component was expected, while parsing
 semantic version strings.
 
-There should be only one @emph{expected numeric component} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_numeric_component_t
-Structure type representing the descriptor for @emph{expected numeric component} condition objects.
-This descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_expected_numeric_component,ccsemver_descriptor_parser_invalid_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_expected_numeric_component}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_expected_numeric_component_t
-Structure type representing an @emph{expected numeric component} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_expected_numeric_component}
 
 
-@deftypefun void ccsemver_condition_init_parser_expected_numeric_component (ccsemver_condition_parser_expected_numeric_component_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_expected_numeric_component_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_expected_numeric_component}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_numeric_component (void)
-Return a pointer to the statically allocated structure representing the single @emph{expected
-numeric component} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_expected_numeric_component (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{expected numeric component} condition object; otherwise
-return @cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_expected_numeric_component}
 
 @c page
 @node conditions parser invalid xnumcomp
@@ -840,40 +739,24 @@ parsing a range and a numeric component is present after a X-Range one; for exam
 a valid range, while @samp{X.2} and @samp{X.X.3} are invalid because @samp{2} and @samp{3} would be
 ignored.
 
-There should be only one @emph{expected X-Range numeric component} condition object: the one
-predefined by @value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_xrange_numeric_component_t
-Structure type representing the descriptor for @emph{expected X-Range numeric component} condition
-objects.  This descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent
-descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_expected_xrange_numeric_component,ccsemver_descriptor_parser_invalid_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_expected_xrange_numeric_component}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_expected_xrange_numeric_component_t
-Structure type representing an @emph{expected X-Range numeric component} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_expected_xrange_numeric_component}
 
 
-@deftypefun void ccsemver_condition_init_parser_expected_xrange_numeric_component (ccsemver_condition_parser_expected_xrange_numeric_component_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_expected_xrange_numeric_component_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_expected_xrange_numeric_component}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_xrange_numeric_component (void)
-Return a pointer to the statically allocated structure representing the single @emph{expected
-X-Range numeric component} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_expected_xrange_numeric_component (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{expected X-Range numeric component} condition object;
-otherwise return @cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_expected_xrange_numeric_component}
 
 @c page
 @node conditions parser invalid id
@@ -884,39 +767,24 @@ The @dfn{expected identifier exceptional--condition object} has the purpose of d
 exceptional condition caused by invalid input when a identifier was expected, while parsing semantic
 version strings.
 
-There should be only one @emph{expected identifier} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_expected_identifier_t
-Structure type representing the descriptor for @emph{expected identifier} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_expected_identifier,ccsemver_descriptor_parser_invalid_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_expected_identifier}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_expected_identifier_t
-Structure type representing an @emph{expected identifier} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_expected_identifier}
 
 
-@deftypefun void ccsemver_condition_init_parser_expected_identifier (ccsemver_condition_parser_expected_identifier_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_expected_identifier_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_expected_identifier}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_expected_identifier (void)
-Return a pointer to the statically allocated structure representing the single @emph{expected
-identifier} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_expected_identifier (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{expected identifier} condition object; otherwise return
-@cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_expected_identifier}
 
 @c page
 @node conditions parser invalid numrange
@@ -927,39 +795,24 @@ The @dfn{number out of range exceptional--condition object} has the purpose of d
 exceptional condition caused by a attempting to parse a number and finding it out of its allowed
 range, while parsing semantic version strings.
 
-There should be only one @emph{number out of range} condition object: the one predefined by
-@value{PACKAGE}.
-
 All the following definitions are accessible from the header file @file{ccsemver.h}.
 
 
-@deftp {Struct Typedef} ccsemver_descriptor_parser_number_out_of_range_t
-Structure type representing the descriptor for @emph{number out of range} condition objects.  This
-descriptor has @objtype{ccsemver_descriptor_parser_invalid_input_t} as parent descriptor.
+@CCEDescriptorTypedef{ccsemver,parser_number_out_of_range,ccsemver_descriptor_parser_invalid_input_t}
+
+
+@deftp {Struct Typedef} @CCEConditionObjectType{ccsemver,parser_number_out_of_range}
+Type of data structure representing an exceptional--condition object.
 @end deftp
 
 
-@deftp {Struct Typedef} ccsemver_condition_parser_number_out_of_range_t
-Structure type representing an @emph{number out of range} condition object.
-@end deftp
+@CCEConditionObjectNewNoArgs{ccsemver,parser_number_out_of_range}
 
 
-@deftypefun void ccsemver_condition_init_parser_number_out_of_range (ccsemver_condition_parser_number_out_of_range_t * @var{C})
-Initialise an already allocated condition object.  This function exists to allow sub--typing from
-@objtype{ccsemver_condition_parser_number_out_of_range_t}.
-@end deftypefun
+@CCEConditionObjectPredicate{ccsemver,parser_number_out_of_range}
 
 
-@deftypefun {cce_condition_t const *} ccsemver_condition_new_parser_number_out_of_range (void)
-Return a pointer to the statically allocated structure representing the single @emph{number out of
-range} condition object.
-@end deftypefun
-
-
-@deftypefun bool ccsemver_condition_is_parser_number_out_of_range (cce_condition_t const * @var{C})
-Return @ctrue{} if @var{C} is an @emph{number out of range} condition object; otherwise return
-@cfalse{}.
-@end deftypefun
+@CCEConditionSubtypingFacilitiesNoArgsFailing{ccsemver,parser_number_out_of_range}
 
 @c page
 @node input

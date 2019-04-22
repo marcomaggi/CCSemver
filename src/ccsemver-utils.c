@@ -51,7 +51,7 @@ ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
     return num;
   } else if (ERANGE == errno) {
     errno = 0;
-    cce_raise(L, ccsemver_condition_new_parser_number_out_of_range());
+    cce_raise(L, ccsemver_condition_new_parser_number_out_of_range(L));
   } else {
     cce_raise(L, cce_condition_new_errno_clear());
   }
