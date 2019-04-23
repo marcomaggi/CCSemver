@@ -36,7 +36,10 @@ ccsemver_REVISION	= @ccsemver_VERSION_INTERFACE_REVISION@
 ccsemver_AGE		= @ccsemver_VERSION_INTERFACE_AGE@
 ccsemver_LINKER_VERSION	= -version-info $(ccsemver_CURRENT):$(ccsemver_REVISION):$(ccsemver_AGE)
 
-include_HEADERS		= src/ccsemver.h
+include_HEADERS		= \
+	src/ccsemver.h			\
+	src/ccsemver-conditions.h	\
+	src/ccsemver-semver.h
 
 lib_LTLIBRARIES		= libccsemver.la
 libccsemver_la_CPPFLAGS	= $(AM_CPPFLAGS)
@@ -44,6 +47,8 @@ libccsemver_la_CFLAGS	= $(AM_CFLAGS) $(CCEXCEPTIONS_CFLAGS) $(CCMEMORY_CFLAGS) $
 libccsemver_la_LDFLAGS	= $(ccsemver_LINKER_VERSION) $(AM_LDFLAGS) $(CCEXCEPTIONS_LIBS) $(CCMEMORY_LIBS) $(CCSTRUCTS_LIBS)
 libccsemver_la_SOURCES	= \
 	src/ccsemver.h				\
+	src/ccsemver-conditions.h		\
+	src/ccsemver-semver.h			\
 	src/ccsemver-internals.h		\
 	src/ccsemver-version.c			\
 	src/ccsemver-conditions.c		\
