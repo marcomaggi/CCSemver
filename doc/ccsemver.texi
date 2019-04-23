@@ -79,7 +79,7 @@
 
 @copying
 This document describes version @value{VERSION} of @value{PACKAGE}, a C11 language library
-implementing semantic versioning for the C language.
+implementing @emph{Semantic Versioning} for the C language.
 
 The library supports @posix{} platforms.  The library depends on the packages: CCExceptions, at
 least version @value{CCExceptionsVersion}; CCMemory, at least version @value{CCMemoryVersion};
@@ -106,6 +106,15 @@ This package is a fork of the project Libsv by @value{ORIGIN_AUTHOR}; the origin
 available at:
 
 @center @value{OriginUrl}
+
+The specification of @emph{Semantic Versioning} is publicly available at the site:
+
+@center @url{https://semver.org/}
+
+@noindent
+under the terms of the @url{https://creativecommons.org/licenses/by/3.0/, Creative Commons --- CC BY
+3.0}.  The @emph{Semantic Versioning} specification is authored by Tom Preston--Werner, inventor of
+Gravatars and cofounder of GitHub.
 @end copying
 
 @c page
@@ -140,7 +149,7 @@ available at:
 
 @menu
 * overview::                    Overview of the package.
-* spec::                        Semantic versioning specification.
+* spec::                        @emph{Semantic Versioning} specification.
 * ext::                         Specification extensions.
 * init::                        Library initialisation.
 * version::                     Version functions.
@@ -173,10 +182,9 @@ Indexes
 
 
 This document describes version @value{VERSION} of @value{PACKAGE}, a C11 language library
-implementing semantic versioning for the C language.  A @dfn{semantic version} is described by the
-@samp{v2.0.0} specification found at:
-
-@center @url{https://semver.org/}
+implementing @emph{Semantic Versioning} for the C language.  A @dfn{semantic version} is described
+by the specification @samp{v2.0.0} included in this document, @ref{spec, @emph{Semantic Versioning}
+specification}.
 
 This package supports @posix{} platforms.  This package depends on the packages: CCExceptions, at
 least version @value{CCExceptionsVersion}; CCMemory, at least version @value{CCMemoryVersion};
@@ -207,10 +215,10 @@ names are prefixed with @code{@value{PackageApiPrefixUpper}}; all the type names
 
 @c page
 @node spec
-@chapter Semantic versioning specification
+@chapter @emph{Semantic Versioning} specification
 
 
-The specification of Semantic Versioning is publicly available at the site:
+The specification of @emph{Semantic Versioning} is publicly available at the site:
 
 @center @url{https://semver.org/}
 
@@ -543,58 +551,49 @@ be included.
 For example, the comparator @samp{>=1.2.7} would match the versions @samp{1.2.7}, @samp{1.2.8},
 @samp{2.5.3}, and @samp{1.3.9}, but not the versions @samp{1.2.6} or @samp{1.1.0}.
 
-Comparators can be joined by whitespace to form a @dfn{comparator set},
-which is satisfied by the @strong{intersection} of all of the
-comparators it includes.
+Comparators can be joined by whitespace to form a @dfn{comparator set}, which is satisfied by the
+@strong{intersection} of all of the comparators it includes.
 
-A range is composed of one or more comparator sets, joined by @code{||}.
-A version matches a range if and only if every comparator in at least
-one of the @code{||}--separated comparator sets is satisfied by the
-version.
+A range is composed of one or more comparator sets, joined by @code{||}.  A version matches a range
+if and only if every comparator in at least one of the @code{||}--separated comparator sets is
+satisfied by the version.
 
-For example, the range @samp{>=1.2.7 <1.3.0} would match the versions
-@samp{1.2.7}, @samp{1.2.8}, and @samp{1.2.99}, but not the versions
-@samp{1.2.6}, @samp{1.3.0}, or @samp{1.1.0}.
+For example, the range @samp{>=1.2.7 <1.3.0} would match the versions @samp{1.2.7}, @samp{1.2.8},
+and @samp{1.2.99}, but not the versions @samp{1.2.6}, @samp{1.3.0}, or @samp{1.1.0}.
 
-The range @samp{1.2.7 || >=1.2.9 <2.0.0} would match the versions
-@samp{1.2.7}, @samp{1.2.9}, and @samp{1.4.6}, but not the versions
-@samp{1.2.8} or @samp{2.0.0}.
+The range @samp{1.2.7 || >=1.2.9 <2.0.0} would match the versions @samp{1.2.7}, @samp{1.2.9}, and
+@samp{1.4.6}, but not the versions @samp{1.2.8} or @samp{2.0.0}.
 
 @c page
 @node ext tags
 @section Prerelease tags
 
 
-If a version has a prerelease tag (for example @samp{1.2.3-alpha.3})
-then it will only be allowed to satisfy comparator sets if at least one
-comparator with the same @code{(major, minor, patch)} tuple also has a
-prerelease tag.
+If a version has a prerelease tag (for example @samp{1.2.3-alpha.3}) then it will only be allowed to
+satisfy comparator sets if at least one comparator with the same @code{(major, minor, patch)} tuple
+also has a prerelease tag.
 
-For example, the range @samp{>1.2.3-alpha.3} would be allowed to match
-the version @samp{1.2.3-alpha.7}, but it would @strong{not} be satisfied
-by @samp{3.4.5-alpha.9}, even though @samp{3.4.5-alpha.9} is technically
-``greater than'' @samp{1.2.3-alpha.3} according to the Semantic
-Versioning sort rules.  The version range only accepts prerelease tags
-on the @samp{1.2.3} version.  The version @samp{3.4.5} @strong{would}
-satisfy the range, because it does not have a prerelease tag, and
-@samp{3.4.5} is greater than @samp{1.2.3-alpha.7}.
+For example, the range @samp{>1.2.3-alpha.3} would be allowed to match the version
+@samp{1.2.3-alpha.7}, but it would @strong{not} be satisfied by @samp{3.4.5-alpha.9}, even though
+@samp{3.4.5-alpha.9} is technically ``greater than'' @samp{1.2.3-alpha.3} according to the
+@emph{Semantic Versioning} sort rules.  The version range only accepts prerelease tags on the
+@samp{1.2.3} version.  The version @samp{3.4.5} @strong{would} satisfy the range, because it does
+not have a prerelease tag, and @samp{3.4.5} is greater than @samp{1.2.3-alpha.7}.
 
 The purpose for this behavior is twofold.
 
 @itemize
 @item
-Prerelease versions frequently are updated very quickly, and contain
-many breaking changes that are (by the author's design) not yet fit for
-public consumption.  Therefore, by default, they are excluded from range
-matching semantics.
+Prerelease versions frequently are updated very quickly, and contain many breaking changes that are
+(by the author's design) not yet fit for public consumption.  Therefore, by default, they are
+excluded from range matching semantics.
 
 @item
-A user who has opted into using a prerelease version has clearly
-indicated the intent to use @strong{that specific} set of alpha/beta/rc
-versions.  By including a prerelease tag in the range, the user is
-indicating that they are aware of the risk.  However, it is still not
-appropriate to assume that they have opted into taking a similar risk on
-the @strong{next} set of prerelease versions.
+A user who has opted into using a prerelease version has clearly indicated the intent to use
+@strong{that specific} set of alpha/beta/rc versions.  By including a prerelease tag in the range,
+the user is indicating that they are aware of the risk.  However, it is still not appropriate to
+assume that they have opted into taking a similar risk on the @strong{next} set of prerelease
+versions.
 @end itemize
 
 @c page
@@ -602,9 +601,8 @@ the @strong{next} set of prerelease versions.
 @section Advanced range syntax
 
 
-Advanced range syntax desugars to primitive comparators in deterministic
-ways.  Advanced ranges may be combined in the same way as primitive
-comparators using white space or @code{||}.
+Advanced range syntax desugars to primitive comparators in deterministic ways.  Advanced ranges may
+be combined in the same way as primitive comparators using white space or @code{||}.
 
 @c ------------------------------------------------------------------------
 
@@ -617,17 +615,16 @@ Specifies an inclusive set.
 @item @samp{1.2.3 - 2.3.4} := @samp{>=1.2.3 <=2.3.4}
 @end table
 
-If a partial version is provided as the first version in the inclusive
-range, then the missing pieces are replaced with zeroes.
+If a partial version is provided as the first version in the inclusive range, then the missing
+pieces are replaced with zeroes.
 
 @table @asis
 @item @samp{1.2 - 2.3.4} := @samp{>=1.2.0 <=2.3.4}
 @end table
 
-If a partial version is provided as the second version in the inclusive
-range, then all versions that start with the supplied parts of the tuple
-are accepted, but nothing that would be greater than the provided tuple
-parts.
+If a partial version is provided as the second version in the inclusive range, then all versions
+that start with the supplied parts of the tuple are accepted, but nothing that would be greater than
+the provided tuple parts.
 
 @table @asis
 @item @samp{1.2.3 - 2.3} := @samp{>=1.2.3 <2.4.0}
@@ -640,8 +637,8 @@ parts.
 @subsubheading X-Ranges @samp{1.2.x} @samp{1.X} @samp{1.2.*} @samp{*}
 
 
-Any of @samp{X}, @samp{x}, or @samp{*} may be used to ``stand in'' for
-one of the numeric values in the @code{(major, minor, patch)} tuple.
+Any of @samp{X}, @samp{x}, or @samp{*} may be used to ``stand in'' for one of the numeric values in
+the @code{(major, minor, patch)} tuple.
 
 @table @asis
 @item @samp{*} := @samp{>=0.0.0}
@@ -654,8 +651,7 @@ Matching major version.
 Matching major and minor versions.
 @end table
 
-A partial version range is treated as an X-Range, so the special
-character is in fact optional.
+A partial version range is treated as an X-Range, so the special character is in fact optional.
 
 @table @asis
 @item Empty string := @samp{*} := @samp{>=0.0.0}
@@ -669,8 +665,8 @@ character is in fact optional.
 
 @subsubheading Tilde ranges @samp{~1.2.3} @samp{~1.2} @samp{~1}
 
-Allows patch--level changes if a minor version is specified on the
-comparator.  Allows minor-level changes if not.
+Allows patch--level changes if a minor version is specified on the comparator.  Allows minor-level
+changes if not.
 
 @table @asis
 @item @samp{~1.2.3} := @samp{>=1.2.3 <1.(2+1).0} := @samp{>=1.2.3 <1.3.0}
@@ -690,11 +686,9 @@ Same as @samp{0.2.x}.
 Same as @samp{0.x}.
 
 @item @samp{~1.2.3-beta.2} := @samp{>=1.2.3-beta.2 <1.3.0}
-Note that prereleases in the @samp{1.2.3} version will be allowed, if
-they are greater than or equal to @samp{beta.2}.  So,
-@samp{1.2.3-beta.4} would be allowed, but @samp{1.2.4-beta.2} would not,
-because it is a prerelease of a different @code{(major, minor, patch)}
-tuple.
+Note that prereleases in the @samp{1.2.3} version will be allowed, if they are greater than or equal
+to @samp{beta.2}.  So, @samp{1.2.3-beta.4} would be allowed, but @samp{1.2.4-beta.2} would not,
+because it is a prerelease of a different @code{(major, minor, patch)} tuple.
 @end table
 
 @c ------------------------------------------------------------------------
@@ -702,21 +696,17 @@ tuple.
 @subsubheading Caret ranges @samp{^1.2.3} @samp{^0.2.5} @samp{^0.0.4}
 
 
-Allow changes that do not modify the left--most non--zero digit in the
-@code{(major, minor, patch)} tuple.  In other words, this allows patch
-and minor updates for versions @samp{1.0.0} and above, patch updates for
-versions @samp{0.X >=0.1.0}, and @strong{no} updates for versions
-@samp{0.0.X}.
+Allow changes that do not modify the left--most non--zero digit in the @code{(major, minor, patch)}
+tuple.  In other words, this allows patch and minor updates for versions @samp{1.0.0} and above,
+patch updates for versions @samp{0.X >=0.1.0}, and @strong{no} updates for versions @samp{0.0.X}.
 
-Many authors treat a @samp{0.x} version as if the @samp{x} were the
-major ``breaking change'' indicator.
+Many authors treat a @samp{0.x} version as if the @samp{x} were the major ``breaking change''
+indicator.
 
-Caret ranges are ideal when an author may make breaking changes between
-@samp{0.2.4} and @samp{0.3.0} releases, which is a common practice.
-However, it presumes that there will @strong{not} be breaking changes
-between @samp{0.2.4} and @samp{0.2.5}.  It allows for changes that are
-presumed to be additive (but non--breaking), according to commonly
-observed practices.
+Caret ranges are ideal when an author may make breaking changes between @samp{0.2.4} and
+@samp{0.3.0} releases, which is a common practice.  However, it presumes that there will
+@strong{not} be breaking changes between @samp{0.2.4} and @samp{0.2.5}.  It allows for changes that
+are presumed to be additive (but non--breaking), according to commonly observed practices.
 
 @table @asis
 @item @samp{^1.2.3} := @samp{>=1.2.3 <2.0.0}
@@ -726,21 +716,17 @@ observed practices.
 @item @samp{^0.0.3} := @samp{>=0.0.3 <0.0.4}
 
 @item @samp{^1.2.3-beta.2} := @samp{>=1.2.3-beta.2 <2.0.0}
-Note that prereleases in the @samp{1.2.3} version will be allowed, if
-they are greater than or equal to @samp{beta.2}.  So,
-@samp{1.2.3-beta.4} would be allowed, but @samp{1.2.4-beta.2} would not,
-because it is a prerelease of a different @code{(major, minor, patch)}
-tuple.
+Note that prereleases in the @samp{1.2.3} version will be allowed, if they are greater than or equal
+to @samp{beta.2}.  So, @samp{1.2.3-beta.4} would be allowed, but @samp{1.2.4-beta.2} would not,
+because it is a prerelease of a different @code{(major, minor, patch)} tuple.
 
 @item @samp{^0.0.3-beta} := @samp{>=0.0.3-beta <0.0.4}
-Note that prereleases in the @samp{0.0.3} version @strong{only} will be
-allowed, if they are greater than or equal to @samp{beta}.  So,
-@samp{0.0.3-pr.2} would be allowed.
+Note that prereleases in the @samp{0.0.3} version @strong{only} will be allowed, if they are greater
+than or equal to @samp{beta}.  So, @samp{0.0.3-pr.2} would be allowed.
 @end table
 
-When parsing caret ranges, a missing @code{patch} value desugars to the
-number @samp{0}, but will allow flexibility within that value, even if
-the major and minor versions are both @samp{0}.
+When parsing caret ranges, a missing @code{patch} value desugars to the number @samp{0}, but will
+allow flexibility within that value, even if the major and minor versions are both @samp{0}.
 
 @table @asis
 @item @samp{^1.2.x} := @samp{>=1.2.0 <2.0.0}
@@ -750,9 +736,8 @@ the major and minor versions are both @samp{0}.
 @item @samp{^0.0} := @samp{>=0.0.0 <0.1.0}
 @end table
 
-A missing @code{minor} and @code{patch} values will desugar to zero, but
-also allow flexibility within those values, even if the major version is
-zero.
+A missing @code{minor} and @code{patch} values will desugar to zero, but also allow flexibility
+within those values, even if the major version is zero.
 
 @table @asis
 @item @samp{^1.x} := @samp{>=1.0.0 <2.0.0}
@@ -786,8 +771,8 @@ Libtool's versioning system, libtool, Shared library support for @gnu{}}.
 
 
 @deftypefun {char const *} ccsemver_version_string (void)
-Return a pointer to a statically allocated @asciiz{} string representing
-the interface version number.
+Return a pointer to a statically allocated @asciiz{} string representing the interface version
+number.
 @end deftypefun
 
 
@@ -797,8 +782,7 @@ Return an integer representing the library interface current number.
 
 
 @deftypefun int ccsemver_version_interface_revision (void)
-Return an integer representing the library interface current revision
-number.
+Return an integer representing the library interface current revision number.
 @end deftypefun
 
 
@@ -1126,7 +1110,7 @@ Type of data structure representing an exceptional--condition object.
 @chapter Parser input specification
 
 
-Every parser functions accepts as argument a pointer to @objtype{ccsemver_input_t} to keep track of
+Every parser function accepts as argument a pointer to @objtype{ccsemver_input_t} to keep track of
 which input characters have been consumed.  The whole parser input strings are meant to be loaded in
 memory.  Usage example:
 
@@ -2772,6 +2756,15 @@ This package is a fork of the project Libsv by @value{ORIGIN_AUTHOR}; the origin
 available at:
 
 @center @value{OriginUrl}
+
+The specification of Semantic Versioning is publicly available at the site:
+
+@center @url{https://semver.org/}
+
+@noindent
+under the terms of the @url{https://creativecommons.org/licenses/by/3.0/, Creative Commons --- CC BY
+3.0}.  The @emph{Semantic Versioning} specification is authored by Tom Preston--Werner, inventor of
+Gravatars and cofounder of GitHub.  @value{PACKAGE} implements a parser for version 2.0.0 of the
 
 @c page
 @node concept index
