@@ -193,9 +193,10 @@ upon the package CCTests, at least version @value{CCTestsVersion}.
 
 @cindex @value{PackageHeaderFile}, header file
 @cindex Header file @value{PackageHeaderFile}
-@value{PACKAGE} installs the single header file @value{PackageHeaderFile}.  All the function names
-in the @api{} are prefixed with @code{@value{PackageApiPrefixLower}}; all the preprocessor symbol
-names are prefixed with @code{@value{PackageApiPrefixUpper}}; all the type names are prefixed with
+@value{PACKAGE} installs multiple header files, the whole @api{} is available by including the
+single header file @value{PackageHeaderFile}.  All the function names in the @api{} are prefixed
+with @code{@value{PackageApiPrefixLower}}; all the preprocessor symbol names are prefixed with
+@code{@value{PackageApiPrefixUpper}}; all the type names are prefixed with
 @code{@value{PackageApiPrefixLower}} and suffixed with @code{_t}.
 
 @strong{Notice that, before using the library, we need to call the global initialisation function
