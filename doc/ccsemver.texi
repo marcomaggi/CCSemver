@@ -1135,23 +1135,21 @@ Number of characters in the input string.  Parser functions never mutate this va
 
 @item size_t off
 Offset of the next character to parse in the input string.  This value is mutated by every parser
-function.
-@end table
-
-For every parser function: the input string is referenced by @code{str}; the length of the input
-string is @code{len} characters; the field @code{off} is both an input and output parameter:
+function.  The field @code{off} is both an input and output parameter:
 
 @itemize
 @item
-Upon entering the function: @code{off} is the offset of the first character to parse in @code{str}.
+Upon entering a parser function: @code{off} is the offset of the first character to parse in
+@code{str}.
 
 @item
-When the function returns successfully: @code{off} is the offset of the first non--parsed character;
-further parsing operations can use such value as input.
+When the parser function returns successfully: @code{off} is the offset of the first non--parsed
+character; further parsing operations can use such value as input.
 
 @item
 When the function returns unsuccessfully: @code{off} is invalid.
 @end itemize
+@end table
 
 Unless otherwise specified, for every parser function: if the input string is empty (@code{len} is
 zero), the function returns unsuccessfully.
@@ -1207,24 +1205,8 @@ Increment the field @code{off}.
 @chapter Parsing semantic versions
 
 
-@menu
-* semvers intro::               Introduction to semantic versions.
-* semvers typedefs::            Type definitions.
-* semvers reading::             Parsing from a string.
-* semvers writing::             Writing to a string.
-* semvers comparing::           Versions comparison.
-@end menu
-
-@c page
-@node semvers intro
-@section Introduction to semantic versions
-
-
-For the full specification version @samp{v2.0.0} we should refer to:
-
-@center @url{https://semver.org/}
-
-@dfn{Semantic versions} are strings in @ascii{} encoding with the following format:
+According to @emph{Semantic Versioning} version @samp{v2.0.0}, @dfn{semantic versions} are strings
+in @ascii{} encoding with the following format:
 
 @example
 1.2.3-alpha.1-beta.2+x86-64
@@ -1235,22 +1217,23 @@ where:
 
 @table @samp
 @item 1
-Is the major version number; it is mandatory.
+Is the major version number; it is mandatory; it must not have leading zeros.
 
 @item 2
-Is the minor version number; it is mandatory.
+Is the minor version number; it is mandatory; it must not have leading zeros.
 
 @item 3
-Is the patch level; it is mandatory.
+Is the patch level; it is mandatory; it must not have leading zeros.
 
 @item -alpha.1-beta.2
 Is the prerelease tag; it is optional.  The leading dash character is the separator: if a dash is
-present after the patch level, there must be a prerelease tag.  Prerelease tags cannot be empty.
+present after the patch level, there must be a prerelease tag.  Prerelease tags cannot be empty:
+either there is a prerelease tag or there is not.
 
 @item +x86-64
 Is the build metadata; it is optional.  The leading plus character is the separator: if a plus is
 present after the patch level or the prerelease tag, there must be a build metadata.  The build
-metadata cannot be empty.
+metadata cannot be empty: either there is a build metadata tag or there is not.
 @end table
 
 Other examples of valid semantic versions:
@@ -1260,6 +1243,13 @@ Other examples of valid semantic versions:
 1.2.3-alpha.1-beta.2
 1.2.3+x86-64
 @end example
+
+@menu
+* semvers typedefs::            Type definitions.
+* semvers reading::             Parsing from a string.
+* semvers writing::             Writing to a string.
+* semvers comparing::           Versions comparison.
+@end menu
 
 @c page
 @node semvers typedefs
