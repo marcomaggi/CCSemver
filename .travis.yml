@@ -164,16 +164,16 @@ matrix:
   fast_finish: true
 
   include:
-    # Plain build under Ubuntu GNU+Linux "xenial", GCC 8.
+    # Plain build under Ubuntu GNU+Linux "xenial", GCC 9.
     - os: linux
       dist: xenial
-      compiler: gcc-8
+      compiler: gcc-9
       addons:
         apt:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - gcc-8
+          - gcc-9
       script: |
         ./configure --enable-maintainer-mode;
         make all;
@@ -186,7 +186,7 @@ matrix:
       dist: xenial
       compiler: clang
       script: |
-        ./configure --enable-maintainer-mode CFLAGS='-Wno-unknown-attributes';
+        ./configure --enable-maintainer-mode;
         make all;
         make check;
         (umask 0; sudo make install);
@@ -197,27 +197,27 @@ matrix:
       osx_image: xcode10.1
       compiler: clang
       script: |
-        ./configure --enable-maintainer-mode CFLAGS='-Wno-unknown-attributes';
+        ./configure --enable-maintainer-mode;
         make all;
         make check;
         (umask 0; sudo make install);
         make installcheck;
 
-    # Codecov support under Ubuntu GNU+Linux "xenial", GCC 8.
+    # Codecov support under Ubuntu GNU+Linux "xenial", GCC 9.
     - os: linux
       dist: xenial
-      compiler: gcc-8
+      compiler: gcc-9
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc-8
+            - gcc-9
       script: |
         ./configure --enable-maintainer-mode CFLAGS='-O0 --coverage';
         make all;
         make check;
       after_success:
-        bash <(curl -s https://codecov.io/bash) -xgcov-8
+        bash <(curl -s https://codecov.io/bash) -xgcov-9
 
 ### end of file
