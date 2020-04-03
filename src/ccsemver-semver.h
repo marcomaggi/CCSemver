@@ -74,38 +74,42 @@ struct ccsemver_sv_t {
  ** Parsing semantic versions: constructors and destructors.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new  (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+cclib_decl ccsemver_sv_t * ccsemver_sv_new  (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
-
-/* ------------------------------------------------------------------ */
-
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_range  (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
-
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_sv_t * ccsemver_sv_init (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_sv_delete (ccsemver_sv_t * sv)
-  __attribute__((__nonnull__(1)));
+cclib_decl ccsemver_sv_t * ccsemver_sv_new_range  (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl void ccsemver_sv_reset (ccsemver_sv_t * sv)
-  __attribute__((__nonnull__(1)));
+cclib_decl ccsemver_sv_t * ccsemver_sv_init_range (cce_destination_t L, ccsemver_sv_t * sv, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
+
+/* ------------------------------------------------------------------ */
+
+cclib_decl void ccsemver_sv_delete (ccsemver_sv_t * sv)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl void ccsemver_sv_reset (ccsemver_sv_t * sv)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 
 /** --------------------------------------------------------------------
  ** Parsing semantic versions: exception handlers.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl void ccsemver_clean_handler_sv_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_sv_t * sv)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl void ccsemver_clean_handler_sv_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_sv_t * sv)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
-ccsemver_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_sv_t * sv)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_sv_t * sv)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 #define ccsemver_handler_sv_init(L,H,sv)				\
   _Generic((H),								\
@@ -117,11 +121,13 @@ ccsemver_decl void ccsemver_error_handler_sv_init   (cce_location_t * L, cce_err
  ** Parsing semantic versions: guarded constructors.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_sv_t * ccsemver_sv_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_sv_t * ccsemver_sv_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_sv_new_guarded(L,H,input)				\
   _Generic((H),								\
@@ -130,13 +136,15 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_new_guarded_error   (cce_destination_t
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+cclib_decl ccsemver_sv_t * ccsemver_sv_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
 								ccsemver_sv_t * sv, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+cclib_decl ccsemver_sv_t * ccsemver_sv_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
 								ccsemver_sv_t * sv, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_sv_init_guarded(L,H,sv,input)				\
   _Generic((H),								\
@@ -149,11 +157,11 @@ ccsemver_decl ccsemver_sv_t * ccsemver_sv_init_guarded_error   (cce_destination_
  ** Parsing semantic versions: operations.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl int  ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl int  ccsemver_sv_write (ccsemver_sv_t const * sv, char * buffer, size_t len)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl int  ccsemver_sv_comp  (ccsemver_sv_t const * sv1, ccsemver_sv_t const * sv2)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl int  ccsemver_sv_comp  (ccsemver_sv_t const * sv1, ccsemver_sv_t const * sv2)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
 
 /** --------------------------------------------------------------------

@@ -31,10 +31,17 @@ original source is available at:
 		      <https://github.com/uael/sv>
 
   The  library  targets POSIX  systems.   This  package depends  on  the
-packages:  CCExceptions,  at least  version  0.9.0;  CCMemory, at  least
-version  0.2.2; CCStructs,  at least  version  0.3.0.  To  run the  test
-suite: this package  depends upon the package CCTests,  at least version
-0.4.1.
+packages:
+
+* CCExceptions, at least version 0.10.0;
+
+* CCMemory, at least  version 0.3.0;
+
+* CCStructs, at least  version 0.4.0;
+
+to run the test suite, this package depends upon the packages:
+
+* CCTests, at least version 0.5.0.
 
   The package uses the GNU Autotools  and it is tested, using Travis CI,
 on both Ubuntu  GNU+Linux systems and OS X systems.   The package relies
@@ -44,7 +51,7 @@ on "pkg-config" to find the dependencies installed on the system.
 2. License
 ----------
 
-Copyright (c) 2017, 2018, 2019 Marco Maggi <marco.maggi-ipsu@poste.it>
+Copyright (c) 2017, 2018, 2019, 2020 Marco Maggi <marco.maggi-ipsu@poste.it>
 Copyright (c) 2017 Lucas Abel <https://github.com/uael/>
 
 This is free and unencumbered software released into the public domain.

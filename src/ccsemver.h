@@ -34,56 +34,8 @@
 #ifndef CCSEMVER_H
 #define CCSEMVER_H 1
 
-
-/** --------------------------------------------------------------------
- ** Preliminary definitions.
- ** ----------------------------------------------------------------- */
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/* The macro CCSEMVER_UNUSED indicates that a function, function argument or variable
-   may potentially be unused. Usage examples:
-
-   static int unused_function (char arg) CCSEMVER_UNUSED;
-   int foo (char unused_argument CCSEMVER_UNUSED);
-   int unused_variable CCSEMVER_UNUSED;
-*/
-#ifdef __GNUC__
-#  define CCSEMVER_UNUSED		__attribute__((__unused__))
-#else
-#  define CCSEMVER_UNUSED		/* empty */
-#endif
-
-#ifndef __GNUC__
-#  define __attribute__(...)	/* empty */
-#endif
-
-/* I found the following chunk on the Net.  (Marco Maggi; Sun Feb 26, 2012) */
-#if defined _WIN32 || defined __CYGWIN__
-#  ifdef BUILDING_DLL
-#    ifdef __GNUC__
-#      define ccsemver_decl		__attribute__((__dllexport__)) extern
-#    else
-#      define ccsemver_decl		__declspec(dllexport) extern
-#    endif
-#  else
-#    ifdef __GNUC__
-#      define ccsemver_decl		__attribute__((__dllimport__)) extern
-#    else
-#      define ccsemver_decl		__declspec(dllimport) extern
-#    endif
-#  endif
-#  define ccsemver_private_decl	extern
-#else
-#  if __GNUC__ >= 4
-#    define ccsemver_decl		__attribute__((__visibility__("default"))) extern
-#    define ccsemver_private_decl	__attribute__((__visibility__("hidden")))  extern
-#  else
-#    define ccsemver_decl		extern
-#    define ccsemver_private_decl	extern
-#  endif
 #endif
 
 
@@ -92,6 +44,7 @@ extern "C" {
  ** ----------------------------------------------------------------- */
 
 #include <ccexceptions.h>
+#include <ccmemory.h>
 #include <ccstructs.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -102,25 +55,18 @@ extern "C" {
  ** Initialisation.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl void ccsemver_library_init (void)
-  __attribute__((__constructor__));
+cclib_decl void ccsemver_library_init (void)
+  CCLIB_FUNC_ATTRIBUTE_CONSTRUCTOR;
 
 
 /** --------------------------------------------------------------------
  ** Version functions.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl char const *	ccsemver_version_string			(void);
-ccsemver_decl int		ccsemver_version_interface_current	(void);
-ccsemver_decl int		ccsemver_version_interface_revision	(void);
-ccsemver_decl int		ccsemver_version_interface_age		(void);
-
-
-/** --------------------------------------------------------------------
- ** Subordinate header files.
- ** ----------------------------------------------------------------- */
-
-#include <ccsemver-conditions.h>
+cclib_decl char const *	ccsemver_version_string			(void);
+cclib_decl int		ccsemver_version_interface_current	(void);
+cclib_decl int		ccsemver_version_interface_revision	(void);
+cclib_decl int		ccsemver_version_interface_age		(void);
 
 
 /** --------------------------------------------------------------------
@@ -158,14 +104,22 @@ struct ccsemver_allocator_t {
   ccsemver_free_fun_t *		free;
 };
 
-ccsemver_decl ccsemver_allocator_t const * const ccsemver_default_allocator;
-ccsemver_decl ccsemver_allocator_t const *       ccsemver_current_allocator;
+cclib_decl ccsemver_allocator_t const * const ccsemver_default_allocator;
+cclib_decl ccsemver_allocator_t const *       ccsemver_current_allocator;
 
-ccsemver_decl void * ccsemver_malloc (cce_destination_t L, size_t size)
-  __attribute__((__nonnull__(1),__returns_nonnull__));
+cclib_decl void * ccsemver_malloc (cce_destination_t L, size_t size)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl void   ccsemver_free   (void * ptr)
-  __attribute__((__nonnull__(1)));
+cclib_decl void   ccsemver_free   (void * ptr)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+
+/** --------------------------------------------------------------------
+ ** Subordinate header files.
+ ** ----------------------------------------------------------------- */
+
+#include <ccsemver-conditions.h>
 
 
 /** --------------------------------------------------------------------
@@ -183,7 +137,8 @@ struct ccsemver_input_t {
   size_t		off;
 };
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline ccsemver_input_t
 ccsemver_input_new (char const * const str, size_t const len, size_t const off)
 {
@@ -197,14 +152,16 @@ ccsemver_input_new (char const * const str, size_t const len, size_t const off)
 
 /* ------------------------------------------------------------------ */
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline char
 ccsemver_input_next (ccsemver_input_t * input)
 {
   return input->str[input->off];
 }
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline void
 ccsemver_input_step (ccsemver_input_t * input)
 {
@@ -213,28 +170,32 @@ ccsemver_input_step (ccsemver_input_t * input)
 
 /* ------------------------------------------------------------------ */
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline bool
 ccsemver_input_more (ccsemver_input_t * input)
 {
   return (input->len > input->off);
 }
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline bool
 ccsemver_input_at_end (ccsemver_input_t * input)
 {
   return (input->len == input->off);
 }
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline bool
 ccsemver_input_invalid_offset (ccsemver_input_t * input)
 {
   return (input->len < input->off);
 }
 
-__attribute__((__always_inline__,__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
+  CCLIB_FUNC_ATTRIBUTE_ALWAYS_INLINE
 static inline bool
 ccsemver_input_is_empty (ccsemver_input_t * input)
 {
@@ -243,53 +204,53 @@ ccsemver_input_is_empty (ccsemver_input_t * input)
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl bool ccsemver_looking_at_blanked_dash (ccsemver_input_t const * input)
-  __attribute__((__nonnull__(1)));
+cclib_decl bool ccsemver_looking_at_blanked_dash (ccsemver_input_t const * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl char ccsemver_input_parse_next	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
+cclib_decl char ccsemver_input_parse_next	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
-ccsemver_decl void ccsemver_input_step_back	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-/* ------------------------------------------------------------------ */
-
-ccsemver_decl bool ccsemver_input_parse_blanks	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_v	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_dot	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_dash	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_plus	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_bar	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_equal	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_blanked_dash	(ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_blanked_OR	(ccsemver_input_t * that_input)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t * input)
-  __attribute__((__nonnull__(1)));
+cclib_decl void ccsemver_input_step_back	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_input_assert_more_input (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl bool ccsemver_input_parse_blanks	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_v	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_dot	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_dash	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_plus	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_bar	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_equal	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_blanked_dash	(ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_blanked_OR	(ccsemver_input_t * that_input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+cclib_decl bool ccsemver_input_parse_comparator_separator (ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
+
+/* ------------------------------------------------------------------ */
+
+cclib_decl void ccsemver_input_assert_more_input (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
 
 /** --------------------------------------------------------------------
@@ -298,14 +259,17 @@ ccsemver_decl void ccsemver_input_assert_more_input (cce_destination_t L, ccsemv
 
 #define CCSEMVER_NUM_X	((long)(-1))
 
-ccsemver_decl long ccsemver_parse_numeric_component (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2),__leaf__));
+cclib_decl long ccsemver_parse_numeric_component (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_LEAF;
 
-ccsemver_decl long ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2),__leaf__));
+cclib_decl long ccsemver_parse_number (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_LEAF;
 
-ccsemver_decl int ccsemver_num_comp (long num1, long num2)
-  __attribute__((__leaf__,__const__));
+cclib_decl int ccsemver_num_comp (long num1, long num2)
+  CCLIB_FUNC_ATTRIBUTE_LEAF
+  CCLIB_FUNC_ATTRIBUTE_CONST;
 
 
 /** --------------------------------------------------------------------
@@ -338,35 +302,38 @@ struct ccsemver_id_t {
   ccsemver_id_t *	next;
 };
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_new  (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2),__returns_nonnull__));
+cclib_decl ccsemver_id_t * ccsemver_id_new  (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_init (cce_destination_t L, ccsemver_id_t * id, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
-
-/* ------------------------------------------------------------------ */
-
-ccsemver_decl void ccsemver_id_delete (ccsemver_id_t * id)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl void ccsemver_id_reset (ccsemver_id_t * id)
-  __attribute__((__nonnull__(1)));
+cclib_decl ccsemver_id_t * ccsemver_id_init (cce_destination_t L, ccsemver_id_t * id, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl int  ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl void ccsemver_id_delete (ccsemver_id_t * id)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
-ccsemver_decl int  ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t const * id2)
-  __attribute__((__nonnull__(1,2),__leaf__));
+cclib_decl void ccsemver_id_reset (ccsemver_id_t * id)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_id_t * id)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl int  ccsemver_id_write (ccsemver_id_t const * id, char * buffer, size_t len)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl void ccsemver_error_handler_id_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl int  ccsemver_id_comp (ccsemver_id_t const * id1, ccsemver_id_t const * id2)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
+  CCLIB_FUNC_ATTRIBUTE_LEAF;
+
+/* ------------------------------------------------------------------ */
+
+cclib_decl void ccsemver_clean_handler_id_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_id_t * id)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
+
+cclib_decl void ccsemver_error_handler_id_init (cce_location_t * L, cce_error_handler_t * H, ccsemver_id_t * id)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 #define ccsemver_handler_id_init(L,id_H,id)				\
   _Generic((id_H),							\
@@ -375,11 +342,13 @@ ccsemver_decl void ccsemver_error_handler_id_init (cce_location_t * L, cce_error
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_id_t * ccsemver_id_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_id_t * ccsemver_id_new_guarded_error (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_id_new_guarded(L,H,input)				\
   _Generic((H),								\
@@ -388,13 +357,15 @@ ccsemver_decl ccsemver_id_t * ccsemver_id_new_guarded_error (cce_destination_t L
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+cclib_decl ccsemver_id_t * ccsemver_id_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
 							      ccsemver_id_t * id, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_id_t * ccsemver_id_init_guarded_error (cce_destination_t L, cce_error_handler_t * H,
+cclib_decl ccsemver_id_t * ccsemver_id_init_guarded_error (cce_destination_t L, cce_error_handler_t * H,
 							      ccsemver_id_t * id, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_id_init_guarded(L,H,id,input)				\
   _Generic((H),								\
@@ -427,38 +398,38 @@ struct ccsemver_cmp_t {
   ccsemver_sv_t			sv;
 };
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new  (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_new  (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3)));
-
-/* ------------------------------------------------------------------ */
-
-ccsemver_decl void ccsemver_cmp_delete (ccsemver_cmp_t * cmp)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl void ccsemver_cmp_reset (ccsemver_cmp_t * cmp)
-  __attribute__((__nonnull__(1)));
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_init (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_cmp_and   (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl void ccsemver_cmp_delete (ccsemver_cmp_t * cmp)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
-ccsemver_decl int  ccsemver_cmp_write (ccsemver_cmp_t const * cmp, char * buffer, size_t len)
-  __attribute__((__nonnull__(1,2)));
-
-ccsemver_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_cmp_t const * cmp)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl void ccsemver_cmp_reset (ccsemver_cmp_t * cmp)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_clean_handler_cmp_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_cmp_t * comp)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl void ccsemver_cmp_and   (cce_destination_t L, ccsemver_cmp_t * cmp, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl void ccsemver_error_handler_cmp_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_cmp_t * comp)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl int  ccsemver_cmp_write (ccsemver_cmp_t const * cmp, char * buffer, size_t len)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
+
+cclib_decl bool ccsemver_match (ccsemver_sv_t const * sv, ccsemver_cmp_t const * cmp)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
+
+/* ------------------------------------------------------------------ */
+
+cclib_decl void ccsemver_clean_handler_cmp_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_cmp_t * comp)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
+
+cclib_decl void ccsemver_error_handler_cmp_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_cmp_t * comp)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 #define ccsemver_handler_cmp_init(L,comp_H,comp) \
   _Generic((comp_H),							\
@@ -467,11 +438,13 @@ ccsemver_decl void ccsemver_error_handler_cmp_init   (cce_location_t * L, cce_er
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_cmp_new_guarded(L,H,input)				\
   _Generic((H),								\
@@ -480,13 +453,15 @@ ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_new_guarded_error   (cce_destination
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
 								    ccsemver_cmp_t * cmp, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+cclib_decl ccsemver_cmp_t * ccsemver_cmp_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
 								    ccsemver_cmp_t * cmp, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_cmp_init_guarded(L,H,cmp,input)			\
   _Generic((H),								\
@@ -511,35 +486,35 @@ struct ccsemver_range_t {
   ccsemver_cmp_t	cmp;
 };
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_new  (cce_destination_t L, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl ccsemver_range_t * ccsemver_range_new  (cce_destination_t L, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_init (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3)));
-
-/* ------------------------------------------------------------------ */
-
-ccsemver_decl void ccsemver_range_delete (ccsemver_range_t * range)
-  __attribute__((__nonnull__(1)));
-
-ccsemver_decl void ccsemver_range_reset (ccsemver_range_t * range)
-  __attribute__((__nonnull__(1)));
+cclib_decl ccsemver_range_t * ccsemver_range_init (cce_destination_t L, ccsemver_range_t * range, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl int ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl void ccsemver_range_delete (ccsemver_range_t * range)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
-ccsemver_decl int ccsemver_range_match (ccsemver_sv_t const * sv, ccsemver_range_t const * range)
-  __attribute__((__nonnull__(1,2)));
+cclib_decl void ccsemver_range_reset (ccsemver_range_t * range)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1);
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl void ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_range_t * range)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl int ccsemver_range_write (ccsemver_range_t const * self, char * buffer, size_t len)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
-ccsemver_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_range_t * range)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl int ccsemver_range_match (ccsemver_sv_t const * sv, ccsemver_range_t const * range)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
+
+/* ------------------------------------------------------------------ */
+
+cclib_decl void ccsemver_clean_handler_range_init (cce_location_t * L, cce_clean_handler_t * H, ccsemver_range_t * range)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
+
+cclib_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_error_handler_t * H, ccsemver_range_t * range)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
 #define ccsemver_handler_range_init(L,range_H,range)			\
   _Generic((range_H),							\
@@ -548,11 +523,13 @@ ccsemver_decl void ccsemver_error_handler_range_init   (cce_location_t * L, cce_
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_range_t * ccsemver_range_new_guarded_clean (cce_destination_t L, cce_clean_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3),__returns_nonnull__));
+cclib_decl ccsemver_range_t * ccsemver_range_new_guarded_error   (cce_destination_t L, cce_error_handler_t * H, ccsemver_input_t * input)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_range_new_guarded(L,H,input)				\
   _Generic((H),								\
@@ -561,13 +538,15 @@ ccsemver_decl ccsemver_range_t * ccsemver_range_new_guarded_error   (cce_destina
 
 /* ------------------------------------------------------------------ */
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
+cclib_decl ccsemver_range_t * ccsemver_range_init_guarded_clean (cce_destination_t L, cce_clean_handler_t * H,
 								      ccsemver_range_t * range, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
-ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
+cclib_decl ccsemver_range_t * ccsemver_range_init_guarded_error   (cce_destination_t L, cce_error_handler_t   * H,
 								      ccsemver_range_t * range, ccsemver_input_t * input)
-  __attribute__((__nonnull__(1,2,3,4),__returns_nonnull__));
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3,4)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 #define ccsemver_range_init_guarded(L,H,range,input)			\
   _Generic((H),								\
@@ -579,20 +558,20 @@ ccsemver_decl ccsemver_range_t * ccsemver_range_init_guarded_error   (cce_destin
  ** Input/output.
  ** ----------------------------------------------------------------- */
 
-ccsemver_decl size_t ccsemver_id_fwrite (cce_destination_t L, ccsemver_id_t const * idp, FILE * stream)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl size_t ccsemver_id_fwrite (cce_destination_t L, ccsemver_id_t const * idp, FILE * stream)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
-ccsemver_decl size_t ccsemver_sv_fwrite (cce_destination_t L, ccsemver_sv_t const * sv, FILE * stream)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl size_t ccsemver_sv_fwrite (cce_destination_t L, ccsemver_sv_t const * sv, FILE * stream)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
-ccsemver_decl size_t ccsemver_cmp_fwrite  (cce_destination_t L, ccsemver_cmp_t const * cmp, FILE * stream)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl size_t ccsemver_cmp_fwrite  (cce_destination_t L, ccsemver_cmp_t const * cmp, FILE * stream)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
-ccsemver_decl size_t ccsemver_range_fwrite (cce_destination_t L, ccsemver_range_t const * range, FILE * stream)
-  __attribute__((__nonnull__(1,2,3)));
+cclib_decl size_t ccsemver_range_fwrite (cce_destination_t L, ccsemver_range_t const * range, FILE * stream)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2,3);
 
-ccsemver_decl char const * ccsemver_op_string (ccsemver_op_t op)
-  __attribute__((__returns_nonnull__));
+cclib_decl char const * ccsemver_op_string (ccsemver_op_t op)
+  CCLIB_FUNC_ATTRIBUTE_RETURNS_NONNULL;
 
 
 /** --------------------------------------------------------------------

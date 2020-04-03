@@ -67,7 +67,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_error_t) (cce_descriptor
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_error (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_error (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "error parsing input string";
 }
@@ -75,13 +75,13 @@ ccsemver_condition_static_message_parser_error (cce_condition_t const * C CCSEMV
 /* ------------------------------------------------------------------ */
 
 void
-ccsemver_condition_init_parser_error (cce_destination_t L CCSEMVER_UNUSED, ccsemver_condition_parser_error_t * C)
+ccsemver_condition_init_parser_error (cce_destination_t L CCLIB_UNUSED, ccsemver_condition_parser_error_t * C)
 {
   cce_condition_init_runtime_error(&(C->runtime_error));
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_error (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_error (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_error;
 }
@@ -121,7 +121,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_no_input_t) (cce_descrip
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_no_input (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_no_input (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: no input available";
 }
@@ -135,7 +135,7 @@ ccsemver_condition_init_parser_no_input (cce_destination_t L, ccsemver_condition
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_no_input (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_no_input (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_no_input;
 }
@@ -175,7 +175,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_empty_input_t) (cce_desc
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_empty_input (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_empty_input (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: input is empty";
 }
@@ -189,7 +189,7 @@ ccsemver_condition_init_parser_empty_input (cce_destination_t L, ccsemver_condit
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_empty_input (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_empty_input (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_empty_input;
 }
@@ -229,7 +229,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_end_of_input_t) (cce_des
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_end_of_input (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_end_of_input (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: unexpected end of input";
 }
@@ -243,7 +243,7 @@ ccsemver_condition_init_parser_end_of_input (cce_destination_t L, ccsemver_condi
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_end_of_input (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_end_of_input (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_end_of_input;
 }
@@ -284,7 +284,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_invalid_input_offset_t) 
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_invalid_input_offset (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_invalid_input_offset (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: invalid offset in input string";
 }
@@ -298,7 +298,7 @@ ccsemver_condition_init_parser_invalid_input_offset (cce_destination_t L, ccsemv
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_invalid_input_offset (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_invalid_input_offset (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_invalid_input_offset;
 }
@@ -338,7 +338,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_invalid_input_t) (cce_de
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_invalid_input (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_invalid_input (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: invalid input";
 }
@@ -352,7 +352,7 @@ ccsemver_condition_init_parser_invalid_input (cce_destination_t L, ccsemver_cond
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_invalid_input (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_invalid_input (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_invalid_input;
 }
@@ -393,7 +393,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_number_t) (cce_
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_expected_number (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_expected_number (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: expected number";
 }
@@ -407,7 +407,7 @@ ccsemver_condition_init_parser_expected_number (cce_destination_t L, ccsemver_co
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_expected_number (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_expected_number (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_expected_number;
 }
@@ -448,7 +448,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_numeric_compone
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_expected_numeric_component (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_expected_numeric_component (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: expected numeric component";
 }
@@ -462,7 +462,7 @@ ccsemver_condition_init_parser_expected_numeric_component (cce_destination_t L, 
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_expected_numeric_component (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_expected_numeric_component (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_expected_numeric_component;
 }
@@ -503,7 +503,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_xrange_numeric_
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_expected_xrange_numeric_component (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_expected_xrange_numeric_component (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: expected X-Range numeric component";
 }
@@ -517,7 +517,7 @@ ccsemver_condition_init_parser_expected_xrange_numeric_component (cce_destinatio
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_expected_xrange_numeric_component (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_expected_xrange_numeric_component (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_expected_xrange_numeric_component;
 }
@@ -558,7 +558,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_expected_identifier_t) (
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_expected_identifier (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_expected_identifier (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: expected identifier";
 }
@@ -572,7 +572,7 @@ ccsemver_condition_init_parser_expected_identifier (cce_destination_t L, ccsemve
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_expected_identifier (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_expected_identifier (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_expected_identifier;
 }
@@ -613,7 +613,7 @@ cce_descriptor_set_parent_to(ccsemver_descriptor_parser_number_out_of_range_t) (
 /* ------------------------------------------------------------------ */
 
 char const *
-ccsemver_condition_static_message_parser_number_out_of_range (cce_condition_t const * C CCSEMVER_UNUSED)
+ccsemver_condition_static_message_parser_number_out_of_range (cce_condition_t const * C CCLIB_UNUSED)
 {
   return "while parsing: number out of range";
 }
@@ -627,7 +627,7 @@ ccsemver_condition_init_parser_number_out_of_range (cce_destination_t L, ccsemve
 }
 
 cce_condition_t const *
-ccsemver_condition_new_parser_number_out_of_range (cce_destination_t L CCSEMVER_UNUSED)
+ccsemver_condition_new_parser_number_out_of_range (cce_destination_t L CCLIB_UNUSED)
 {
   return (cce_condition_t const *) &ccsemver_condition_parser_number_out_of_range;
 }

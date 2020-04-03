@@ -2,6 +2,25 @@
 @section Linking code with the library
 
 
+All the packages in the CCLibraries project, and all the packages making use of a CCLibraries
+project, @strong{must} generate a @file{config.h} file at package configuration time, using the
+@gnu{} Autoconf directive:
+
+@example
+AC_CONFIG_HEADERS([config.h])
+@end example
+
+@noindent
+in their @file{configure.ac} file.  In addition they must include the macro file distributed by this
+package in @file{meta/autoconf/cclibraries.m4}, along with its dependencies, and use the macro:
+
+@example
+CCLIB_CONFIG_SETUP()
+@end example
+
+@noindent
+which will inspect the underlying platform and generate definitions in the file @file{config.h}.
+
 This package installs a data file for @command{pkg-config}, so when searching for the installed
 library with the @gnu{} Autotools, we can add the following macro use to @file{configure.ac}:
 

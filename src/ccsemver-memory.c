@@ -7,7 +7,7 @@
 
 
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 
   This  is  free and  unencumbered  software  released into  the  public
   domain.
@@ -48,16 +48,16 @@
  ** Default allocator.
  ** ----------------------------------------------------------------- */
 
-__attribute__((__nonnull__(1)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1)
 static void *
-ccsemver_default_malloc (ccsemver_allocator_t const * const A CCSEMVER_UNUSED, cce_destination_t L, size_t const size)
+ccsemver_default_malloc (ccsemver_allocator_t const * const A CCLIB_UNUSED, cce_destination_t L, size_t const size)
 {
   return cce_sys_malloc(L, size);
 }
 
-__attribute__((__nonnull__(1,2)))
+CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2)
 static void
-ccsemver_default_free (ccsemver_allocator_t const * const A CCSEMVER_UNUSED, void * ptr)
+ccsemver_default_free (ccsemver_allocator_t const * const A CCLIB_UNUSED, void * ptr)
 {
   free(ptr);
 }

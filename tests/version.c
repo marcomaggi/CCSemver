@@ -7,7 +7,7 @@
 
 	Test file for version functions.
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2020 Marco Maggi <marco.maggi-ipsu@poste.it>
 
   See the UNLICENSE file.
 */
@@ -17,7 +17,7 @@
 #include <stdlib.h>
 
 int
-main (int argc CCSEMVER_UNUSED, const char *const argv[] CCSEMVER_UNUSED)
+main (void)
 {
   ccsemver_library_init();
 

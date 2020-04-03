@@ -8,7 +8,7 @@
 	This  header  file is  for  internal  definitions.  It  must  be
 	included by all the source files in this package.
 
-  Copyright (C) 2018 Marco Maggi <marco.maggi-ipsu@poste.it>
+  Copyright (C) 2018, 2020 Marco Maggi <mrc.mgg@gmail.com>
 
   This  is  free and  unencumbered  software  released into  the  public
   domain.
@@ -68,17 +68,13 @@
  ** Function prototypes and inline functions.
  ** ----------------------------------------------------------------- */
 
-ccsemver_private_decl long ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
-  __attribute__((__nonnull__(1,2)));
+cclib_private_decl long ccsemver_strtol (cce_destination_t L, char const * input_str, char ** endptr)
+  CCLIB_FUNC_ATTRIBUTE_NONNULL(1,2);
 
 
 /** --------------------------------------------------------------------
  ** Done.
  ** ----------------------------------------------------------------- */
-
-#ifdef __cplusplus
-} // extern "C"
-#endif
 
 #endif /* CCSEMVER_INTERNALS_H */
 
