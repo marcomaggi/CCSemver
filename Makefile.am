@@ -7,6 +7,7 @@ EXTRA_DIST		= INSTALL \
 dist_doc_DATA		= README UNLICENSE
 AM_CPPFLAGS		= -I$(srcdir)/src
 AM_CFLAGS		= $(MMUX_CFLAGS)
+CLEANFILES		=
 
 ## --------------------------------------------------------------------
 
@@ -15,8 +16,11 @@ nodist_pkgconfig_DATA	= meta/scripts/ccsemver.pc
 
 #### documentation
 
+EXTRA_DIST		+= doc/cclibraries.style.css
+CLEANFILES		+= doc/cclibraries.css
+
 AM_MAKEINFOFLAGS	= --no-split
-AM_MAKEINFOHTMLFLAGS	= --split=node -c WORDS_IN_PAGE=0 \
+AM_MAKEINFOHTMLFLAGS	= --split=node -c WORDS_IN_PAGE=0 --css-ref=cclibraries.css \
 	-c PRE_BODY_CLOSE="<p>This document describes version <tt>$(PACKAGE_VERSION)</tt> of <em>$(PACKAGE_NAME)</em>.</p>"
 
 info_TEXINFOS		= doc/ccsemver.texi
@@ -27,6 +31,23 @@ doc_ccsemver_TEXINFOS	= \
 	doc/overview-ccnames.texi	\
 	doc/overview-ccexceptions.texi	\
 	doc/overview-ccmemory.texi
+
+## --------------------------------------------------------------------
+
+doc/cctemplate.html/$(am__dirstamp): doc/$(am__dirstamp)
+	@$(MKDIR_P) doc/cctemplate.html/
+	@: > doc/cctemplate.html/$(am__dirstamp)
+
+doc/cctemplate.html/cclibraries.css: doc/cclibraries.style.css doc/cctemplate.html/$(am__dirstamp)
+	$(INSTALL) -m 0444 "$(top_srcdir)/doc/cclibraries.style.css" "$(builddir)/doc/cctemplate.html/cclibraries.css"
+
+## --------------------------------------------------------------------
+
+html-local: doc/cctemplate.html/cclibraries.css
+
+install-html-local:
+	$(MKDIR_P) "$(DESTDIR)$(htmldir)/cctemplate.html/"
+	$(INSTALL) -m 0444 $(builddir)/doc/cctemplate.html/cclibraries.css "$(DESTDIR)$(htmldir)/cctemplate.html/"
 
 
 #### libraries
